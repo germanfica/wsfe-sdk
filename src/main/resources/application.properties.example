@@ -1,3 +1,5 @@
+spring.application.name=wsfe
+
 # Ubicacion del Servicio de Autenticacion y Autorizacion
 endpoint=https://wsaahomo.afip.gov.ar/ws/services/LoginCms
 #endpoint=https://wsaa.afip.gov.ar/ws/services/LoginCms
@@ -43,20 +45,19 @@ keystore-password=soloio
 # Tiempo de vida del ticket requerido
 TicketTime=3600000
 
-
-log4j.rootLogger=DEBUG, console
-log4j.appender.console=org.apache.log4j.ConsoleAppender
-log4j.appender.console.target=System.out
-log4j.appender.console.layout=org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern=%d{ISO8601} %-5p [%t] %c{1} - %m%n
-
+# log4j
+#log4j.rootLogger=DEBUG, console
+#log4j.appender.console=org.apache.log4j.ConsoleAppender
+#log4j.appender.console.target=System.out
+#log4j.appender.console.layout=org.apache.log4j.PatternLayout
+#log4j.appender.console.layout.ConversionPattern=%d{ISO8601} %-5p [%t] %c{1} - %m%n
 
 # Configuración de nivel de log para Spring Boot
-logging.level.root=DEBUG
+#logging.level.root=DEBUG
 
 # Configuración específica para paquetes (opcional)
-logging.level.org.springframework=DEBUG
-logging.level.com.your.package=DEBUG
+#logging.level.org.springframework=DEBUG
+#logging.level.com.your.package=DEBUG
 
 # Puerto configurado (por defecto 8080)
 server.port=5785
