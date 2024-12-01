@@ -6,6 +6,9 @@ target/
 # Ignore application.properties
 application.properties
 
+# Ignore private certs
+certs/private
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
