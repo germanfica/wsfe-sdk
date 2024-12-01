@@ -42,12 +42,6 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter Web Services -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web-services</artifactId>
-        </dependency>
-
         <!-- Spring Boot Starter Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -55,12 +49,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Dom4j -->
-<!--        <dependency>-->
-<!--            <groupId>org.dom4j</groupId>-->
-<!--            <artifactId>dom4j</artifactId>-->
-<!--            <version>2.1.4</version>-->
-<!--        </dependency>-->
+        <!-- Spring Boot Starter Web Services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+        </dependency>
 
         <!-- Bouncy Castle CMS APIs -->
         <dependency>
