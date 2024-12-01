@@ -6,11 +6,7 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
+import com.germanfica.wsfe.model.LoginTicketRequest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -67,6 +63,8 @@ public class ArcaWSAAUtils {
         // Crear el XML del LoginTicketRequest
         LoginTicketRequest_xml = create_LoginTicketRequest(SignerDN, dstDN, service, TicketTime);
 
+        System.out.println(LoginTicketRequest_xml);
+
         try {
             // Generar el firmante de contenido
             ContentSigner contentSigner = new JcaContentSignerBuilder("SHA1withRSA")
@@ -105,44 +103,7 @@ public class ArcaWSAAUtils {
     // Create XML Message for AFIP wsaa
     //
     public static String create_LoginTicketRequest(String SignerDN, String dstDN, String service, Long TicketTime) {
-
-        String LoginTicketRequest_xml;
-
-        // Obtener la fecha actual
-        Date GenTime = new Date();
-
-        // Configurar tiempos de generación y expiración con un desfase de 10 minutos
-        GregorianCalendar gentime = new GregorianCalendar();
-        GregorianCalendar exptime = new GregorianCalendar();
-        gentime.setTime(new Date(GenTime.getTime() - 10 * 60 * 1000)); // Resta 10 minutos
-        exptime.setTime(new Date(GenTime.getTime() + 10 * 60 * 1000)); // Suma 10 minutos
-
-        // Convertir GregorianCalendar a XMLGregorianCalendar
-        DatatypeFactory datatypeFactory = null;
-        try {
-            datatypeFactory = DatatypeFactory.newInstance();
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-        XMLGregorianCalendar XMLGenTime = datatypeFactory.newXMLGregorianCalendar(gentime);
-        XMLGregorianCalendar XMLExpTime = datatypeFactory.newXMLGregorianCalendar(exptime);
-
-        // Generar el UniqueId
-        String UniqueId = String.valueOf(GenTime.getTime() / 1000);
-
-        // Construir el XML del LoginTicketRequest
-        LoginTicketRequest_xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                + "<loginTicketRequest version=\"1.0\">"
-                + "<header>"
-                + "<source>" + SignerDN + "</source>"
-                + "<destination>" + dstDN + "</destination>"
-                + "<uniqueId>" + UniqueId + "</uniqueId>"
-                + "<generationTime>" + XMLGenTime.toXMLFormat().split("\\.")[0] + "</generationTime>"
-                + "<expirationTime>" + XMLExpTime.toXMLFormat().split("\\.")[0] + "</expirationTime>"
-                + "</header>"
-                + "<service>" + service + "</service>"
-                + "</loginTicketRequest>";
-
-        return LoginTicketRequest_xml;
+        LoginTicketRequest request = LoginTicketRequest.create(SignerDN, dstDN, service, TicketTime);
+        return XMLUtils.toXML(request);
     }
 }
