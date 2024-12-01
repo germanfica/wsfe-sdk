@@ -30,10 +30,11 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jaxb.version>2.3.0</jaxb.version>
+        <jaxb.version>4.0.5</jaxb.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
     <dependencies>
         <!-- Spring Boot Starter -->
         <dependency>
@@ -47,12 +48,19 @@
             <artifactId>spring-boot-starter-web-services</artifactId>
         </dependency>
 
-        <!-- Dom4j -->
+        <!-- Spring Boot Starter Test -->
         <dependency>
-            <groupId>org.dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>2.1.4</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
+
+        <!-- Dom4j -->
+<!--        <dependency>-->
+<!--            <groupId>org.dom4j</groupId>-->
+<!--            <artifactId>dom4j</artifactId>-->
+<!--            <version>2.1.4</version>-->
+<!--        </dependency>-->
 
         <!-- Bouncy Castle CMS APIs -->
         <dependency>
@@ -61,41 +69,39 @@
             <version>1.79</version>
         </dependency>
 
-        <!-- JAXB Runtime -->
+        <!-- Apache Commons Codec -->
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.5</version>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.17.1</version>
         </dependency>
 
-        <!-- Jakarta XML Binding API -->
+        <!--
+        This dependency is required for jaxb2-maven-plugin v3.2.0.
+        WARNING: If you update the version of jaxb2-maven-plugin,
+        you must also update this dependency to ensure compatibility.
+        The best way to find a compatible version is by checking the release date.
+        Typically, the versions of this dependency and jaxb2-maven-plugin are
+        released on the same or very close dates.
+        -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>4.0.2</version>
         </dependency>
 
-
+        <!--
+        This dependency is required for jaxb2-maven-plugin v3.2.0.
+        WARNING: If you update the version of jaxb2-maven-plugin,
+        you must also update this dependency to ensure compatibility.
+        The best way to find a compatible version is by checking the release date.
+        Typically, the versions of this dependency and jaxb2-maven-plugin are
+        released on the same or very close dates.
+        -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${jaxb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
+            <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>${jaxb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <version>4.0.5</version>
         </dependency>
     </dependencies>
 
@@ -107,11 +113,16 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- Plugin JAXB para generar clases desde XSD -->
+            <!--
+             Plugin for JAXB to generate classes from XSD files.
+             NOTE: This plugin depends on the following dependencies:
+             - org.glassfish.jaxb:jaxb-core:4.0.5
+             - jakarta.xml.bind:jakarta.xml.bind-api:4.0.2
+             -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.5.0</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -124,6 +135,7 @@
                     <sources>
                         <source>${basedir}/src/main/resources/wsdl</source>
                         <!-- jaxb2 no permite procesar directamente un WSDL desde una URL -->
+                        <!-- tienes que generar manualmente los .xsd o .wsdl en resources/wsdl -->
                         <!-- <source>https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL</source> -->
                     </sources>
                     <sourceType>wsdl</sourceType>

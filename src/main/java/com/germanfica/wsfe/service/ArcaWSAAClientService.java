@@ -35,8 +35,12 @@ public class ArcaWSAAClientService {
     private String service;
 
     // == constructors ==
+    private final SoapClientService soapClientService;
+
     @Autowired
-    private ArcaWSAAClientService(){}
+    private ArcaWSAAClientService(SoapClientService soapClientService){
+        this.soapClientService = soapClientService;
+    }
 
     // == methods ==
     public String invokeWsaa() {
@@ -52,7 +56,8 @@ public class ArcaWSAAClientService {
             );
 
             // Invocar el WSAA
-            return ArcaWSAAClient.invoke_wsaa(loginTicketRequestXmlCms, endpoint);
+            return soapClientService.invokeWsaa(loginTicketRequestXmlCms, endpoint);
+            //return ArcaWSAAClient.invoke_wsaa(loginTicketRequestXmlCms, endpoint);
             //return "HOLA HOLAA";
             //return generateJsonConfig();
 

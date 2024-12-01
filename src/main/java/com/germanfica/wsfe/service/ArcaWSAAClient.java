@@ -72,12 +72,12 @@ public class ArcaWSAAClient {
         // Crear el payload de la solicitud SOAP
         String soapRequest =
                 "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-                        "                  xmlns:ns=\"http://wsaa.view.sua.dvadac.desein.afip.gov\">" +
+                        "xmlns:wsaa=\"http://wsaa.view.sua.dvadac.desein.afip.gov\">" +
                         "   <soapenv:Header/>" +
                         "   <soapenv:Body>" +
-                        "       <ns:loginCms>" +
-                        "           <ns:request>" + encodedRequest + "</ns:request>" +
-                        "       </ns:loginCms>" +
+                        "      <wsaa:loginCms>" +
+                        "         <wsaa:in0>" + encodedRequest + "</wsaa:in0>" +
+                        "      </wsaa:loginCms>" +
                         "   </soapenv:Body>" +
                         "</soapenv:Envelope>";
 
