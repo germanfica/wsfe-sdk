@@ -6,22 +6,11 @@ import gov.afip.desein.dvadac.sua.view.wsaa.ObjectFactory;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.apache.commons.codec.binary.Base64;
-
-
-
-import org.springframework.stereotype.Service;
-import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
-
-
 import java.io.ByteArrayOutputStream;
 
 @Service
@@ -44,21 +33,17 @@ public class SoapClientService {
         ObjectFactory factory = new ObjectFactory(); // Cambia por la fábrica generada
         LoginCms request = factory.createLoginCms();
 
-
         String encodedRequest = Base64.encodeBase64String(loginTicketRequestXmlCms);
         request.setIn0(encodedRequest);
-
 
         // Enviar la solicitud y obtener la respuesta
         LoginCmsResponse response = (LoginCmsResponse) webServiceTemplate
                 .marshalSendAndReceive(endpoint, request, new SoapActionCallback("urn:loginCms"));
 
-        //return response.getLoginTicketResponse();
         return response.getLoginCmsReturn();
 
-//        String xmlRequest = marshallObjectToXml(request);
-//        return xmlRequest;
-
+        //String xmlRequest = marshallObjectToXml(request);
+        //return xmlRequest;
         //return "";
     }
 
@@ -78,5 +63,4 @@ public class SoapClientService {
         }
         return outputStream.toString(); // Convierte el contenido a String
     }
-
 }

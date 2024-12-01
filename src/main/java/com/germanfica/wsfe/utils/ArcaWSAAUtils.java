@@ -1,27 +1,17 @@
-package com.germanfica.wsfe.service;
+package com.germanfica.wsfe.utils;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
-import java.security.cert.CertStore;
-import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-//import javax.xml.rpc.ParameterMode;
-
-
-
-
-import org.bouncycastle.cms.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;
@@ -32,86 +22,9 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.cert.CertStore;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.List;
 
-//import org.apache.axis2.client.ServiceClient;
-//import org.apache.axis2.client.Options;
-//import org.apache.axis2.addressing.EndpointReference;
-//import org.apache.axiom.om.OMElement;
-//import org.apache.axiom.om.OMFactory;
-//import org.apache.axiom.om.OMNamespace;
-//import org.apache.axiom.om.OMAbstractFactory;
-//import org.apache.commons.codec.binary.Base64;
-
-// import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
-
-import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.xml.transform.StringSource;
-import javax.xml.transform.Source;
-import org.springframework.ws.client.core.WebServiceTemplate;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-public class ArcaWSAAClient {
-
-    public static String invoke_wsaa(byte[] loginTicketRequestXmlCms, String endpoint) throws Exception {
-        // Codificar en Base64 el contenido
-        String encodedRequest = java.util.Base64.getEncoder().encodeToString(loginTicketRequestXmlCms);
-
-        // Crear el payload de la solicitud SOAP
-        String soapRequest =
-                "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-                        "xmlns:wsaa=\"http://wsaa.view.sua.dvadac.desein.afip.gov\">" +
-                        "   <soapenv:Header/>" +
-                        "   <soapenv:Body>" +
-                        "      <wsaa:loginCms>" +
-                        "         <wsaa:in0>" + encodedRequest + "</wsaa:in0>" +
-                        "      </wsaa:loginCms>" +
-                        "   </soapenv:Body>" +
-                        "</soapenv:Envelope>";
-
-        // Crear WebServiceTemplate
-        WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
-
-        // Configurar la solicitud como StreamSource
-        StreamSource requestSource = new StreamSource(new StringReader(soapRequest));
-        StringWriter responseWriter = new StringWriter();
-        StreamResult responseResult = new StreamResult(responseWriter);
-
-        // Enviar solicitud y recibir respuesta
-        webServiceTemplate.sendSourceAndReceiveToResult(endpoint, requestSource, responseResult);
-
-        // Extraer el texto de la respuesta SOAP
-        String responseXml = responseWriter.toString();
-
-        // (Opcional) Procesar el XML para obtener el valor de "loginTicketResponse"
-        String loginTicketResponse = extractLoginTicketResponse(responseXml);
-
-        return loginTicketResponse;
-    }
-
-    // Método auxiliar para extraer el valor de loginTicketResponse
-    private static String extractLoginTicketResponse(String responseXml) {
-        // Implementa un parser XML o XPath para extraer el contenido del nodo deseado
-        // Ejemplo rápido usando un regex simple (mejor usar un parser robusto para producción)
-        String startTag = "<loginCmsReturn>";
-        String endTag = "</loginCmsReturn>";
-        int start = responseXml.indexOf(startTag) + startTag.length();
-        int end = responseXml.indexOf(endTag);
-        return responseXml.substring(start, end).trim();
-    }
-
+public class ArcaWSAAUtils {
     //
     // Create the CMS Message
     //
