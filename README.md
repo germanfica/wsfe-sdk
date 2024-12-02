@@ -1,5 +1,12 @@
 # wsfe
 
+## Maven goals
+
+```maven
+mvn clean
+mvn jaxb2:xjc
+```
+
 ## Known issues
 
 When working with IntelliJ IDEA, there are occasional issues where the code and controllers may break after performing a `mvn clean` operation.
