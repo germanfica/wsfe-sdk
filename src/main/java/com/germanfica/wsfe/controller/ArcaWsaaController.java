@@ -16,7 +16,7 @@ public class ArcaWsaaController {
         this.arcaWSAAClientService = arcaWSAAClientService;
     }
 
-    @GetMapping("/wsaa/invoke")
+    @GetMapping(value = "/wsaa/invoke", produces = "application/soap+xml")
     public String invokeWsaa() {
         //return "HOLAAA";
         return arcaWSAAClientService.invokeWsaa();

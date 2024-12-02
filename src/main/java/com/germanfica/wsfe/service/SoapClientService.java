@@ -9,6 +9,7 @@ import jakarta.xml.bind.Marshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.apache.commons.codec.binary.Base64;
 import java.io.ByteArrayOutputStream;
@@ -23,28 +24,41 @@ public class SoapClientService {
     }
 
     public String invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) throws Exception {
-        // Configurar el marshaller y unmarshaller
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("gov.afip.desein.dvadac.sua.view.wsaa"); // Cambia por tu paquete generado
-        webServiceTemplate.setMarshaller(marshaller);
-        webServiceTemplate.setUnmarshaller(marshaller);
+        try {
+            // Configurar el marshaller y unmarshaller
+            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+            marshaller.setPackagesToScan("gov.afip.desein.dvadac.sua.view.wsaa"); // Cambia por tu paquete generado
+            webServiceTemplate.setMarshaller(marshaller);
+            webServiceTemplate.setUnmarshaller(marshaller);
 
-        // Crear la solicitud utilizando las clases generadas por JAXB
-        ObjectFactory factory = new ObjectFactory(); // Cambia por la fábrica generada
-        LoginCms request = factory.createLoginCms();
+            // Crear la solicitud utilizando las clases generadas por JAXB
+            ObjectFactory factory = new ObjectFactory(); // Cambia por la fábrica generada
+            LoginCms request = factory.createLoginCms();
 
-        String encodedRequest = Base64.encodeBase64String(loginTicketRequestXmlCms);
-        request.setIn0(encodedRequest);
+            String encodedRequest = Base64.encodeBase64String(loginTicketRequestXmlCms);
+            request.setIn0(encodedRequest);
 
-        // Enviar la solicitud y obtener la respuesta
-        LoginCmsResponse response = (LoginCmsResponse) webServiceTemplate
-                .marshalSendAndReceive(endpoint, request, new SoapActionCallback("urn:loginCms"));
+            // Enviar la solicitud y obtener la respuesta
+            LoginCmsResponse response = (LoginCmsResponse) webServiceTemplate
+                    .marshalSendAndReceive(endpoint, request, new SoapActionCallback("urn:loginCms"));
 
-        return response.getLoginCmsReturn();
+            return response.getLoginCmsReturn();
 
-        //String xmlRequest = marshallObjectToXml(request);
-        //return xmlRequest;
-        //return "";
+        } catch (SoapFaultClientException e) {
+            // Manejo específico de errores SOAP
+            return generateErrorXml("Error SOAP: " + e.getMessage());
+        } catch (Exception e) {
+            // Manejo genérico de otros errores
+            return generateErrorXml("Error inesperado: " + e.getMessage());
+        }
+    }
+
+    // Método para generar un XML con el mensaje de error
+    private String generateErrorXml(String errorMessage) {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<error>" +
+                "<message>" + errorMessage + "</message>" +
+                "</error>";
     }
 
     // Método auxiliar para convertir objetos a XML (opcional, para depuración)
