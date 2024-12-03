@@ -162,6 +162,7 @@ public class SoapClientService {
         }
     }
 
+    // TODO: hay que corregir exceptionName y hostname, no deberia estar hardcoded
     private ErrorDto mapToErrorDto(SoapFaultClientException e) {
         // Parsear SOAP Fault al DTO de error
         var faultCode = e.getFaultCode();
