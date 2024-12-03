@@ -3,6 +3,11 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Utils
+CombineStagedGitDiffToOutput.ps1
+output.txt
+curl_output.html
+
 # Ignore application.properties
 application.properties
 
