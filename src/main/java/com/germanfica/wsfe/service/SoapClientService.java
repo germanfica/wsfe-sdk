@@ -94,12 +94,14 @@ public class SoapClientService {
         } catch (SoapFaultClientException e) {
             // Manejo de errores SOAP específicos
             //log.error("SOAP Fault: {}", e.getMessage());
+            e.printStackTrace();
             throw new ApiException(
                     mapToErrorDto(e), HttpStatus.BAD_REQUEST
             );
         } catch (Exception e) {
             // Manejo de otros errores
             //log.error("Unexpected error: {}", e.getMessage());
+            e.printStackTrace();
             throw new ApiException(
                     new ErrorDto("unexpected_error", "Unexpected error occurred", null),
                     HttpStatus.INTERNAL_SERVER_ERROR
@@ -137,36 +139,28 @@ public class SoapClientService {
         // Obtener los valores desde la respuesta
         String loginCmsReturn = xml;
 
-        try {
-            LoginTicketResponseType responseObj = convertXmlToObject(loginCmsReturn, LoginTicketResponseType.class);
-            System.out.println("Header Source: " + responseObj.getHeader().getSource());
-            System.out.println("Token: " + responseObj.getCredentials().getToken());
+        LoginTicketResponseType responseObj = convertXmlToObject(loginCmsReturn, LoginTicketResponseType.class);
 
-            // Construir el DTO
-            return new LoginCmsResponseDto(
-                    new LoginCmsResponseDto.HeaderDto(
-                            responseObj.getHeader().getSource(), // Extraer del contenido decodificado
-                            responseObj.getHeader().getDestination(), // Extraer del contenido decodificado
-                            responseObj.getHeader().getUniqueId(), // Extraer del contenido decodificado
-                            ArcaDateTimeUtils.formatDateTime(
-                                    responseObj.getHeader().getGenerationTime(),
-                                    ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL,
-                                    ArcaDateTimeUtils.OffsetOption.ES_AR), // Extraer del contenido decodificado
-                            ArcaDateTimeUtils.formatDateTime(
-                                    responseObj.getHeader().getExpirationTime(),
-                                    ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL,
-                                    ArcaDateTimeUtils.OffsetOption.ES_AR) // Extraer del contenido decodificado
-                    ),
-                    new LoginCmsResponseDto.CredentialsDto(
-                            responseObj.getCredentials().getToken(), // Extraer del contenido decodificado
-                            responseObj.getCredentials().getSign() // Extraer del contenido decodificado
-                    )
-            );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        // Construir el DTO
+        return new LoginCmsResponseDto(
+                new LoginCmsResponseDto.HeaderDto(
+                        responseObj.getHeader().getSource(),
+                        responseObj.getHeader().getDestination(),
+                        responseObj.getHeader().getUniqueId(),
+                        ArcaDateTimeUtils.formatDateTime(
+                                responseObj.getHeader().getGenerationTime(),
+                                ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL,
+                                ArcaDateTimeUtils.OffsetOption.ES_AR),
+                        ArcaDateTimeUtils.formatDateTime(
+                                responseObj.getHeader().getExpirationTime(),
+                                ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL,
+                                ArcaDateTimeUtils.OffsetOption.ES_AR)
+                ),
+                new LoginCmsResponseDto.CredentialsDto(
+                        responseObj.getCredentials().getToken(),
+                        responseObj.getCredentials().getSign()
+                )
+        );
     }
 
     // TODO: hay que corregir exceptionName y hostname, no deberia estar hardcoded
