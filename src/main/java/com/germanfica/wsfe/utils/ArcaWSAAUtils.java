@@ -5,7 +5,11 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.germanfica.wsfe.model.LoginTicketRequest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -18,6 +22,8 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
 
 public class ArcaWSAAUtils {
@@ -105,5 +111,19 @@ public class ArcaWSAAUtils {
     public static String create_LoginTicketRequest(String SignerDN, String dstDN, String service, Long TicketTime) {
         LoginTicketRequest request = LoginTicketRequest.create(SignerDN, dstDN, service, TicketTime);
         return XMLUtils.toXML(request);
+    }
+
+    /**
+     * Converts an XML string to an object of the specified type.
+     *
+     * @param xmlString the XML string to convert
+     * @param clazz     the class type of the object
+     * @param <T>       the type parameter
+     * @return the deserialized object of type T
+     * @throws Exception if an error occurs during deserialization
+     */
+    public static <T> T convertXmlToObject(String xmlString, Class<T> clazz) throws Exception {
+        XmlMapper xmlMapper = new XmlMapper();
+        return xmlMapper.readValue(xmlString, clazz);
     }
 }

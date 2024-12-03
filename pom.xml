@@ -69,6 +69,21 @@
             <version>1.17.1</version>
         </dependency>
 
+        <!-- Project Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.36</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jackson Dataformat XML -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+
         <!--
         This dependency is required for jaxb2-maven-plugin v3.2.0.
         WARNING: If you update the version of jaxb2-maven-plugin,
@@ -127,6 +142,7 @@
                     <!-- Directorio donde se encuentran los esquemas XSD -->
                     <sources>
                         <source>${basedir}/src/main/resources/wsdl</source>
+                        <source>${project.basedir}/src/main/resources/xsd</source>
                         <!-- jaxb2 no permite procesar directamente un WSDL desde una URL -->
                         <!-- tienes que generar manualmente los .xsd o .wsdl en resources/wsdl -->
                         <!-- <source>https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL</source> -->

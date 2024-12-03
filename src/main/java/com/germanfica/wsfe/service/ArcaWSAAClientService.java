@@ -2,6 +2,7 @@ package com.germanfica.wsfe.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.utils.ArcaWSAAUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,7 @@ public class ArcaWSAAClientService {
     }
 
     // == methods ==
-    public String invokeWsaa() {
+    public LoginCmsResponseDto invokeWsaa() {
         try {
             // Crear el CMS
             byte[] loginTicketRequestXmlCms = ArcaWSAAUtils.create_cms(
