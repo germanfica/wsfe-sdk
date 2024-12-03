@@ -148,8 +148,14 @@ public class SoapClientService {
                             responseObj.getHeader().getSource(), // Extraer del contenido decodificado
                             responseObj.getHeader().getDestination(), // Extraer del contenido decodificado
                             responseObj.getHeader().getUniqueId(), // Extraer del contenido decodificado
-                            ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getGenerationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL, ZoneOffset.of("-03:00")), // Extraer del contenido decodificado
-                            ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getExpirationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL, ZoneOffset.of("-03:00")) // Extraer del contenido decodificado
+                            ArcaDateTimeUtils.formatDateTime(
+                                    responseObj.getHeader().getGenerationTime(),
+                                    ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL,
+                                    ArcaDateTimeUtils.OffsetOption.ES_AR), // Extraer del contenido decodificado
+                            ArcaDateTimeUtils.formatDateTime(
+                                    responseObj.getHeader().getExpirationTime(),
+                                    ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL,
+                                    ArcaDateTimeUtils.OffsetOption.ES_AR) // Extraer del contenido decodificado
                     ),
                     new LoginCmsResponseDto.CredentialsDto(
                             responseObj.getCredentials().getToken(), // Extraer del contenido decodificado
