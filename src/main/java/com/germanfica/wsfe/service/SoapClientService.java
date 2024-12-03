@@ -20,6 +20,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 
 import java.io.ByteArrayOutputStream;
+import java.time.ZoneOffset;
 
 import static com.germanfica.wsfe.utils.ArcaWSAAUtils.convertXmlToObject;
 
@@ -36,19 +37,19 @@ public class SoapClientService {
     public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
         try {
             // Configurar marshaller y crear la solicitud
-            var marshaller = new org.springframework.oxm.jaxb.Jaxb2Marshaller();
-            marshaller.setPackagesToScan("gov.afip.desein.dvadac.sua.view.wsaa");
-            webServiceTemplate.setMarshaller(marshaller);
-            webServiceTemplate.setUnmarshaller(marshaller);
-
-            var factory = new ObjectFactory();
-            var request = factory.createLoginCms();
-            request.setIn0(Base64.encodeBase64String(loginTicketRequestXmlCms));
-
-            // Enviar solicitud y obtener respuesta
-            var response = (LoginCmsResponse) webServiceTemplate.marshalSendAndReceive(
-                    endpoint, request, new SoapActionCallback("urn:loginCms")
-            );
+//            var marshaller = new org.springframework.oxm.jaxb.Jaxb2Marshaller();
+//            marshaller.setPackagesToScan("gov.afip.desein.dvadac.sua.view.wsaa");
+//            webServiceTemplate.setMarshaller(marshaller);
+//            webServiceTemplate.setUnmarshaller(marshaller);
+//
+//            var factory = new ObjectFactory();
+//            var request = factory.createLoginCms();
+//            request.setIn0(Base64.encodeBase64String(loginTicketRequestXmlCms));
+//
+//            // Enviar solicitud y obtener respuesta
+//            var response = (LoginCmsResponse) webServiceTemplate.marshalSendAndReceive(
+//                    endpoint, request, new SoapActionCallback("urn:loginCms")
+//            );
 
 //            String xmlString = """
 //            <LoginCmsResponseDto>
@@ -66,26 +67,26 @@ public class SoapClientService {
 //            </LoginCmsResponseDto>
 //        """;
 
-//            String xmlString = """
-//            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-//             <loginTicketResponse version="1.0">
-//             <header>
-//             <source>CN=wsaahomo, O=AFIP, C=AR,
-//            SERIALNUMBER=CUIT 33693450239</source>
-//             <destination>SERIALNUMBER=CUIT 20190178154,
-//             CN=glarriera20190903</destination>
-//             <uniqueId>3866895167</uniqueId>
-//             <generationTime>2019-09-26T13:56:14.467-03:00</generationTime>
-//             <expirationTime>2019-09-27T01:56:14.467-03:00</expirationTime>
-//             </header>
-//             <credentials>
-//             <token>PD94bWwgdmVyc2lv . . . go8L3Nzbz4K</token>
-//             <sign>Urp5dbarIb8m5y . . . SEzSeon1W7ys=</sign>
-//             </credentials>
-//             </loginTicketResponse>
-//                    """;
+            String xmlString = """
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+             <loginTicketResponse version="1.0">
+             <header>
+             <source>CN=wsaahomo, O=AFIP, C=AR,
+            SERIALNUMBER=CUIT 33693450239</source>
+             <destination>SERIALNUMBER=CUIT 20190178154,
+             CN=glarriera20190903</destination>
+             <uniqueId>3866895167</uniqueId>
+             <generationTime>2019-09-26T13:56:14.467-03:00</generationTime>
+             <expirationTime>2019-09-27T01:56:14.467-03:00</expirationTime>
+             </header>
+             <credentials>
+             <token>PD94bWwgdmVyc2lv . . . go8L3Nzbz4K</token>
+             <sign>Urp5dbarIb8m5y . . . SEzSeon1W7ys=</sign>
+             </credentials>
+             </loginTicketResponse>
+                    """;
 
-            String xmlString = response.getLoginCmsReturn();
+            //String xmlString = response.getLoginCmsReturn();
             System.out.println(xmlString);
 
             return mapToDto(xmlString);
@@ -147,8 +148,8 @@ public class SoapClientService {
                             responseObj.getHeader().getSource(), // Extraer del contenido decodificado
                             responseObj.getHeader().getDestination(), // Extraer del contenido decodificado
                             responseObj.getHeader().getUniqueId(), // Extraer del contenido decodificado
-                            ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getGenerationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL), // Extraer del contenido decodificado
-                            ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getExpirationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL) // Extraer del contenido decodificado
+                            ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getGenerationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL, ZoneOffset.of("-03:00")), // Extraer del contenido decodificado
+                            ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getExpirationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL, ZoneOffset.of("-03:00")) // Extraer del contenido decodificado
                     ),
                     new LoginCmsResponseDto.CredentialsDto(
                             responseObj.getCredentials().getToken(), // Extraer del contenido decodificado
