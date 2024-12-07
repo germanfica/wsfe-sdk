@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.ZoneOffset;
 
 import static com.germanfica.wsfe.utils.ArcaWSAAUtils.convertXmlToObject;
+import com.fasterxml.jackson.core.JsonParseException;
 
 
 @Service
@@ -69,7 +70,7 @@ public class SoapClientService {
 
             String xmlString = """
             <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-             <loginTicketResponse version="1.0">
+             <loginTicket2Response version="1.0">
              <header>
              <source>CN=wsaahomo, O=AFIP, C=AR,
             SERIALNUMBER=CUIT 33693450239</source>
@@ -91,6 +92,32 @@ public class SoapClientService {
 
             return mapToDto(xmlString);
 
+        } catch (JsonParseException e) {
+            // Manejo específico para errores de parseo JSON
+            String errorMessage = String.format("Error parsing XML response.");
+            String errorMessageDetails = String.format(
+                    "Error parsing XML response: %s at row %d, column %d. Please verify the structure of the response XML.",
+                    e.getOriginalMessage(),
+                    e.getLocation().getLineNr(),
+                    e.getLocation().getColumnNr()
+            );
+            e.printStackTrace();
+
+            ErrorDto errorPrueba =  ErrorDto.builder()
+                    .type(ErrorDto.ErrorType.API_ERROR)
+
+                    .build();
+
+            throw new ApiException(
+                    ErrorDto.builder()
+                            .type(ErrorDto.ErrorType.API_ERROR)
+                            .faultCode("json_parse_error")
+                            .faultString("Error parsing JSON")
+                            .details(new ErrorDto.ErrorDetailsDto("ExceptionName", "Hostname"))
+                            .build(),
+                    //new ErrorDto(ErrorDto.ErrorType.API_ERROR, "json_parse_error", errorMessage, null),
+                    HttpStatus.BAD_REQUEST
+            );
         } catch (SoapFaultClientException e) {
             // Manejo de errores SOAP específicos
             //log.error("SOAP Fault: {}", e.getMessage());
@@ -103,7 +130,11 @@ public class SoapClientService {
             //log.error("Unexpected error: {}", e.getMessage());
             e.printStackTrace();
             throw new ApiException(
-                    new ErrorDto("unexpected_error", "Unexpected error occurred", null),
+                    //new ErrorDto("unexpected_error", "Unexpected error occurred", null),
+                    ErrorDto.builder()
+                            .type(ErrorDto.ErrorType.API_ERROR)
+
+                            .build(),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
@@ -171,6 +202,12 @@ public class SoapClientService {
         var exceptionName = "gov.afip.desein.dvadac.sua.view.wsaa.LoginFault"; // Ajustar según el mensaje
         var hostname = "wsaaext1.homo.afip.gov.ar"; // Ajustar según el contexto
 
-        return new ErrorDto(faultCode != null ? faultCode.getLocalPart().toString() : "unknown_code", faultString, new ErrorDto.ErrorDetailsDto(exceptionName, hostname));
+        //return new ErrorDto(faultCode != null ? faultCode.getLocalPart().toString() : "unknown_code", faultString, new ErrorDto.ErrorDetailsDto(exceptionName, hostname));
+        return ErrorDto.builder()
+                .type(ErrorDto.ErrorType.API_ERROR)
+                .faultCode("json_parse_error")
+                .faultString("Error parsing JSON")
+                .details(new ErrorDto.ErrorDetailsDto("ExceptionName", "Hostname"))
+                .build();
     }
 }
