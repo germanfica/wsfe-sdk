@@ -21,6 +21,7 @@ import org.springframework.ws.soap.client.core.SoapActionCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 import static com.germanfica.wsfe.utils.ArcaWSAAUtils.convertXmlToObject;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -35,57 +36,57 @@ public class SoapClientService {
         this.webServiceTemplate = webServiceTemplate;
     }
 
-    public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
+    public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) throws ApiException {
         try {
             // Configurar marshaller y crear la solicitud
-//            var marshaller = new org.springframework.oxm.jaxb.Jaxb2Marshaller();
-//            marshaller.setPackagesToScan("gov.afip.desein.dvadac.sua.view.wsaa");
-//            webServiceTemplate.setMarshaller(marshaller);
-//            webServiceTemplate.setUnmarshaller(marshaller);
-//
-//            var factory = new ObjectFactory();
-//            var request = factory.createLoginCms();
-//            request.setIn0(Base64.encodeBase64String(loginTicketRequestXmlCms));
-//
-//            // Enviar solicitud y obtener respuesta
-//            var response = (LoginCmsResponse) webServiceTemplate.marshalSendAndReceive(
-//                    endpoint, request, new SoapActionCallback("urn:loginCms")
-//            );
+            var marshaller = new org.springframework.oxm.jaxb.Jaxb2Marshaller();
+            marshaller.setPackagesToScan("gov.afip.desein.dvadac.sua.view.wsaa");
+            webServiceTemplate.setMarshaller(marshaller);
+            webServiceTemplate.setUnmarshaller(marshaller);
 
-//            String xmlString = """
-//            <LoginCmsResponseDto>
-//                <header>
-//                    <source>AFIP</source>
-//                    <destination>User</destination>
-//                    <uniqueId>123456</uniqueId>
-//                    <generationTime>2024-12-02T10:00:00</generationTime>
-//                    <expirationTime>2024-12-02T18:00:00</expirationTime>
-//                </header>
-//                <credentials>
-//                    <token>abcd1234</token>
-//                    <sign>efgh5678</sign>
-//                </credentials>
-//            </LoginCmsResponseDto>
-//        """;
+            var factory = new ObjectFactory();
+            var request = factory.createLoginCms();
+            request.setIn0(Base64.encodeBase64String(loginTicketRequestXmlCms));
+
+            // Enviar solicitud y obtener respuesta
+            var response = (LoginCmsResponse) webServiceTemplate.marshalSendAndReceive(
+                    endpoint, request, new SoapActionCallback("urn:loginCms")
+            );
 
             String xmlString = """
-            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-             <loginTicket2Response version="1.0">
-             <header>
-             <source>CN=wsaahomo, O=AFIP, C=AR,
-            SERIALNUMBER=CUIT 33693450239</source>
-             <destination>SERIALNUMBER=CUIT 20190178154,
-             CN=glarriera20190903</destination>
-             <uniqueId>3866895167</uniqueId>
-             <generationTime>2019-09-26T13:56:14.467-03:00</generationTime>
-             <expirationTime>2019-09-27T01:56:14.467-03:00</expirationTime>
-             </header>
-             <credentials>
-             <token>PD94bWwgdmVyc2lv . . . go8L3Nzbz4K</token>
-             <sign>Urp5dbarIb8m5y . . . SEzSeon1W7ys=</sign>
-             </credentials>
-             </loginTicketResponse>
+                        <LoginCmsResponseDto>
+                            <header>
+                                <source>AFIP</source>
+                                <destination>User</destination>
+                                <uniqueId>123456</uniqueId>
+                                <generationTime>2024-12-02T10:00:00</generationTime>
+                                <expirationTime>2024-12-02T18:00:00</expirationTime>
+                            </header>
+                            <credentials>
+                                <token>abcd1234</token>
+                                <sign>efgh5678</sign>
+                            </credentials>
+                        </LoginCmsResponseDto>
                     """;
+
+//            String xmlString = """
+//            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+//             <loginTicket2Response version="1.0">
+//             <header>
+//             <source>CN=wsaahomo, O=AFIP, C=AR,
+//            SERIALNUMBER=CUIT 33693450239</source>
+//             <destination>SERIALNUMBER=CUIT 20190178154,
+//             CN=glarriera20190903</destination>
+//             <uniqueId>3866895167</uniqueId>
+//             <generationTime>2019-09-26T13:56:14.467-03:00</generationTime>
+//             <expirationTime>2019-09-27T01:56:14.467-03:00</expirationTime>
+//             </header>
+//             <credentials>
+//             <token>PD94bWwgdmVyc2lv . . . go8L3Nzbz4K</token>
+//             <sign>Urp5dbarIb8m5y . . . SEzSeon1W7ys=</sign>
+//             </credentials>
+//             </loginTicketResponse>
+//                    """;
 
             //String xmlString = response.getLoginCmsReturn();
             System.out.println(xmlString);
@@ -104,16 +105,27 @@ public class SoapClientService {
             e.printStackTrace();
 
             ErrorDto errorPrueba =  ErrorDto.builder()
-                    .type(ErrorDto.ErrorType.API_ERROR)
+                    .withType(ErrorDto.ErrorType.API_ERROR)
+//                    .docUrl(Optional.of(""))
 
+
+                    //.docUrl(Optional.of("prueba 1"))
+                    //.docUrl(Optional.of("prueba 2"))
                     .build();
 
             throw new ApiException(
                     ErrorDto.builder()
-                            .type(ErrorDto.ErrorType.API_ERROR)
-                            .faultCode("json_parse_error")
-                            .faultString("Error parsing JSON")
-                            .details(new ErrorDto.ErrorDetailsDto("ExceptionName", "Hostname"))
+                            .withType(ErrorDto.ErrorType.API_ERROR)
+                            .faultCode("")
+                            .faultString("")
+                            .details(new ErrorDto.ErrorDetailsDto("", ""))
+                            .docUrl(Optional.of("asd"))
+                            //.docUrl(Optional.of("prueba 1"))
+                            //.docUrl(Optional.of("prueba 2"))
+//                            .type(ErrorDto.ErrorType.API_ERROR)
+//                            .faultCode("json_parse_error")
+//                            .faultString("Error parsing JSON")
+                            //.details(new ErrorDto.ErrorDetailsDto("ExceptionName", "Hostname"))
                             .build(),
                     //new ErrorDto(ErrorDto.ErrorType.API_ERROR, "json_parse_error", errorMessage, null),
                     HttpStatus.BAD_REQUEST
@@ -132,7 +144,13 @@ public class SoapClientService {
             throw new ApiException(
                     //new ErrorDto("unexpected_error", "Unexpected error occurred", null),
                     ErrorDto.builder()
-                            .type(ErrorDto.ErrorType.API_ERROR)
+                            .withType(ErrorDto.ErrorType.API_ERROR)
+                            .faultCode("")
+                            .faultCode("")
+
+                            .docUrl(Optional.of("asd"))
+
+
 
                             .build(),
                     HttpStatus.INTERNAL_SERVER_ERROR
@@ -204,7 +222,8 @@ public class SoapClientService {
 
         //return new ErrorDto(faultCode != null ? faultCode.getLocalPart().toString() : "unknown_code", faultString, new ErrorDto.ErrorDetailsDto(exceptionName, hostname));
         return ErrorDto.builder()
-                .type(ErrorDto.ErrorType.API_ERROR)
+                .withType(ErrorDto.ErrorType.API_ERROR)
+
                 .faultCode("json_parse_error")
                 .faultString("Error parsing JSON")
                 .details(new ErrorDto.ErrorDetailsDto("ExceptionName", "Hostname"))
