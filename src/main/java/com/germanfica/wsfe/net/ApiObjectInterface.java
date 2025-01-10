@@ -1,6 +1,4 @@
-package com.germanfica.wsfe.model;
-
-import com.germanfica.wsfe.net.ApiResponse;
+package com.germanfica.wsfe.net;
 
 public interface ApiObjectInterface {
     public ApiResponse getLastResponse();

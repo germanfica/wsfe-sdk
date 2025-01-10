@@ -1,7 +1,6 @@
 package com.germanfica.wsfe.service;
 
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.model.ApiObjectInterface;
 import com.germanfica.wsfe.net.ApiRequest;
 import com.germanfica.wsfe.net.ApiResponseGetter;
 import lombok.AccessLevel;

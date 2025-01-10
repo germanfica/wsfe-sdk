@@ -3,13 +3,15 @@ package com.germanfica.wsfe.service;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.net.ApiRequest;
+import com.germanfica.wsfe.net.ApiResponseGetter;
+import com.germanfica.wsfe.net.BaseApiRequest;
 import com.germanfica.wsfe.net.HttpStatus;
 import com.germanfica.wsfe.utils.ArcaDateTimeUtils;
 import generated.LoginTicketResponseType;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
-import static com.germanfica.wsfe.utils.ArcaWSAAUtils.convertXmlToObject;
 import jakarta.xml.soap.*;
 
 import java.util.Map;
@@ -22,7 +24,7 @@ public class SoapClientService extends SoapService {
 
     public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
         try {
-            LoginTicketResponseType request = this.request(
+            ApiRequest request = new ApiRequest(
                     SOAP_ACTION,
                     loginTicketRequestXmlCms,
                     NAMESPACE,
@@ -33,7 +35,7 @@ public class SoapClientService extends SoapService {
             );
 
             // Mapear al DTO
-            return postProcessDto(request);
+            return postProcessDto(request.request(request, LoginTicketResponseType.class));
 
         } catch (SOAPException | JAXBException e) {
             throw new ApiException(
