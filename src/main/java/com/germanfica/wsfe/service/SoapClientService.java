@@ -37,6 +37,8 @@ public class SoapClientService extends SoapService {
             // Procesar respuesta
             String xmlResponse = extractResponse(soapResponse);
 
+            LoginTicketResponseType responseDto = mapToDto(xmlResponse, LoginTicketResponseType.class);
+
             // Mapear al DTO
             return mapToDto(xmlResponse);
 
@@ -51,14 +53,6 @@ public class SoapClientService extends SoapService {
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-    }
-
-    private String extractResponse(SOAPMessage soapResponse) throws SOAPException {
-        var responseBody = soapResponse.getSOAPBody();
-        if (responseBody.hasFault()) {
-            throw new SOAPException("SOAP Fault: " + responseBody.getFault().getFaultString());
-        }
-        return responseBody.getElementsByTagName("loginCmsReturn").item(0).getTextContent();
     }
 
     private LoginCmsResponseDto mapToDto(String xml) throws Exception {
