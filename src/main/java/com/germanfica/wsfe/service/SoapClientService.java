@@ -12,27 +12,34 @@ import org.springframework.stereotype.Service;
 import static com.germanfica.wsfe.utils.ArcaWSAAUtils.convertXmlToObject;
 import jakarta.xml.soap.*;
 
+import java.util.Map;
+
 @Service
-public class SoapClientService {
+public class SoapClientService extends SoapService {
+    private static final String NAMESPACE = "http://wsaa.view.sua.dvadac.desein.afip.gov.ar/";
+    private static final String OPERATION = "loginCms";
+    private static final String SOAP_ACTION = "urn:loginCms";
 
     public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
         try {
-            // Crear conexión SOAP
-            SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
-            SOAPConnection soapConnection = soapConnectionFactory.createConnection();
-
             // Crear mensaje SOAP
-            SOAPMessage soapMessage = createSoapMessage(loginTicketRequestXmlCms);
+            SOAPMessage soapMessage = createSoapMessage(
+                    SOAP_ACTION,
+                    loginTicketRequestXmlCms,
+                    NAMESPACE,
+                    OPERATION,
+                    Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms))
+            );
 
-            // Enviar solicitud y recibir respuesta
-            SOAPMessage soapResponse = soapConnection.call(soapMessage, endpoint);
+            // Enviar solicitud
+            SOAPMessage soapResponse = sendSoapRequest(soapMessage, endpoint);
 
-            // Procesar la respuesta SOAP
+            // Procesar respuesta
             String xmlResponse = extractResponse(soapResponse);
-            System.out.println("Response: " + xmlResponse);
 
-            // Mapear respuesta al DTO
+            // Mapear al DTO
             return mapToDto(xmlResponse);
+
         } catch (SOAPException | JAXBException e) {
             throw new ApiException(
                     new ErrorDto("soap_error", e.getMessage(), null),
@@ -46,31 +53,11 @@ public class SoapClientService {
         }
     }
 
-    private SOAPMessage createSoapMessage(byte[] loginTicketRequestXmlCms) throws SOAPException {
-        // Crear mensaje SOAP
-        MessageFactory messageFactory = MessageFactory.newInstance();
-        SOAPMessage soapMessage = messageFactory.createMessage();
-
-        // Crear el cuerpo del mensaje
-        SOAPEnvelope envelope = soapMessage.getSOAPPart().getEnvelope();
-        SOAPBody body = envelope.getBody();
-        SOAPElement loginCms = body.addChildElement("loginCms", "ns1", "http://wsaa.view.sua.dvadac.desein.afip.gov.ar/");
-        loginCms.addChildElement("in0").addTextNode(Base64.encodeBase64String(loginTicketRequestXmlCms));
-
-        // Agregar encabezado SOAPAction
-        MimeHeaders headers = soapMessage.getMimeHeaders();
-        headers.addHeader("SOAPAction", "urn:loginCms");
-
-        soapMessage.saveChanges();
-        return soapMessage;
-    }
-
     private String extractResponse(SOAPMessage soapResponse) throws SOAPException {
-        SOAPBody responseBody = soapResponse.getSOAPBody();
+        var responseBody = soapResponse.getSOAPBody();
         if (responseBody.hasFault()) {
             throw new SOAPException("SOAP Fault: " + responseBody.getFault().getFaultString());
         }
-
         return responseBody.getElementsByTagName("loginCmsReturn").item(0).getTextContent();
     }
 
