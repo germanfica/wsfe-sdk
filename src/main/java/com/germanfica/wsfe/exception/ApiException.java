@@ -1,8 +1,9 @@
 package com.germanfica.wsfe.exception;
 
 import com.germanfica.wsfe.dto.ErrorDto;
+import com.germanfica.wsfe.net.HttpStatus;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
+
 
 @Getter
 public class ApiException extends RuntimeException {
