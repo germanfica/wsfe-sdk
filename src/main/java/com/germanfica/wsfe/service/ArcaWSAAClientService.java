@@ -2,8 +2,11 @@ package com.germanfica.wsfe.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.utils.ArcaWSAAUtils;
+import generated.LoginTicketResponseType;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,12 +39,8 @@ public class ArcaWSAAClientService {
     private String service;
 
     // == constructors ==
-    private final SoapClientService soapClientService;
 
-    @Autowired
-    private ArcaWSAAClientService(SoapClientService soapClientService){
-        this.soapClientService = soapClientService;
-    }
+    private ArcaWSAAClientService(){ }
 
     // == methods ==
     public LoginCmsResponseDto invokeWsaa() {
@@ -57,7 +56,11 @@ public class ArcaWSAAClientService {
             );
 
             // Invocar el WSAA
-            return soapClientService.invokeWsaa(loginTicketRequestXmlCms, endpoint);
+            WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
+            client.loginService();
+
+            return client.loginService().invokeWsaa(loginTicketRequestXmlCms, endpoint);
+            //return soapClientService.invokeWsaa(loginTicketRequestXmlCms, endpoint);
             //return ArcaWSAAClient.invoke_wsaa(loginTicketRequestXmlCms, endpoint);
             //return "HOLA HOLAA";
             //return generateJsonConfig();

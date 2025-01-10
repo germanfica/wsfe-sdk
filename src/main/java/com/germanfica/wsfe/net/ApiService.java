@@ -1,16 +1,17 @@
-package com.germanfica.wsfe.service;
+package com.germanfica.wsfe.net;
 
-import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.ApiObjectInterface;
-import com.germanfica.wsfe.net.ApiRequest;
-import com.germanfica.wsfe.net.ApiResponseGetter;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.lang.reflect.Type;
+/** The base class for all services. */
+public abstract class ApiService {
+    @Getter(AccessLevel.PROTECTED)
+    private final SoapRequestHandler soapRequestHandler;
 
-/** Clase base para todos los servicios SOAP */
-public abstract class SoapService {
+    protected ApiService(SoapRequestHandler soapRequestHandler) {
+        this.soapRequestHandler = soapRequestHandler;
+    }
+
 //    @Getter(AccessLevel.PROTECTED)
 //    private final ApiResponseGetter responseGetter;
 //
@@ -26,6 +27,7 @@ public abstract class SoapService {
 
     protected <T> T request(ApiRequest request, Class<T> responseType)
             throws Exception {
-        return request.request(request, responseType);
+        //return request.request(request, responseType);
+        return soapRequestHandler.handleRequest(request, responseType);
     }
 }

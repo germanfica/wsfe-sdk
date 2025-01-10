@@ -1,5 +1,8 @@
 package com.germanfica.wsfe.config;
 
+import com.germanfica.wsfe.net.BaseApiRequest;
+import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
+import com.germanfica.wsfe.net.SoapRequestHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -23,4 +26,16 @@ public class SoapClientConfig {
         webServiceTemplate.setUnmarshaller(marshaller);
         return webServiceTemplate;
     }
+
+//    @Bean
+//    public BaseApiRequest baseApiRequest() {
+//        // Crear e inicializar la instancia de BaseApiRequest
+//        return new BaseApiRequest();
+//    }
+//
+//    @Bean
+//    public SoapRequestHandler soapRequestHandler(BaseApiRequest baseApiRequest) {
+//        // Pasar baseApiRequest al constructor de DefaultSoapRequestHandler
+//        return new DefaultSoapRequestHandler(baseApiRequest);
+//    }
 }

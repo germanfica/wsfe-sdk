@@ -3,24 +3,23 @@ package com.germanfica.wsfe.service;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.ApiRequest;
-import com.germanfica.wsfe.net.ApiResponseGetter;
-import com.germanfica.wsfe.net.BaseApiRequest;
-import com.germanfica.wsfe.net.HttpStatus;
+import com.germanfica.wsfe.net.*;
 import com.germanfica.wsfe.utils.ArcaDateTimeUtils;
 import generated.LoginTicketResponseType;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.stereotype.Service;
 import jakarta.xml.soap.*;
 
 import java.util.Map;
 
-@Service
-public class SoapClientService extends SoapService {
+public final class LoginService extends ApiService {
     private static final String NAMESPACE = "http://wsaa.view.sua.dvadac.desein.afip.gov.ar/";
     private static final String OPERATION = "loginCms";
     private static final String SOAP_ACTION = "urn:loginCms";
+
+    public LoginService(SoapRequestHandler soapRequestHandler) {
+        super(soapRequestHandler);
+    }
 
     public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
         try {
