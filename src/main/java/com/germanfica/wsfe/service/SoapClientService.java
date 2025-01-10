@@ -22,25 +22,18 @@ public class SoapClientService extends SoapService {
 
     public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
         try {
-            // Crear mensaje SOAP
-            SOAPMessage soapMessage = createSoapMessage(
+            LoginTicketResponseType request = this.request(
                     SOAP_ACTION,
                     loginTicketRequestXmlCms,
                     NAMESPACE,
                     OPERATION,
-                    Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms))
+                    Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms)),
+                    endpoint,
+                    LoginTicketResponseType.class
             );
 
-            // Enviar solicitud
-            SOAPMessage soapResponse = sendSoapRequest(soapMessage, endpoint);
-
-            // Procesar respuesta
-            String xmlResponse = extractResponse(soapResponse);
-
-            LoginTicketResponseType responseDto = mapToDto(xmlResponse, LoginTicketResponseType.class);
-
             // Mapear al DTO
-            return mapToDto(xmlResponse);
+            return postProcessDto(request);
 
         } catch (SOAPException | JAXBException e) {
             throw new ApiException(
@@ -55,20 +48,18 @@ public class SoapClientService extends SoapService {
         }
     }
 
-    private LoginCmsResponseDto mapToDto(String xml) throws Exception {
-        LoginTicketResponseType responseObj = convertXmlToObject(xml, LoginTicketResponseType.class);
-
+    protected LoginCmsResponseDto postProcessDto(LoginTicketResponseType rawResponse) {
         return new LoginCmsResponseDto(
                 new LoginCmsResponseDto.HeaderDto(
-                        responseObj.getHeader().getSource(),
-                        responseObj.getHeader().getDestination(),
-                        responseObj.getHeader().getUniqueId(),
-                        ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getGenerationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL),
-                        ArcaDateTimeUtils.formatDateTime(responseObj.getHeader().getExpirationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL)
+                        rawResponse.getHeader().getSource(),
+                        rawResponse.getHeader().getDestination(),
+                        rawResponse.getHeader().getUniqueId(),
+                        ArcaDateTimeUtils.formatDateTime(rawResponse.getHeader().getGenerationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL),
+                        ArcaDateTimeUtils.formatDateTime(rawResponse.getHeader().getExpirationTime(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL)
                 ),
                 new LoginCmsResponseDto.CredentialsDto(
-                        responseObj.getCredentials().getToken(),
-                        responseObj.getCredentials().getSign()
+                        rawResponse.getCredentials().getToken(),
+                        rawResponse.getCredentials().getSign()
                 )
         );
     }
