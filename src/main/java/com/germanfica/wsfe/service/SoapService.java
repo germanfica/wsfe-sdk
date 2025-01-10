@@ -23,4 +23,9 @@ public abstract class SoapService {
 //            throws ApiException {
 //        return this.getResponseGetter().request(request, typeToken);
 //    }
+
+    protected <T> T request(ApiRequest request, Class<T> responseType)
+            throws Exception {
+        return request.request(request, responseType);
+    }
 }

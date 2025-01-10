@@ -101,7 +101,7 @@ public abstract class BaseApiRequest {
      * @return Instancia del DTO mapeada desde la respuesta SOAP.
      * @throws Exception Si ocurre algún error.
      */
-    public <T> T request(String soapAction, byte[] payload, String namespace, String operation,
+    protected <T> T request(String soapAction, byte[] payload, String namespace, String operation,
                          Map<String, String> bodyElements, String endpoint, Class<T> responseType) throws Exception {
         // Crear mensaje SOAP
         SOAPMessage soapMessage = createSoapMessage(soapAction, payload, namespace, operation, bodyElements);
@@ -116,6 +116,16 @@ public abstract class BaseApiRequest {
         return mapToDto(xmlResponse, responseType);
     }
 
+    /**
+     * Envía una solicitud SOAP utilizando la información de la instancia de ApiRequest
+     * y mapea la respuesta al tipo de dato especificado.
+     *
+     * @param apiRequest Instancia de ApiRequest que contiene los detalles de la solicitud SOAP.
+     * @param responseType Clase del tipo objetivo para mapear la respuesta.
+     * @param <T> Tipo genérico que define el tipo esperado en la respuesta.
+     * @return Una instancia del tipo especificado mapeada desde la respuesta SOAP.
+     * @throws Exception Si ocurre algún error al crear, enviar o procesar la solicitud SOAP.
+     */
     public <T> T request(ApiRequest apiRequest, Class<T> responseType) throws Exception {
         // Crear mensaje SOAP utilizando los valores de ApiRequest
         SOAPMessage soapMessage = createSoapMessage(

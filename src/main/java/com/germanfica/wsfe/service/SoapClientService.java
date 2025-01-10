@@ -35,7 +35,7 @@ public class SoapClientService extends SoapService {
             );
 
             // Mapear al DTO
-            return postProcessDto(request.request(request, LoginTicketResponseType.class));
+            return postProcessDto(this.request(request, LoginTicketResponseType.class));
 
         } catch (SOAPException | JAXBException e) {
             throw new ApiException(
