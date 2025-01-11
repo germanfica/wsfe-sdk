@@ -30,6 +30,26 @@ public class ArcaWSAAUtils {
     //
     // Create the CMS Message
     //
+    /**
+     * This method creates a CMS (Cryptographic Message Syntax) signed message that encapsulates
+     * a LoginTicketRequest XML, which is required for accessing services in the ARCA (AFIP) system.
+     * It uses a PKCS#12 keystore file (.p12) containing the private key and certificate to sign the
+     * request. The resulting CMS message is used for authentication in the ARCA web service.
+     *
+     * The process includes:
+     * 1. Loading the PKCS#12 keystore to extract the private key and certificate.
+     * 2. Creating the LoginTicketRequest XML with the provided details.
+     * 3. Signing the XML data using the private key and generating a CMS message.
+     * 4. Returning the CMS message as ASN.1 encoded data.
+     *
+     * @param p12file the path to the PKCS#12 keystore file
+     * @param p12pass the password for the PKCS#12 keystore
+     * @param signer  the alias of the signer in the keystore
+     * @param dstDN   the Distinguished Name of the destination
+     * @param service the service name
+     * @param TicketTime the ticket expiration time
+     * @return the ASN.1 encoded CMS message
+     */
     public static byte[] create_cms(String p12file, String p12pass, String signer, String dstDN, String service, Long TicketTime) {
 
         PrivateKey pKey = null;
