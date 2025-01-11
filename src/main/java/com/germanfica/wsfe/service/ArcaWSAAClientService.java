@@ -54,6 +54,12 @@ public class ArcaWSAAClientService {
                     service,
                     ticketTime
             );
+/* testing only */
+//            return new LoginCmsResponseDto(
+//                    new LoginCmsResponseDto.HeaderDto("","","","",""),
+//                    new LoginCmsResponseDto.CredentialsDto("","")
+//
+//            );
 
             // Invocar el WSAA
             WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
