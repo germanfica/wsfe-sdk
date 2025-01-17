@@ -4,15 +4,26 @@ import jakarta.xml.soap.SOAPMessage;
 
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
-    private final BaseApiRequest baseApiRequest;
+    private final SoapClient soapClient;
 
-    public DefaultSoapRequestHandler(BaseApiRequest baseApiRequest) {
-        this.baseApiRequest = baseApiRequest;
+    public DefaultSoapRequestHandler(SoapClient soapClient) {
+        this.soapClient = (soapClient != null) ? soapClient : buildDefaultSoapClient();
+    }
+
+    /**
+     * Método para construir un cliente SOAP predeterminado.
+     *
+     * @return Una instancia de SoapClient predeterminada.
+     */
+    private static SoapClient buildDefaultSoapClient() {
+        // Configuración predeterminada para SoapClient.
+        // Este es un ejemplo genérico; ajusta según las necesidades específicas de tu aplicación.
+        return new DefaultSoapClient();
     }
 
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, Class<T> responseType) throws Exception {
-        SOAPMessage soapMessage = baseApiRequest.createSoapMessage(
+        SOAPMessage soapMessage = soapClient.createSoapMessage(
                 apiRequest.getSoapAction(),
                 apiRequest.getPayload(),
                 apiRequest.getNamespace(),
@@ -20,10 +31,18 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                 apiRequest.getBodyElements()
         );
 
-        SOAPMessage soapResponse = baseApiRequest.sendSoapRequest(soapMessage, apiRequest.getEndpoint());
+        System.out.println(soapMessage);
 
-        String xmlResponse = baseApiRequest.extractResponse(soapResponse);
+        SOAPMessage soapResponse = soapClient.sendSoapRequest(soapMessage, apiRequest.getEndpoint());
 
-        return baseApiRequest.mapToDto(xmlResponse, responseType);
+        System.out.println(apiRequest.getEndpoint());
+
+        String xmlResponse = soapClient.extractResponse(soapResponse);
+
+        System.out.println(xmlResponse);
+
+
+
+        return ApiResource.mapToDto(xmlResponse, responseType);
     }
 }

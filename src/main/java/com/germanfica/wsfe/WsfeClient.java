@@ -26,7 +26,7 @@ public class WsfeClient {
                 .setPayload(payload)
                 .buildOptions();
         // Instanciar el SoapRequestHandler con el BaseApiRequest creado
-        this.soapRequestHandler = new DefaultSoapRequestHandler(baseApiRequest);
+        this.soapRequestHandler = new DefaultSoapRequestHandler(null);
     }
 
 //
