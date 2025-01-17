@@ -2,6 +2,7 @@ package com.germanfica.wsfe.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.utils.ArcaWSAAUtils;
@@ -16,10 +17,7 @@ import java.util.Map;
 
 @Service
 public class ArcaWSAAClientService {
-
-    @Value("${endpoint}")
-    private String endpoint;
-
+    private final String endpoint = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
     @Value("${keystore}")
     private String keystorePath;
 
@@ -60,6 +58,10 @@ public class ArcaWSAAClientService {
 //                    new LoginCmsResponseDto.CredentialsDto("","")
 //
 //            );
+
+            // Obtener el endpoint base dinámico de WSAA
+            Wsfe.overrideWsaaBase(Wsfe.TEST_WSAA_API_BASE); // Usar TEST_WSAA_API_BASE para pruebas
+            String endpoint = Wsfe.getWsaaBase() + "/ws/services/LoginCms"; // Concatenar la ruta específica
 
             // Invocar el WSAA
             WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
