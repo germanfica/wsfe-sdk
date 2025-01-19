@@ -1,6 +1,7 @@
 package com.germanfica.wsfe.utils;
 
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.germanfica.wsfe.model.LoginTicketRequest;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -131,6 +134,22 @@ public class ArcaWSAAUtils {
     public static String create_LoginTicketRequest(String SignerDN, String dstDN, String service, Long TicketTime) {
         LoginTicketRequest request = LoginTicketRequest.create(SignerDN, dstDN, service, TicketTime);
         return XMLUtils.toXML(request);
+    }
+
+    /**
+     * Converts an XML string to an object of the specified type using JAXBContext.
+     *
+     * @param xmlString the XML string to convert
+     * @param clazz     the class type of the object
+     * @param <T>       the type parameter
+     * @return the deserialized object of type T
+     * @throws Exception if an error occurs during deserialization
+     */
+    public static <T> T convertXmlToObjectJAXB(String xmlString, Class<T> clazz) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(clazz); // Initialize JAXBContext with the class
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller(); // Create an Unmarshaller instance
+        StringReader reader = new StringReader(xmlString); // Wrap the XML string in a StringReader
+        return clazz.cast(unmarshaller.unmarshal(reader)); // Deserialize the XML into an object of type T
     }
 
     /**

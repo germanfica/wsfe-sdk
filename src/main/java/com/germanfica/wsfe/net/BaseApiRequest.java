@@ -4,6 +4,8 @@ import jakarta.xml.soap.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import java.io.ByteArrayOutputStream;
+
 
 import java.util.Map;
 
@@ -42,19 +44,20 @@ public abstract class BaseApiRequest {
         MessageFactory messageFactory = MessageFactory.newInstance();
         SOAPMessage soapMessage = messageFactory.createMessage();
 
+        System.out.println("************");
+        System.out.println(soapMessage.getSOAPBody().getTextContent());
+        System.out.println("************");
+
         // Crear cuerpo del mensaje
         SOAPEnvelope envelope = soapMessage.getSOAPPart().getEnvelope();
         SOAPBody body = envelope.getBody();
+
         SOAPElement operationElement = body.addChildElement(operation, "ns1", namespace);
 
         // Agregar elementos al cuerpo
-        bodyElements.forEach((key, value) -> {
-            try {
-                operationElement.addChildElement(key).addTextNode(value);
-            } catch (SOAPException e) {
-                throw new RuntimeException("Error al agregar elementos al cuerpo SOAP", e);
-            }
-        });
+        for (Map.Entry<String, String> entry : bodyElements.entrySet()) {
+            operationElement.addChildElement(entry.getKey()).addTextNode(entry.getValue());
+        }
 
         // Agregar encabezados
         MimeHeaders headers = soapMessage.getMimeHeaders();
@@ -147,7 +150,7 @@ public abstract class BaseApiRequest {
     }
 
     /**
-     * Extraer la respuesta del mensaje SOAP como cadena XML.
+     * Extraer la respuesta del mensaje SOAP como cadena XML completa.
      *
      * @param soapMessage El mensaje SOAP de respuesta.
      * @return Respuesta como cadena XML.
@@ -155,9 +158,12 @@ public abstract class BaseApiRequest {
      */
     protected String extractResponse(SOAPMessage soapMessage) throws SOAPException {
         try {
-            return soapMessage.getSOAPBody().getTextContent();
+            // Convertir el cuerpo del mensaje SOAP a un XML completo como cadena
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            soapMessage.writeTo(outputStream);
+            return outputStream.toString("UTF-8");
         } catch (Exception e) {
-            throw new SOAPException("Error al extraer contenido del cuerpo SOAP", e);
+            throw new SOAPException("Error al extraer contenido XML del cuerpo SOAP", e);
         }
     }
 }

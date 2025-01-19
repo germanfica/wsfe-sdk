@@ -3,13 +3,20 @@ package com.germanfica.wsfe.service;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.*;
+
+import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
+import com.germanfica.wsfe.net.ApiRequest;
+import com.germanfica.wsfe.net.ApiService;
+import com.germanfica.wsfe.net.HttpStatus;
+import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.utils.ArcaDateTimeUtils;
 import generated.LoginTicketResponseType;
-import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.commons.codec.binary.Base64;
-import jakarta.xml.soap.*;
 
+
+import java.io.StringReader;
 import java.util.Map;
 
 public final class LoginService extends ApiService {
@@ -33,15 +40,46 @@ public final class LoginService extends ApiService {
                     LoginTicketResponseType.class
             );
 
-            // Mapear al DTO
-            return postProcessDto(this.request(request, LoginTicketResponseType.class));
+            System.out.println(Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms)));
 
-        } catch (SOAPException | JAXBException e) {
-            throw new ApiException(
-                    new ErrorDto("soap_error", e.getMessage(), null),
-                    HttpStatus.BAD_REQUEST
-            );
+            SoapEnvelope fault = this.request(request, SoapEnvelope.class);
+//
+//            String xmlResponse = """
+//<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+//   <soapenv:Body>
+//      <soapenv:Fault>
+//         <faultcode xmlns:ns1="http://xml.apache.org/axis/">ns1:coe.alreadyAuthenticated</faultcode>
+//         <faultstring>El CEE ya posee un TA valido para el acceso al WSN solicitado</faultstring>
+//         <detail>
+//            <ns2:exceptionName xmlns:ns2="http://xml.apache.org/axis/">gov.afip.desein.dvadac.sua.view.wsaa.LoginFault</ns2:exceptionName>
+//            <ns3:hostname xmlns:ns3="http://xml.apache.org/axis/">wsaaext0.homo.afip.gov.ar</ns3:hostname>
+//         </detail>
+//      </soapenv:Fault>
+//   </soapenv:Body>
+//</soapenv:Envelope>
+//            """;
+//
+//            JAXBContext jaxbContext = JAXBContext.newInstance(SoapEnvelope.class);
+//            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+//
+//            StringReader reader = new StringReader(xmlResponse);
+//            SoapEnvelope envelope = (SoapEnvelope) unmarshaller.unmarshal(reader);
+//
+//            System.out.println("Fault Code: " + envelope.getBody().getFault().getFaultCode());
+//            System.out.println("Fault String: " + envelope.getBody().getFault().getFaultString());
+//            System.out.println("Exception Name: " + envelope.getBody().getFault().getDetail().getExceptionName());
+//            System.out.println("Hostname: " + envelope.getBody().getFault().getDetail().getHostname());
+
+
+
+            // Mapear al DTO
+            return new LoginCmsResponseDto(null,null);
+            //return postProcessDto(this.request(request, LoginTicketResponseType.class));
+
+
         } catch (Exception e) {
+
+            System.out.println(e);
             throw new ApiException(
                     new ErrorDto("unexpected_error", "Unexpected error occurred", null),
                     HttpStatus.INTERNAL_SERVER_ERROR

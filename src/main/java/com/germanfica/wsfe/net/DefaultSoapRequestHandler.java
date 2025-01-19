@@ -22,7 +22,11 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
         SOAPMessage soapResponse = baseApiRequest.sendSoapRequest(soapMessage, apiRequest.getEndpoint());
 
+
+
         String xmlResponse = baseApiRequest.extractResponse(soapResponse);
+
+        System.out.println(xmlResponse);
 
         return baseApiRequest.mapToDto(xmlResponse, responseType);
     }
