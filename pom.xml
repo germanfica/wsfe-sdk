@@ -30,7 +30,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jaxb.version>4.0.5</jaxb.version>
+        <jaxb.version>3.0.0</jaxb.version>
         <gson.version>2.11.0</gson.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -141,7 +141,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.2</version>
+            <version>${jaxb.version}</version>
         </dependency>
 
         <!--
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>4.0.5</version>
+            <version>${jaxb.version}</version>
         </dependency>
     </dependencies>
 
@@ -176,7 +176,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -187,13 +187,45 @@
                 <configuration>
                     <!-- Directorio donde se encuentran los esquemas XSD -->
                     <sources>
-                        <source>${basedir}/src/main/resources/wsdl</source>
-                        <source>${project.basedir}/src/main/resources/xsd</source>
+                        <!-- Directorio(s) donde están las clases Java -->
+<!--                        <source>${project.basedir}/src/main/java/com/germanfica/wsfe/model/soap/</source>-->
+<!--                            <source>${project.basedir}/target/generated-resources/schemagen/schema3.xsd</source>-->
+<!--                            <source>${project.basedir}/src/main/resources/prueba/schema1.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/java/com/germanfica/wsfe/model/soap/envelope</source>-->
+
+<!--                        <source>${basedir}/src/main/resources/wsdl</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/xsd/person.xsd</source>&ndash;&gt;-->
+<!--                        <source>${project.basedir}/src/main/resources/xsd/root.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/xsd/soap-envelope.xsd</source>-->
+                        <source>${project.basedir}/src/main/resources/xsd/LoginTicketResponseType.xsd</source>
+                        <source>${project.basedir}/src/main/resources/wsdl/LoginCms.wsdl</source>
+                        <!-- Login CMS Fault -->
+<!--                        <source>${project.basedir}/src/main/resources/xsd/fault/SoapEnvelope.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/fault/xsd/SoapBody.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/fault/xsd/SoapFault.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/fault/xsd/FaultDetailNoes.xsd</source>-->
+
+<!--                        <source>${project.basedir}/src/main/resources/xsd/fault_ok/schema1.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/xsd/fault_ok/schema2.xsd</source>-->
+<!--                        <source>${project.basedir}/src/main/resources/xsd/fault_ok/schema3.xsd</source>-->
+
+
                         <!-- jaxb2 no permite procesar directamente un WSDL desde una URL -->
                         <!-- tienes que generar manualmente los .xsd o .wsdl en resources/wsdl -->
                         <!-- <source>https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL</source> -->
                     </sources>
+                    <xjbSources>
+<!--                        <xjbSource>${project.basedir}/src/main/resources/prueba/episode_default-cli.xjb</xjbSource>-->
+<!--                        <xjbSource>${project.basedir}/target/generated-resources/schemagen/META-INF/JAXB/episode_default-cli.xjb</xjbSource>-->
+<!--                        <xjbSource>${project.basedir}/src/main/resources/xjb/episode_default-cli.xjb</xjbSource>-->
+
+                        <!--                        <xjbSource>${project.basedir}/src/main/resources/xjb/bindings.xjb</xjbSource>-->
+<!--                        <xjbSource>${project.basedir}/src/main/resources/xjb/person-bindings.xjb</xjbSource>-->
+                    </xjbSources>
+                    <!-- Especifica solo el archivo principal a procesar -->
                     <sourceType>wsdl</sourceType>
+                    <createJavaDocAnnotations>true</createJavaDocAnnotations>
+
                 </configuration>
             </plugin>
         </plugins>

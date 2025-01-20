@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               version="3.0">
+
+    <!-- Configuración general para el namespace "http://xml.apache.org/axis/" -->
+    <jaxb:bindings schemaLocation="schema1.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="com.example.axis"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <!-- Configuración general para el namespace "http://schemas.xmlsoap.org/soap/envelope/" -->
+    <jaxb:bindings schemaLocation="schema2.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="com.example.soap"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <!-- Configuración específica para el esquema principal "schema3.xsd" -->
+    <jaxb:bindings schemaLocation="schema3.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="com.example.main"/>
+        </jaxb:schemaBindings>
+
+        <!-- Personalización para el tipo complejo Person -->
+        <jaxb:bindings node="/xs:schema/xs:complexType[@name='Person']">
+            <jaxb:class name="Person"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

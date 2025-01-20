@@ -11,12 +11,9 @@ import com.germanfica.wsfe.net.HttpStatus;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.utils.ArcaDateTimeUtils;
 import generated.LoginTicketResponseType;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.commons.codec.binary.Base64;
 
 
-import java.io.StringReader;
 import java.util.Map;
 
 public final class LoginService extends ApiService {

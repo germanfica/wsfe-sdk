@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" targetNamespace="http://schemas.xmlsoap.org/soap/envelope/" elementFormDefault="qualified">
+    <!-- Importar otros namespaces -->
+    <xs:import namespace="http://xml.apache.org/axis/" schemaLocation="FaultDetailNoes.xsd"/>
+
+    <xs:element name="Envelope">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Body">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Fault">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="faultcode" type="xs:string"/>
+                                        <xs:element name="faultstring" type="xs:string"/>
+                                        <xs:element name="detail">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="exceptionName" type="xs:string" xmlns:ns2="http://xml.apache.org/axis/" minOccurs="0"/>
+                                                    <xs:element name="hostname" type="xs:string" xmlns:ns3="http://xml.apache.org/axis/" minOccurs="0"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,11 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://example.com/ns1"
+           targetNamespace="http://example.com/ns1"
+           elementFormDefault="qualified">
+
+    <xs:complexType name="ChildType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string"/>
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>
