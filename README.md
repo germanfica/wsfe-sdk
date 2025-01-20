@@ -7,6 +7,11 @@ mvn clean
 mvn jaxb2:xjc
 ```
 
+# Docs
+
+- https://www.mojohaus.org/jaxb2-maven-plugin/Documentation/v3.1.0/index.html
+- 
+
 ## Known issues
 
 When working with IntelliJ IDEA, there are occasional issues where the code and controllers may break after performing a `mvn clean` operation.

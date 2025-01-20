@@ -123,12 +123,6 @@
             <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
-            <scope>test</scope>
-        </dependency>
 
         <!--
         This dependency is required for jaxb2-maven-plugin v3.2.0.
@@ -187,6 +181,9 @@
                 <configuration>
                     <!-- Directorio donde se encuentran los esquemas XSD -->
                     <sources>
+                        <source>${basedir}/src/main/resources/wsdl/LoginCms.wsdl</source>
+                        <source>${project.basedir}/src/main/resources/xsd/LoginTicketResponseType.xsd</source>
+                        <source>${project.basedir}/src/main/resources/wsdl/LoginCms.wsdl</source>
                         <!-- Directorio(s) donde están las clases Java -->
 <!--                        <source>${project.basedir}/src/main/java/com/germanfica/wsfe/model/soap/</source>-->
 <!--                            <source>${project.basedir}/target/generated-resources/schemagen/schema3.xsd</source>-->
@@ -197,8 +194,6 @@
 <!--                        <source>${project.basedir}/src/main/resources/xsd/person.xsd</source>&ndash;&gt;-->
 <!--                        <source>${project.basedir}/src/main/resources/xsd/root.xsd</source>-->
 <!--                        <source>${project.basedir}/src/main/resources/xsd/soap-envelope.xsd</source>-->
-                        <source>${project.basedir}/src/main/resources/xsd/LoginTicketResponseType.xsd</source>
-                        <source>${project.basedir}/src/main/resources/wsdl/LoginCms.wsdl</source>
                         <!-- Login CMS Fault -->
 <!--                        <source>${project.basedir}/src/main/resources/xsd/fault/SoapEnvelope.xsd</source>-->
 <!--                        <source>${project.basedir}/src/main/resources/fault/xsd/SoapBody.xsd</source>-->
