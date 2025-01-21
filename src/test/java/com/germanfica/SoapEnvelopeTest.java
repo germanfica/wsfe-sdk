@@ -45,7 +45,6 @@ public class SoapEnvelopeTest {
 
         // Parseo del XML
         StringReader reader = new StringReader(xmlResponse);
-        org.springframework.ws.soap.SoapEnvelope asd = new org.springframework.ws.soap.SoapEnvelope();
 
         SoapEnvelope envelope = (SoapEnvelope) unmarshaller.unmarshal(reader);
 

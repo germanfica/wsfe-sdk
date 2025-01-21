@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @XmlRootElement(name = "loginTicketRequest")
+@JacksonXmlRootElement(localName = "loginTicketRequest")
 @XmlType(propOrder = {"version", "header", "service"})
 public class LoginTicketRequest {
 
