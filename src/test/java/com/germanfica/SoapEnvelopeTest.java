@@ -1,11 +1,10 @@
 package com.germanfica;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.germanfica.wsfe.model.soap.envelope.FaultDetail;
+import com.germanfica.wsfe.model.soap.envelope.SoapFaultDetail;
 import com.germanfica.wsfe.model.soap.envelope.SoapBody;
 import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
 import com.germanfica.wsfe.model.soap.envelope.SoapFault;
-import com.sun.xml.messaging.saaj.soap.Envelope;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -90,7 +89,7 @@ public class SoapEnvelopeTest {
         SoapEnvelope soapEnvelope = new SoapEnvelope();
         SoapBody soapBody = new SoapBody();
         SoapFault soapFault = new SoapFault();
-        FaultDetail faultDetail = new FaultDetail();
+        SoapFaultDetail faultDetail = new SoapFaultDetail();
 
         // Configurar los valores del objeto SoapEnvelope
         faultDetail.setExceptionName("gov.afip.desein.dvadac.sua.view.wsaa.LoginFault");

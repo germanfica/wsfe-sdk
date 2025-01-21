@@ -15,7 +15,7 @@ public class SoapFault { // Cambiado a public
 
     @XmlElement(name = "detail")
     @JacksonXmlProperty(localName = "detail")
-    private FaultDetail detail;
+    private SoapFaultDetail detail;
 
     // Getters y Setters
     public String getFaultCode() {
@@ -34,11 +34,11 @@ public class SoapFault { // Cambiado a public
         this.faultString = faultString;
     }
 
-    public FaultDetail getDetail() {
+    public SoapFaultDetail getDetail() {
         return detail;
     }
 
-    public void setDetail(FaultDetail detail) {
+    public void setDetail(SoapFaultDetail detail) {
         this.detail = detail;
     }
 }

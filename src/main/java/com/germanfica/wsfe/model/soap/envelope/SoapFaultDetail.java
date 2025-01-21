@@ -4,7 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class FaultDetail { // Cambiado a public
+public class SoapFaultDetail { // Cambiado a public
     @XmlElement(name = "exceptionName", namespace = "http://xml.apache.org/axis/")
     @JacksonXmlProperty(localName = "exceptionName", namespace = "http://xml.apache.org/axis/")
     private String exceptionName;
