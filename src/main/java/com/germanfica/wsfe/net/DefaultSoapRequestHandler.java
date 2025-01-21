@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.net;
 
+import com.germanfica.wsfe.exception.XmlMappingException;
 import jakarta.xml.soap.SOAPMessage;
 
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
@@ -22,12 +23,14 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
         SOAPMessage soapResponse = baseApiRequest.sendSoapRequest(soapMessage, apiRequest.getEndpoint());
 
-
-
         String xmlResponse = baseApiRequest.extractResponse(soapResponse);
 
         System.out.println(xmlResponse);
 
-        return baseApiRequest.mapToDto(xmlResponse, responseType);
+        try {
+            return baseApiRequest.mapToDto(xmlResponse, responseType);
+        } catch (Exception e) {
+            throw new XmlMappingException("Error mapping XML to DTO", xmlResponse, e);
+        }
     }
 }

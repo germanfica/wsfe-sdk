@@ -4,6 +4,7 @@ import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.exception.ApiException;
 
+import com.germanfica.wsfe.exception.XmlMappingException;
 import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
 import com.germanfica.wsfe.model.soap.loginticket.LoginTicketResponseType;
 import com.germanfica.wsfe.net.ApiRequest;
@@ -16,6 +17,8 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.util.Map;
 
+import static com.germanfica.wsfe.utils.ArcaWSAAUtils.convertXmlToObject;
+
 public final class LoginService extends ApiService {
     private static final String NAMESPACE = "http://wsaa.view.sua.dvadac.desein.afip.gov.ar/";
     private static final String OPERATION = "loginCms";
@@ -25,7 +28,7 @@ public final class LoginService extends ApiService {
         super(soapRequestHandler);
     }
 
-    public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) {
+    public LoginCmsResponseDto invokeWsaa(byte[] loginTicketRequestXmlCms, String endpoint) throws Exception {
         try {
             ApiRequest request = new ApiRequest(
                     SOAP_ACTION,
@@ -39,7 +42,10 @@ public final class LoginService extends ApiService {
 
             System.out.println(Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms)));
 
-            SoapEnvelope fault = this.request(request, SoapEnvelope.class);
+            // success: en caso de éxito
+//            LoginTicketResponseType success = this.request(request, LoginTicketResponseType.class);
+            // error: en caso de error
+//            SoapEnvelope error = this.request(request, SoapEnvelope.class);
 //
 //            String xmlResponse = """
 //<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -70,10 +76,45 @@ public final class LoginService extends ApiService {
 
 
             // Mapear al DTO
-            return new LoginCmsResponseDto(null,null);
-            //return postProcessDto(this.request(request, LoginTicketResponseType.class));
+            //return new LoginCmsResponseDto(null,null);
+            return postProcessDto(this.request(request, LoginTicketResponseType.class));
 
+            } catch (XmlMappingException xmlEx) {
+                System.err.println("Error mapping XML to DTO: " + xmlEx.getMessage());
+                System.err.println("XML Response: " + xmlEx.getXmlResponse());
+                xmlEx.printStackTrace();
 
+                try {
+                    // Intentar mapear la respuesta XML al objeto SoapEnvelope
+                    SoapEnvelope error;
+                    try {
+                        error = convertXmlToObject(xmlEx.getXmlResponse(), SoapEnvelope.class);
+                    } catch (Exception mappingEx) {
+                        // Manejo explícito del fallo de mapeo
+                        System.err.println("Error mapping XML response to SoapEnvelope: " + mappingEx.getMessage());
+                        mappingEx.printStackTrace();
+
+                        throw new ApiException(
+                                new ErrorDto("xml_mapping_error", "Error mapping XML response to DTO", null),
+                                HttpStatus.BAD_REQUEST // Ajusta el código de estado según corresponda
+                        );
+                    }
+
+                    // Si se mapea correctamente, lanzar ApiException con información detallada del error del servidor
+                    throw new ApiException(
+                            new ErrorDto(
+                                    error.getBody().getFault().getFaultCode(),
+                                    error.getBody().getFault().getFaultString(),
+                                    new ErrorDto.ErrorDetailsDto(
+                                            error.getBody().getFault().getDetail().getExceptionName(),
+                                            error.getBody().getFault().getDetail().getHostname()
+                                    )
+                            ),
+                            HttpStatus.INTERNAL_SERVER_ERROR // Ajusta según corresponda para errores del servidor
+                    );
+                } catch (ApiException e) {
+                    throw e; // Propaga la ApiException sin modificarla
+                }
         } catch (Exception e) {
 
             System.out.println(e);

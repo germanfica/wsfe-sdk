@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.germanfica.wsfe.exception.XmlMappingException;
 import com.germanfica.wsfe.model.LoginTicketRequest;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
@@ -161,8 +162,12 @@ public class ArcaWSAAUtils {
      * @return the deserialized object of type T
      * @throws Exception if an error occurs during deserialization
      */
-    public static <T> T convertXmlToObject(String xmlString, Class<T> clazz) throws Exception {
+    public static <T> T convertXmlToObject(String xmlString, Class<T> clazz) throws XmlMappingException {
         XmlMapper xmlMapper = new XmlMapper();
-        return xmlMapper.readValue(xmlString, clazz);
+        try {
+            return xmlMapper.readValue(xmlString, clazz);
+        } catch (Exception e) {
+            throw new XmlMappingException("Error mapping XML to object", xmlString, e);
+        }
     }
 }
