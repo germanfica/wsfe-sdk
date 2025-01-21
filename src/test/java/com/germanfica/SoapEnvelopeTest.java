@@ -56,7 +56,7 @@ public class SoapEnvelopeTest {
     }
 
     @Test
-    void testConvertXmlToObject() throws Exception  {
+    void testDeserializeSoapEnvelopeWithJackson() throws Exception  {
         // XML de prueba
         String xmlResponse = """
                 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
