@@ -92,7 +92,7 @@ public final class LoginService extends ApiService {
                     } catch (Exception mappingEx) {
                         // Manejo explícito del fallo de mapeo
                         System.err.println("Error mapping XML response to SoapEnvelope: " + mappingEx.getMessage());
-                        //mappingEx.printStackTrace();
+                        mappingEx.printStackTrace();
 
                         throw new ApiException(
                                 new ErrorDto("xml_mapping_error", "Error mapping XML response to DTO", null),

@@ -5,6 +5,9 @@ import com.germanfica.wsfe.model.soap.envelope.SoapFaultDetail;
 import com.germanfica.wsfe.model.soap.envelope.SoapBody;
 import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
 import com.germanfica.wsfe.model.soap.envelope.SoapFault;
+import com.germanfica.wsfe.model.soap.loginticket.CredentialsType;
+import com.germanfica.wsfe.model.soap.loginticket.HeaderType;
+import com.germanfica.wsfe.model.soap.loginticket.LoginTicketResponseType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -13,13 +16,52 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
-
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SoapEnvelopeTest {
+
+    @Test
+    void testUnmarshalLoginTicketResponseType() throws JAXBException {
+        // XML de prueba
+        String xmlResponse = """
+                <loginTicketResponse version=\"1.0\">
+                   <header>
+                      <source>TestSource</source>
+                      <destination>TestDestination</destination>
+                      <uniqueId>12345</uniqueId>
+                      <generationTime>2024-01-01T12:00:00Z</generationTime>
+                      <expirationTime>2024-01-02T12:00:00Z</expirationTime>
+                   </header>
+                   <credentials>
+                      <token>TestToken</token>
+                      <sign>TestSign</sign>
+                   </credentials>
+                </loginTicketResponse>
+                """;
+
+        // Configuración del contexto JAXB
+        JAXBContext jaxbContext = JAXBContext.newInstance(LoginTicketResponseType.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+        // Parseo del XML
+        StringReader reader = new StringReader(xmlResponse);
+
+        LoginTicketResponseType loginTicketResponse = (LoginTicketResponseType) unmarshaller.unmarshal(reader);
+
+        // Verificación de resultados
+        assertEquals("TestSource", loginTicketResponse.getHeader().getSource());
+        assertEquals("TestDestination", loginTicketResponse.getHeader().getDestination());
+        assertEquals("12345", loginTicketResponse.getHeader().getUniqueId());
+        assertEquals("2024-01-01T12:00:00Z", loginTicketResponse.getHeader().getGenerationTime().toString());
+        assertEquals("2024-01-02T12:00:00Z", loginTicketResponse.getHeader().getExpirationTime().toString());
+
+        assertEquals("TestToken", loginTicketResponse.getCredentials().getToken());
+        assertEquals("TestSign", loginTicketResponse.getCredentials().getSign());
+    }
 
     @Test
     void testUnmarshalSoapEnvelope() throws JAXBException {
@@ -120,6 +162,52 @@ public class SoapEnvelopeTest {
             Assertions.assertTrue(generatedXml.contains("<ns3:Body"), "El XML generado no contiene el nodo Body");
             Assertions.assertTrue(generatedXml.contains("ns1:coe.alreadyAuthenticated"), "El XML generado no contiene el faultcode esperado");
             Assertions.assertTrue(generatedXml.contains("El CEE ya posee un TA valido para el acceso al WSN solicitado"), "El XML generado no contiene el faultstring esperado");
+        } catch (JAXBException e) {
+            Assertions.fail("Error durante la serialización: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testPrintLoginTicketResponseType() throws DatatypeConfigurationException {
+        // Crear instancia de LoginTicketResponseType y asignar valores de ejemplo
+        var loginTicketResponse = new LoginTicketResponseType();
+        var header = new HeaderType();
+        var credentials = new CredentialsType();
+
+        // Configurar los valores del objeto LoginTicketResponseType
+        header.setSource("TestSource");
+        header.setDestination("TestDestination");
+        header.setUniqueId("12345");
+        header.setGenerationTime(javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar("2024-01-01T12:00:00Z"));
+        header.setExpirationTime(javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar("2024-01-02T12:00:00Z"));
+
+        credentials.setToken("TestToken");
+        credentials.setSign("TestSign");
+
+        loginTicketResponse.setHeader(header);
+        loginTicketResponse.setCredentials(credentials);
+        loginTicketResponse.setVersion("1.0");
+
+        // Crear contexto JAXB y configurar el marshaller
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(LoginTicketResponseType.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            // Convertir el objeto a XML
+            StringWriter xmlWriter = new StringWriter();
+            marshaller.marshal(loginTicketResponse, xmlWriter);
+
+            // Verificar el XML generado
+            String generatedXml = xmlWriter.toString();
+            System.out.println("XML generado: \n" + generatedXml);
+
+            // Verificar algunos fragmentos clave del XML
+            Assertions.assertTrue(generatedXml.contains("<header>"), "El XML generado no contiene el nodo header");
+            Assertions.assertTrue(generatedXml.contains("<source>TestSource</source>"), "El XML generado no contiene el source esperado");
+            Assertions.assertTrue(generatedXml.contains("<destination>TestDestination</destination>"), "El XML generado no contiene el destination esperado");
+            Assertions.assertTrue(generatedXml.contains("<credentials>"), "El XML generado no contiene el nodo credentials");
+            Assertions.assertTrue(generatedXml.contains("<token>TestToken</token>"), "El XML generado no contiene el token esperado");
         } catch (JAXBException e) {
             Assertions.fail("Error durante la serialización: " + e.getMessage());
         }

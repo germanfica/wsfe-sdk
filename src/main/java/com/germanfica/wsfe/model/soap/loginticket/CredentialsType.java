@@ -14,41 +14,11 @@ import lombok.Setter;
     "token",
     "sign"
 })
-public class CredentialsType {
 
-    /**
-     * -- GETTER --
-     *  Gets the value of the token property.
-     *
-     *
-     * -- SETTER --
-     *  Sets the value of the token property.
-     *
-     @return
-     *     possible object is
-     *     {@link String }
-      * @param value
-      *     allowed object is
-      *     {@link String }
-     */
+public class CredentialsType {
     @XmlElement(required = true)
     protected String token;
-    /**
-     * -- GETTER --
-     *  Gets the value of the sign property.
-     *
-     *
-     * -- SETTER --
-     *  Sets the value of the sign property.
-     *
-     @return
-     *     possible object is
-     *     {@link String }
-      * @param value
-      *     allowed object is
-      *     {@link String }
-     */
+
     @XmlElement(required = true)
     protected String sign;
-
 }
