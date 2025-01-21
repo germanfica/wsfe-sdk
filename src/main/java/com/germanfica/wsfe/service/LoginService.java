@@ -5,12 +5,12 @@ import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.exception.ApiException;
 
 import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
+import com.germanfica.wsfe.model.soap.loginticket.LoginTicketResponseType;
 import com.germanfica.wsfe.net.ApiRequest;
 import com.germanfica.wsfe.net.ApiService;
 import com.germanfica.wsfe.net.HttpStatus;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.utils.ArcaDateTimeUtils;
-import generated.LoginTicketResponseType;
 import org.apache.commons.codec.binary.Base64;
 
 
