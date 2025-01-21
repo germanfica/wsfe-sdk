@@ -150,13 +150,28 @@ public abstract class BaseApiRequest {
     }
 
     /**
-     * Extraer la respuesta del mensaje SOAP como cadena XML completa.
+     * Extraer la respuesta del mensaje SOAP como cadena XML.
      *
      * @param soapMessage El mensaje SOAP de respuesta.
      * @return Respuesta como cadena XML.
      * @throws SOAPException Si ocurre un error al procesar el mensaje.
      */
     protected String extractResponse(SOAPMessage soapMessage) throws SOAPException {
+        try {
+            return soapMessage.getSOAPBody().getTextContent();
+        } catch (Exception e) {
+            throw new SOAPException("Error al extraer contenido del cuerpo SOAP", e);
+        }
+    }
+
+    /**
+     * Extraer la respuesta del mensaje SOAP como cadena XML completa.
+     *
+     * @param soapMessage El mensaje SOAP de respuesta.
+     * @return Respuesta como cadena XML.
+     * @throws SOAPException Si ocurre un error al procesar el mensaje.
+     */
+    protected String extractResponseXml(SOAPMessage soapMessage) throws SOAPException {
         try {
             // Convertir el cuerpo del mensaje SOAP a un XML completo como cadena
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
