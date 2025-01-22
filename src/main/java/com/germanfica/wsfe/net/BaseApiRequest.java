@@ -82,11 +82,11 @@ public abstract class BaseApiRequest {
      * @return Instancia del DTO mapeada desde el XML.
      * @throws Exception Si ocurre un error durante el mapeo.
      */
-    protected <T> T mapToDto(String xml, Class<T> clazz) throws Exception {
+    protected <T> T mapToDto(String xml, Class<T> clazz) {
         try {
-            return convertXmlToObject(xml, clazz);
+            return SoapProcessor.processResponse(xml, clazz);
         } catch (Exception e) {
-            throw new Exception("Error al mapear XML a DTO: " + e.getMessage(), e);
+            throw new RuntimeException("Error mapping XML to DTO", e);
         }
     }
 
@@ -156,7 +156,7 @@ public abstract class BaseApiRequest {
      * @return Respuesta como cadena XML.
      * @throws SOAPException Si ocurre un error al procesar el mensaje.
      */
-    protected String extractResponse(SOAPMessage soapMessage) throws SOAPException {
+    protected String extractResponseOld(SOAPMessage soapMessage) throws SOAPException {
         try {
             return soapMessage.getSOAPBody().getTextContent();
         } catch (Exception e) {
@@ -171,7 +171,7 @@ public abstract class BaseApiRequest {
      * @return Respuesta como cadena XML.
      * @throws SOAPException Si ocurre un error al procesar el mensaje.
      */
-    protected String extractResponseXml(SOAPMessage soapMessage) throws SOAPException {
+    protected String extractResponse(SOAPMessage soapMessage) throws SOAPException {
         try {
             // Convertir el cuerpo del mensaje SOAP a un XML completo como cadena
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
