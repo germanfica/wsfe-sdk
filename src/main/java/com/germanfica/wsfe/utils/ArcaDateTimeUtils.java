@@ -99,7 +99,7 @@ public class ArcaDateTimeUtils {
         OffsetDateTime dateTime = xmlGregorianCalendar
                 .toGregorianCalendar()
                 .toZonedDateTime()
-                .withZoneSameInstant(offset.getZoneOffset()) // Ajuste explícito del offset
+                .withZoneSameInstant(offset.getZoneOffset())
                 .toOffsetDateTime();
         return formatDateTime(dateTime, format);
     }
