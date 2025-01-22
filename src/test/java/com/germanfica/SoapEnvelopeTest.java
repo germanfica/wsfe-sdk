@@ -1,6 +1,7 @@
 package com.germanfica;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.germanfica.wsfe.exception.XmlMappingException;
 import com.germanfica.wsfe.model.soap.envelope.SoapFaultDetail;
 import com.germanfica.wsfe.model.soap.envelope.SoapBody;
 import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
@@ -28,19 +29,20 @@ public class SoapEnvelopeTest {
     void testUnmarshalLoginTicketResponseType() throws JAXBException {
         // XML de prueba
         String xmlResponse = """
-                <loginTicketResponse version=\"1.0\">
-                   <header>
-                      <source>TestSource</source>
-                      <destination>TestDestination</destination>
-                      <uniqueId>12345</uniqueId>
-                      <generationTime>2024-01-01T12:00:00Z</generationTime>
-                      <expirationTime>2024-01-02T12:00:00Z</expirationTime>
-                   </header>
-                   <credentials>
-                      <token>TestToken</token>
-                      <sign>TestSign</sign>
-                   </credentials>
-                </loginTicketResponse>
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <loginTicketResponse version="1.0">
+                <header>
+                    <source>CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239</source>
+                    <destination>SERIALNUMBER=CUIT xxxxxxxxxxx, CN=test</destination>
+                    <uniqueId>2610407892</uniqueId>
+                    <generationTime>2025-01-21T18:36:40.770-03:00</generationTime>
+                    <expirationTime>2025-01-22T06:36:40.770-03:00</expirationTime>
+                </header>
+                <credentials>
+                    <token>xxxxxxxxxxxxxxxxxxxxxxxxx</token>
+                    <sign>xxxxxxxxxxxxxxxxxxxxxxxxx</sign>
+                </credentials>
+            </loginTicketResponse>
                 """;
 
         // Configuración del contexto JAXB
@@ -53,14 +55,14 @@ public class SoapEnvelopeTest {
         LoginTicketResponseType loginTicketResponse = (LoginTicketResponseType) unmarshaller.unmarshal(reader);
 
         // Verificación de resultados
-        assertEquals("TestSource", loginTicketResponse.getHeader().getSource());
-        assertEquals("TestDestination", loginTicketResponse.getHeader().getDestination());
-        assertEquals("12345", loginTicketResponse.getHeader().getUniqueId());
-        assertEquals("2024-01-01T12:00:00Z", loginTicketResponse.getHeader().getGenerationTime().toString());
-        assertEquals("2024-01-02T12:00:00Z", loginTicketResponse.getHeader().getExpirationTime().toString());
+        assertEquals("CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239", loginTicketResponse.getHeader().getSource());
+        assertEquals("SERIALNUMBER=CUIT xxxxxxxxxxx, CN=test", loginTicketResponse.getHeader().getDestination());
+        assertEquals("2610407892", loginTicketResponse.getHeader().getUniqueId());
+        assertEquals("2025-01-21T18:36:40.770-03:00", loginTicketResponse.getHeader().getGenerationTime().toString());
+        assertEquals("2025-01-22T06:36:40.770-03:00", loginTicketResponse.getHeader().getExpirationTime().toString());
 
-        assertEquals("TestToken", loginTicketResponse.getCredentials().getToken());
-        assertEquals("TestSign", loginTicketResponse.getCredentials().getSign());
+        assertEquals("xxxxxxxxxxxxxxxxxxxxxxxxx", loginTicketResponse.getCredentials().getToken());
+        assertEquals("xxxxxxxxxxxxxxxxxxxxxxxxx", loginTicketResponse.getCredentials().getSign());
     }
 
     @Test
@@ -210,6 +212,25 @@ public class SoapEnvelopeTest {
             Assertions.assertTrue(generatedXml.contains("<token>TestToken</token>"), "El XML generado no contiene el token esperado");
         } catch (JAXBException e) {
             Assertions.fail("Error durante la serialización: " + e.getMessage());
+        }
+    }
+
+
+     /**
+     * Converts an XML string to an object of the specified type.
+     *
+     * @param xmlString the XML string to convert
+     * @param clazz     the class type of the object
+     * @param <T>       the type parameter
+     * @return the deserialized object of type T
+     * @throws Exception if an error occurs during deserialization
+     */
+     private static <T> T convertXmlToObject(String xmlString, Class<T> clazz) throws XmlMappingException {
+        XmlMapper xmlMapper = new XmlMapper();
+        try {
+            return xmlMapper.readValue(xmlString, clazz);
+        } catch (Exception e) {
+            throw new XmlMappingException("Error mapping XML to object", xmlString, e);
         }
     }
 }
