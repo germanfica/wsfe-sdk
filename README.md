@@ -1,5 +1,13 @@
 # wsfe
 
+The SDK is a developer-focused tool designed to simplify interactions with ARCA's SOAP API by providing a high-level abstraction layer. Its primary goal is to transform the complexity of SOAP communication into a straightforward interface, enabling developers to work with Java objects and methods instead of directly handling SOAP calls or XML manipulation.
+
+This design eliminates the need for developers to engage with the underlying SOAP protocol or XML structures. By automatically converting SOAP responses into easy-to-use Java objects, the SDK streamlines development, allowing developers to concentrate on implementing business logic rather than managing low-level communication details.
+
+The SDK is not intended to serve as a comprehensive SOAP API client. Instead, it prioritizes usability by abstracting the intricacies of SOAP requests and responses, removing the requirement for maintaining schema files such as .xsd or .wsdl. This approach reduces the maintenance overhead and ensures the SDK remains flexible and adaptable to API changes.
+
+By focusing on high-level abstraction and simplifying the integration process, the SDK enhances developer productivity and facilitates efficient interaction with the ARCA SOAP API, making it a practical and developer-friendly solution.
+
 ## Maven goals
 
 ```maven
