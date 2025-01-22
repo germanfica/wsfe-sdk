@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.model.soap.loginticket;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -17,8 +18,10 @@ import lombok.Setter;
 
 public class CredentialsType {
     @XmlElement(required = true)
+    @JacksonXmlProperty(localName = "token")
     protected String token;
 
     @XmlElement(required = true)
+    @JacksonXmlProperty(localName = "sign")
     protected String sign;
 }
