@@ -1,6 +1,6 @@
 # wsfe
 
-The SDK is a developer-focused tool designed to simplify interactions with ARCA's SOAP API by providing a high-level abstraction layer. Its primary goal is to transform the complexity of SOAP communication into a straightforward interface, enabling developers to work with Java objects and methods instead of directly handling SOAP calls or XML manipulation.
+The WSFE SDK is a developer-focused tool designed to simplify interactions with ARCA's SOAP API by providing a high-level abstraction layer. Its primary goal is to transform the complexity of SOAP communication into a straightforward interface, enabling developers to work with Java objects and methods instead of directly handling SOAP calls or XML manipulation.
 
 This design eliminates the need for developers to engage with the underlying SOAP protocol or XML structures. By automatically converting SOAP responses into easy-to-use Java objects, the SDK streamlines development, allowing developers to concentrate on implementing business logic rather than managing low-level communication details.
 
