@@ -137,37 +137,37 @@ public class ArcaWSAAUtils {
         return XMLUtils.toXML(request);
     }
 
-    /**
-     * Converts an XML string to an object of the specified type using JAXBContext.
-     *
-     * @param xmlString the XML string to convert
-     * @param clazz     the class type of the object
-     * @param <T>       the type parameter
-     * @return the deserialized object of type T
-     * @throws Exception if an error occurs during deserialization
-     */
-    public static <T> T convertXmlToObjectJAXB(String xmlString, Class<T> clazz) throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(clazz); // Initialize JAXBContext with the class
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller(); // Create an Unmarshaller instance
-        StringReader reader = new StringReader(xmlString); // Wrap the XML string in a StringReader
-        return clazz.cast(unmarshaller.unmarshal(reader)); // Deserialize the XML into an object of type T
-    }
-
-    /**
-     * Converts an XML string to an object of the specified type.
-     *
-     * @param xmlString the XML string to convert
-     * @param clazz     the class type of the object
-     * @param <T>       the type parameter
-     * @return the deserialized object of type T
-     * @throws Exception if an error occurs during deserialization
-     */
-    public static <T> T convertXmlToObject(String xmlString, Class<T> clazz) throws XmlMappingException {
-        XmlMapper xmlMapper = new XmlMapper();
-        try {
-            return xmlMapper.readValue(xmlString, clazz);
-        } catch (Exception e) {
-            throw new XmlMappingException("Error mapping XML to object", xmlString, e);
-        }
-    }
+//    /**
+//     * Converts an XML string to an object of the specified type using JAXBContext.
+//     *
+//     * @param xmlString the XML string to convert
+//     * @param clazz     the class type of the object
+//     * @param <T>       the type parameter
+//     * @return the deserialized object of type T
+//     * @throws Exception if an error occurs during deserialization
+//     */
+//    public static <T> T convertXmlToObjectJAXB(String xmlString, Class<T> clazz) throws Exception {
+//        JAXBContext jaxbContext = JAXBContext.newInstance(clazz); // Initialize JAXBContext with the class
+//        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller(); // Create an Unmarshaller instance
+//        StringReader reader = new StringReader(xmlString); // Wrap the XML string in a StringReader
+//        return clazz.cast(unmarshaller.unmarshal(reader)); // Deserialize the XML into an object of type T
+//    }
+//
+//    /**
+//     * Converts an XML string to an object of the specified type.
+//     *
+//     * @param xmlString the XML string to convert
+//     * @param clazz     the class type of the object
+//     * @param <T>       the type parameter
+//     * @return the deserialized object of type T
+//     * @throws Exception if an error occurs during deserialization
+//     */
+//    public static <T> T convertXmlToObject(String xmlString, Class<T> clazz) throws XmlMappingException {
+//        XmlMapper xmlMapper = new XmlMapper();
+//        try {
+//            return xmlMapper.readValue(xmlString, clazz);
+//        } catch (Exception e) {
+//            throw new XmlMappingException("Error mapping XML to object", xmlString, e);
+//        }
+//    }
 }
