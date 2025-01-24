@@ -9,17 +9,17 @@ import org.w3c.dom.Node;
 
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
-    private final BaseApiRequest baseApiRequest;
+    private final SoapClient soapClient;
 
-    public DefaultSoapRequestHandler(BaseApiRequest baseApiRequest) {
-        this.baseApiRequest = baseApiRequest;
+    public DefaultSoapRequestHandler(SoapClient soapClient) {
+        this.soapClient = (soapClient != null) ? soapClient : buildDefaultHttpClient();
     }
 
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, Class<T> responseType) throws Exception {
         try {
             // Crear y enviar el mensaje SOAP
-            SOAPMessage message = baseApiRequest.createSoapMessage(
+            SOAPMessage message = soapClient.createSoapMessage(
                     apiRequest.getSoapAction(),
                     apiRequest.getPayload(),
                     apiRequest.getNamespace(),
@@ -27,7 +27,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                     apiRequest.getBodyElements()
             );
 
-            SOAPMessage response = baseApiRequest.sendSoapRequest(message, apiRequest.getEndpoint());
+            SOAPMessage response = soapClient.sendSoapRequest(message, apiRequest.getEndpoint());
 
             handleSoapBodyNull(response);
 
@@ -43,6 +43,10 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
             handleUnexpectedError(e);
         }
         return null; // Este return nunca se alcanzará debido a los throws
+    }
+
+    private static SoapClient buildDefaultHttpClient() {
+        return new SoapURLConnectionClient();
     }
 
     private void handleSoapFault(SOAPMessage response) {

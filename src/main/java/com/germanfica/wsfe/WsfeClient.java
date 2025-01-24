@@ -21,12 +21,7 @@ public class WsfeClient {
      * @param payload Contenido del mensaje SOAP en bytes.
      */
     public WsfeClient(byte[] payload) {
-        // Construir instancia de BaseApiRequest con los parámetros proporcionados
-        BaseApiRequest baseApiRequest = builder()
-                .setPayload(payload)
-                .buildOptions();
-        // Instanciar el SoapRequestHandler con el BaseApiRequest creado
-        this.soapRequestHandler = new DefaultSoapRequestHandler(baseApiRequest);
+        this.soapRequestHandler = new DefaultSoapRequestHandler(null);
     }
 
 //
