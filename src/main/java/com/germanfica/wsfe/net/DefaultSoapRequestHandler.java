@@ -30,13 +30,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
             SOAPMessage response = baseApiRequest.sendSoapRequest(message, apiRequest.getEndpoint());
 
-            // Verificar si el cuerpo SOAP es nulo
-            if (response == null || response.getSOAPBody() == null) {
-                throw new ApiException(
-                        new ErrorDto("soap_body_null", "El cuerpo de la respuesta SOAP es nulo", null),
-                        HttpStatus.INTERNAL_SERVER_ERROR
-                );
-            }
+            handleSoapBodyNull(response);
 
             handleSoapFault(response);
 
@@ -107,6 +101,23 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         } catch (SOAPException e) {
             throw new ApiException(
                     new ErrorDto("soap_fault_error", "Error al manejar un SOAP fault", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    private void handleSoapBodyNull(SOAPMessage response) {
+        try {
+            // Verificar si el cuerpo SOAP es nulo
+            if (response == null || response.getSOAPBody() == null) {
+                throw new ApiException(
+                        new ErrorDto("soap_body_null", "El cuerpo de la respuesta SOAP es nulo", null),
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+        } catch (SOAPException e) {
+            throw new ApiException(
+                    new ErrorDto("soap_body_error", "Error al verificar el cuerpo SOAP", null),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
