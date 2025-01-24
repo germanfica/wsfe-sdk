@@ -30,7 +30,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jaxb.version>4.0.5</jaxb.version>
+        <jaxb.version>3.0.0</jaxb.version>
         <gson.version>2.11.0</gson.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -92,72 +92,38 @@
             <version>${gson.version}</version>
         </dependency>
 
-        <!--
-        This dependency is required for jaxb2-maven-plugin v3.2.0.
-        WARNING: If you update the version of jaxb2-maven-plugin,
-        you must also update this dependency to ensure compatibility.
-        The best way to find a compatible version is by checking the release date.
-        Typically, the versions of this dependency and jaxb2-maven-plugin are
-        released on the same or very close dates.
-        -->
+        <!-- Test dependencies -->
         <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.2</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.0.1-jre</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.1.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
         </dependency>
 
-        <!--
-        This dependency is required for jaxb2-maven-plugin v3.2.0.
-        WARNING: If you update the version of jaxb2-maven-plugin,
-        you must also update this dependency to ensure compatibility.
-        The best way to find a compatible version is by checking the release date.
-        Typically, the versions of this dependency and jaxb2-maven-plugin are
-        released on the same or very close dates.
-        -->
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>4.0.5</version>
-        </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <!-- Plugin para Spring Boot -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <!--
-             Plugin for JAXB to generate classes from XSD files.
-             NOTE: This plugin depends on the following dependencies:
-             - org.glassfish.jaxb:jaxb-core:4.0.5
-             - jakarta.xml.bind:jakarta.xml.bind-api:4.0.2
-             -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!-- Directorio donde se encuentran los esquemas XSD -->
-                    <sources>
-                        <source>${basedir}/src/main/resources/wsdl</source>
-                        <source>${project.basedir}/src/main/resources/xsd</source>
-                        <!-- jaxb2 no permite procesar directamente un WSDL desde una URL -->
-                        <!-- tienes que generar manualmente los .xsd o .wsdl en resources/wsdl -->
-                        <!-- <source>https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL</source> -->
-                    </sources>
-                    <sourceType>wsdl</sourceType>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

@@ -6,7 +6,7 @@ import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.utils.ArcaWSAAUtils;
-import generated.LoginTicketResponseType;
+import com.germanfica.wsfe.model.soap.loginticket.LoginTicketResponseType;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,29 +1,136 @@
 package com.germanfica.wsfe.net;
 
+import com.germanfica.wsfe.exception.SoapProcessingException;
+import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
+import com.germanfica.wsfe.dto.ErrorDto;
+import com.germanfica.wsfe.exception.ApiException;
+import org.w3c.dom.Node;
 
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
-    private final BaseApiRequest baseApiRequest;
+    private final SoapClient soapClient;
 
-    public DefaultSoapRequestHandler(BaseApiRequest baseApiRequest) {
-        this.baseApiRequest = baseApiRequest;
+    public DefaultSoapRequestHandler(SoapClient soapClient) {
+        this.soapClient = (soapClient != null) ? soapClient : buildDefaultHttpClient();
     }
 
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, Class<T> responseType) throws Exception {
-        SOAPMessage soapMessage = baseApiRequest.createSoapMessage(
-                apiRequest.getSoapAction(),
-                apiRequest.getPayload(),
-                apiRequest.getNamespace(),
-                apiRequest.getOperation(),
-                apiRequest.getBodyElements()
+        try {
+            // Crear y enviar el mensaje SOAP
+            SOAPMessage message = soapClient.createSoapMessage(
+                    apiRequest.getSoapAction(),
+                    apiRequest.getPayload(),
+                    apiRequest.getNamespace(),
+                    apiRequest.getOperation(),
+                    apiRequest.getBodyElements()
+            );
+
+            SOAPMessage response = soapClient.sendSoapRequest(message, apiRequest.getEndpoint());
+
+            handleSoapBodyNull(response);
+
+            handleSoapFault(response);
+
+            // Procesar la respuesta y mapear al DTO
+            return SoapProcessor.processResponse(response, responseType);
+        } catch (SoapProcessingException e) {
+            handleSoapProcessingError(e);
+        } catch (ApiException e) {
+            throw e; // Relanzar excepciones conocidas
+        } catch (Exception e) {
+            handleUnexpectedError(e);
+        }
+        return null; // Este return nunca se alcanzará debido a los throws
+    }
+
+    private static SoapClient buildDefaultHttpClient() {
+        return new SoapURLConnectionClient();
+    }
+
+    private void handleSoapFault(SOAPMessage response) {
+        try {
+            if (response.getSOAPBody().hasFault()) {
+                // Manejo del fault si existe
+                jakarta.xml.soap.SOAPFault fault = response.getSOAPBody().getFault();
+                String faultCode = fault != null ? fault.getFaultCode() : "unknown";
+                String faultString = fault != null ? fault.getFaultString() : "unknown";
+                String exceptionName = null;
+                String hostname = null;
+
+                // Intentar obtener detalles del fallo
+                if (fault.getDetail() != null) {
+                    Node exceptionNode = fault.getDetail().getElementsByTagNameNS("http://xml.apache.org/axis/", "exceptionName").item(0);
+                    Node hostnameNode = fault.getDetail().getElementsByTagNameNS("http://xml.apache.org/axis/", "hostname").item(0);
+
+                    // Verificar y extraer el contenido de los nodos
+                    if (exceptionNode != null) {
+                        exceptionName = exceptionNode.getTextContent();
+                        System.out.println("Exception Name: " + exceptionName);
+                    } else {
+                        System.err.println("No se encontró el nodo exceptionName.");
+                    }
+
+                    if (hostnameNode != null) {
+                        hostname = hostnameNode.getTextContent();
+                        System.out.println("Hostname: " + hostname);
+                    } else {
+                        System.err.println("No se encontró el nodo hostname.");
+                    }
+                }
+                throw new ApiException(
+                        new ErrorDto(
+                                faultCode,
+                                faultString,
+                                new ErrorDto.ErrorDetailsDto(exceptionName, hostname)
+                        ),
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+
+        } catch (SOAPException e) {
+            throw new ApiException(
+                    new ErrorDto("soap_fault_error", "Error al manejar un SOAP fault", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    private void handleSoapBodyNull(SOAPMessage response) {
+        try {
+            // Verificar si el cuerpo SOAP es nulo
+            if (response == null || response.getSOAPBody() == null) {
+                throw new ApiException(
+                        new ErrorDto("soap_body_null", "El cuerpo de la respuesta SOAP es nulo", null),
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+        } catch (SOAPException e) {
+            throw new ApiException(
+                    new ErrorDto("soap_body_error", "Error al verificar el cuerpo SOAP", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    private void handleSoapProcessingError(SoapProcessingException e) {
+        System.err.println("Error mapping XML to DTO: " + e.getMessage());
+        e.getCause().printStackTrace();
+        throw new ApiException(
+                new ErrorDto("xml_mapping_error", "Error mapping XML response to DTO", null),
+                HttpStatus.BAD_REQUEST
         );
+    }
 
-        SOAPMessage soapResponse = baseApiRequest.sendSoapRequest(soapMessage, apiRequest.getEndpoint());
-
-        String xmlResponse = baseApiRequest.extractResponse(soapResponse);
-
-        return baseApiRequest.mapToDto(xmlResponse, responseType);
+    // temporal handleUnexpectedError
+    private void handleUnexpectedError(Exception e) {
+        // Manejo de excepciones genéricas
+        System.err.println("Unexpected error occurred: " + e.getMessage());
+        e.printStackTrace();
+        throw new ApiException(
+                new ErrorDto("unexpected_error", "Unexpected error occurred", null),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }
