@@ -35,13 +35,8 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
             // Procesar la respuesta y mapear al DTO
             return SoapProcessor.processResponse(response, responseType);
-        } catch (SoapProcessingException soapProcessingException) {
-            System.err.println("Error mapping XML to DTO: " + soapProcessingException.getMessage());
-            soapProcessingException.getCause().printStackTrace();
-            throw new ApiException(
-                    new ErrorDto("xml_mapping_error", "Error mapping XML response to DTO", null),
-                    HttpStatus.BAD_REQUEST
-            );
+        } catch (SoapProcessingException e) {
+            handleSoapProcessingError(e);
         } catch (ApiException e) {
             throw e; // Relanzar excepciones conocidas
         } catch (Exception e) {
@@ -113,6 +108,15 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    private void handleSoapProcessingError(SoapProcessingException e) {
+        System.err.println("Error mapping XML to DTO: " + e.getMessage());
+        e.getCause().printStackTrace();
+        throw new ApiException(
+                new ErrorDto("xml_mapping_error", "Error mapping XML response to DTO", null),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     // temporal handleUnexpectedError
