@@ -7,7 +7,6 @@ import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
 import org.w3c.dom.Node;
 
-
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     private final BaseApiRequest baseApiRequest;
