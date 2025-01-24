@@ -42,19 +42,12 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                     new ErrorDto("xml_mapping_error", "Error mapping XML response to DTO", null),
                     HttpStatus.BAD_REQUEST
             );
+        } catch (ApiException e) {
+            throw e; // Relanzar excepciones conocidas
         } catch (Exception e) {
-            // Si ya es una exception conocida, simplemente la relanza
-            if (e instanceof ApiException) throw e;
-            if (e instanceof SoapProcessingException) throw e;
-
-            // Manejo de excepciones genéricas
-            System.err.println("Unexpected error occurred: " + e.getMessage());
-            e.printStackTrace();
-            throw new ApiException(
-                    new ErrorDto("unexpected_error", "Unexpected error occurred", null),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
+            handleUnexpectedError(e);
         }
+        return null; // Este return nunca se alcanzará debido a los throws
     }
 
     private void handleSoapFault(SOAPMessage response) {
@@ -120,5 +113,16 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    // temporal handleUnexpectedError
+    private void handleUnexpectedError(Exception e) {
+        // Manejo de excepciones genéricas
+        System.err.println("Unexpected error occurred: " + e.getMessage());
+        e.printStackTrace();
+        throw new ApiException(
+                new ErrorDto("unexpected_error", "Unexpected error occurred", null),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }
