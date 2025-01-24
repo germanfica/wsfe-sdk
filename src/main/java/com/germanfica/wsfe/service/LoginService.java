@@ -5,7 +5,7 @@ import com.germanfica.wsfe.dto.LoginCmsResponseDto;
 import com.germanfica.wsfe.exception.ApiException;
 
 import com.germanfica.wsfe.exception.XmlMappingException;
-import com.germanfica.wsfe.model.soap.envelope.SoapEnvelope;
+
 import com.germanfica.wsfe.model.soap.loginticket.LoginTicketResponseType;
 import com.germanfica.wsfe.net.ApiRequest;
 import com.germanfica.wsfe.net.ApiService;
