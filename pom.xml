@@ -37,23 +37,20 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Starter -->
+        <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-frontend-jaxws -->
+        <!-- Apache CXF Runtime JAX WS Frontend -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>4.1.0</version>
         </dependency>
 
-        <!-- Spring Boot Starter Test -->
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.messaging.saaj/saaj-impl -->
+        <!-- Jakarta SOAP Implementation -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Spring Boot Starter Web Services -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web-services</artifactId>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>3.0.4</version>
         </dependency>
 
         <!-- Bouncy Castle CMS APIs -->
