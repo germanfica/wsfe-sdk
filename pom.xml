@@ -12,7 +12,7 @@
     <artifactId>wsfe</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>wsfe</name>
-    <description>Demo project for Spring Boot</description>
+    <description>WSFE SDK simplifies interactions with ARCA's SOAP services by providing a high-level abstraction layer, enabling seamless integration through Java objects and methods while eliminating SOAP and XML complexities.</description>
     <url/>
     <licenses>
         <license/>
