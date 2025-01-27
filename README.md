@@ -27,6 +27,12 @@ mvn clean package -DskipTests
 mvn install:install-file -Dfile=target/wsfe-0.0.1-SNAPSHOT.jar -DgroupId=com.germanfica -DartifactId=wsfe -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
 ```
 
+or
+
+```bash
+mvn clean package -DskipTests install:install-file -Dfile=target/wsfe-0.0.1-SNAPSHOT.jar -DgroupId=com.germanfica -DartifactId=wsfe -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
+```
+
 ## Using the SDK as a Library in IntelliJ IDEA
 
 ![PzQFdT5hT4](https://github.com/user-attachments/assets/c502c4fa-c3a7-42d9-8a82-dc271f838adc)
