@@ -93,7 +93,7 @@ public class ArcaWSAAUtils {
         // Crear el XML del LoginTicketRequest
         LoginTicketRequest_xml = create_LoginTicketRequest(SignerDN, dstDN, service, TicketTime);
 
-        System.out.println(LoginTicketRequest_xml);
+//        System.out.println(LoginTicketRequest_xml);
 
         try {
             // Generar el firmante de contenido
