@@ -17,6 +17,12 @@ mvn jaxb2:xjc
 
 ## Install package maven local repository
 
+(1) First build the package.
+```bash
+mvn clean package -DskipTests 
+```
+
+(2) Second install the package in maven local repository.
 ```bash
 mvn install:install-file -Dfile=target/wsfe-0.0.1-SNAPSHOT.jar -DgroupId=com.germanfica -DartifactId=wsfe -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
 ```
