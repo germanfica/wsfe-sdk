@@ -39,7 +39,7 @@ public final class LoginService extends ApiService {
                 LoginTicketResponseType.class
         );
 
-        System.out.println(Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms)));
+//        System.out.println(Map.of("in0", Base64.encodeBase64String(loginTicketRequestXmlCms)));
 
         // success: en caso de éxito
 //            LoginTicketResponseType success = this.request(request, LoginTicketResponseType.class);
