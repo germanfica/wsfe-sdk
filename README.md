@@ -12,7 +12,8 @@ By focusing on high-level abstraction and simplifying the integration process, t
 
 ```maven
 mvn clean
-mvn jaxb2:xjc
+mvn generate-sources
+mvn clean generate-sources -DskipTests
 ```
 
 ## Install package maven local repository
