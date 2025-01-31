@@ -39,6 +39,14 @@
             <version>4.1.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-transports-http -->
+        <!-- Apache CXF Runtime HTTP Transport -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.sun.xml.messaging.saaj/saaj-impl -->
         <!-- Jakarta SOAP Implementation -->
         <dependency>
