@@ -142,9 +142,11 @@
                         </goals>
                         <configuration>
                             <wsdlOptions>
+                                <!-- WSAA -->
                                 <wsdlOption>
                                     <wsdl>https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl</wsdl>
                                 </wsdlOption>
+                                <!-- WSFE -->
                                 <wsdlOption>
                                     <wsdl>https://wswhomo.afip.gov.ar/wsfev1/service.asmx?wsdl</wsdl>
                                 </wsdlOption>
