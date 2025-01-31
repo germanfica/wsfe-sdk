@@ -31,6 +31,9 @@ public class FECAESolicitarExample {
             String dstdn = properties.getProperty("dstdn", "cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239");
             Long ticketTime = Long.parseLong(properties.getProperty("TicketTime", "36000"));
             String service = properties.getProperty("service");
+            String token = properties.getProperty("token");
+            String sign  = properties.getProperty("sign");
+            long   cuit  = Long.parseLong(properties.getProperty("cuit"));  // tu CUIT real/homo
 
             try {
                 // 2) Armar CMS para WSAA
@@ -51,14 +54,14 @@ public class FECAESolicitarExample {
                 WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
 
                 // 5) Invocar login WSAA para obtener Token y Sign
-                LoginCmsResponseDto loginResp = client.loginService().invokeWsaa(loginTicketRequestXmlCms, endpointWsaa);
+//                LoginCmsResponseDto loginResp = client.loginService().invokeWsaa(loginTicketRequestXmlCms, endpointWsaa);
 
-                String token = loginResp.getCredentials().getToken();
-                String sign  = loginResp.getCredentials().getSign();
-                long cuit    = 20223344556L;  // tu CUIT real/homo
+//                String token = loginResp.getCredentials().getToken();
+//                String sign  = loginResp.getCredentials().getSign();
+//                long cuit    = 20223344556L;  // tu CUIT real/homo
 
-                System.out.println("Token: " + token);
-                System.out.println("Sign:  " + sign);
+//                System.out.println("Token: " + token);
+//                System.out.println("Sign:  " + sign);
 
                 // 6) Invocar WSFE (FECAESolicitar) con las credenciales
                 FECAEResponse feResp = client.fecaeSolicitarService().invokeWsfev1(token, sign, cuit);
