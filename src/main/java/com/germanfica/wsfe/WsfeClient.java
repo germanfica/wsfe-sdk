@@ -3,10 +3,12 @@ package com.germanfica.wsfe;
 import com.germanfica.wsfe.net.BaseApiRequest;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
+import com.germanfica.wsfe.service.AuthService;
 import com.germanfica.wsfe.service.FECAESolicitarService;
 import com.germanfica.wsfe.service.FECompUltimoAutorizadoService;
 import com.germanfica.wsfe.service.LoginService;
 
+import java.net.MalformedURLException;
 import java.util.Map;
 
 /**
@@ -70,6 +72,10 @@ public class WsfeClient {
 
     public FECompUltimoAutorizadoService feCompUltimoAutorizadoService() {
         return new FECompUltimoAutorizadoService(soapRequestHandler);
+    }
+
+    public AuthService authService() throws MalformedURLException {
+        return new AuthService(soapRequestHandler);
     }
 
     // Aquí podrías seguir añadiendo métodos para exponer tus otros servicios:
