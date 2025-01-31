@@ -4,6 +4,7 @@ import com.germanfica.wsfe.net.BaseApiRequest;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.service.FECAESolicitarService;
+import com.germanfica.wsfe.service.FECompUltimoAutorizadoService;
 import com.germanfica.wsfe.service.LoginService;
 
 import java.util.Map;
@@ -65,6 +66,10 @@ public class WsfeClient {
 
     public FECAESolicitarService fecaeSolicitarService() {
         return new FECAESolicitarService(soapRequestHandler);
+    }
+
+    public FECompUltimoAutorizadoService feCompUltimoAutorizadoService() {
+        return new FECompUltimoAutorizadoService(soapRequestHandler);
     }
 
     // Aquí podrías seguir añadiendo métodos para exponer tus otros servicios:
