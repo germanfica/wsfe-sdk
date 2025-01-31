@@ -41,6 +41,9 @@ public class FECAESolicitarService extends ApiService {
      * @return        Respuesta de AFIP (FECAEResponse)
      */
     public FECAEResponse invokeWsfev1(String token, String sign, long cuit) {
+        int ptoVta = 1;
+        int cbteTipo = 11;
+
         // 1) Armar el objeto FEAuthRequest con las credenciales
         FEAuthRequest auth = new FEAuthRequest();
         auth.setToken(token);
@@ -50,17 +53,18 @@ public class FECAESolicitarService extends ApiService {
         // 2) Cabecera FECAECabRequest
         FECAECabRequest cab = new FECAECabRequest();
         cab.setCantReg(1);  // Cantidad de comprobantes a enviar
-        cab.setPtoVta(1);   // Punto de venta
-        cab.setCbteTipo(11);// Factura C
+        cab.setPtoVta(ptoVta);   // Punto de venta
+        cab.setCbteTipo(cbteTipo);// Factura C
 
         // 3) Detalle FECAEDetRequest (datos de la factura)
         FECAEDetRequest det = new FECAEDetRequest();
         det.setConcepto(2);      // 2 = Servicios
         det.setDocTipo(99);      // 99 = Consumidor final / Doc. no informado
         det.setDocNro(0);        // 0 (anónimo)
-        det.setCbteDesde(1);     // Número de comprobante desde
-        det.setCbteHasta(1);     // Número de comprobante hasta (igual si es uno solo)
-        det.setCbteFch("20241119");  // Fecha de emisión (AAAAMMDD)
+        FERecuperaLastCbteResponse feRecuperaLastCbteResponse = port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
+        det.setCbteDesde(feRecuperaLastCbteResponse.getCbteNro() + 1);     // Número de comprobante desde - FECompUltimoAutorizado + 1
+        det.setCbteHasta(feRecuperaLastCbteResponse.getCbteNro() + 1);     // Número de comprobante hasta - FECompUltimoAutorizado + 1
+        det.setCbteFch("20250131");  // Fecha de emisión (AAAAMMDD)
         det.setImpTotal(100.0);  // Importe total
         det.setImpTotConc(0.0);
         det.setImpNeto(100.0);   // Neto
@@ -68,9 +72,9 @@ public class FECAESolicitarService extends ApiService {
         det.setImpTrib(0.0);
         det.setImpIVA(0.0);      // Para Factura C no corresponde IVA
         // Fechas servicio
-        det.setFchServDesde("20241101");
-        det.setFchServHasta("20241119");
-        det.setFchVtoPago("20241125");
+        det.setFchServDesde("20250131");
+        det.setFchServHasta("20250131");
+        det.setFchVtoPago("20250131");
         // Moneda
         det.setMonId("PES");     // Pesos
         det.setMonCotiz(1.0);    // Cotización
