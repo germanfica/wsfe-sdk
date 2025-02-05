@@ -1,64 +1,82 @@
-# Ubicacion del Servicio de Autenticacion y Autorizacion
+# Nombre de la aplicación
+spring.application.name=wsfe
+
+# ---------------------------------------------------------------------------
+# Configuración del Servicio de Autenticación y Autorización
+# ---------------------------------------------------------------------------
+# URL del servicio de autenticación y autorización (WSAA).
+# Nota: Asegúrate de utilizar el endpoint correspondiente al entorno deseado.
+# Desarrollo
 endpoint=https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+# Producción
 #endpoint=https://wsaa.afip.gov.ar/ws/services/LoginCms
 
-#
-# Configuracion de Proxy
-#
-# En el caso que sea neceario se puede definir un proxy
-# Se define en proxy, el port,y en caso de que sea
-# necesario un usuario y password de acceso al proxy
-#
-#http_proxy=10.20.152.112
-#http_proxy_port=80
-#http.proxyUser=coqui
-#http.proxyPassword=soloio
+# ---------------------------------------------------------------------------
+# Configuración de Proxy (Opcional)
+# ---------------------------------------------------------------------------
+# Si es necesario utilizar un proxy, descomenta las líneas correspondientes
+# y completa con los valores adecuados.
+# Ejemplo de configuración de proxy:
+# http_proxy=10.20.152.112
+# http_proxy_port=80
+# http.proxyUser=coqui
+# http.proxyPassword=soloio
 
-#
-# Keystore que posee los certificados necesarios para
-# acceder al wsaa por medio de SSL, si no se define se
-# utiliza el keystore por defecto de java
-#
-#trustStore=certs/afip/homo/wsaahomo.jks
-#trustStore=certs/afip/produ/afip-ac-produ.jks
-#trustStore_password=soloio
+# ---------------------------------------------------------------------------
+# Configuración del Keystore para SSL
+# ---------------------------------------------------------------------------
+# Define el keystore con los certificados necesarios para acceder al WSAA.
+# Si no se especifica, se utilizará el keystore por defecto de Java.
+# Ejemplo de configuración de keystore:
+# trustStore=certs/afip/homo/wsaahomo.jks
+# trustStore=certs/afip/produ/afip-ac-produ.jks
+# trustStore_password=soloio
 
-# Servicio para el cual se requiere el ticket de acceso
+# ---------------------------------------------------------------------------
+# Configuración del Servicio
+# ---------------------------------------------------------------------------
+# Define el servicio para el cual se requiere el ticket de acceso.
 service=wsfe
 
-# Destino del Servicio
+# Destino del servicio (Distinguished Name - DN)
+# Nota: NO MODIFICAR a menos que ARCA (AFIP) modifique o actualice estos valores.
 dstdn=cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239
 
-# Keystorore en formato PKCS#12 que posee el certificado del
-# computador que solicita el acceso
-#keystore=certs/private/20246637998-homo.p12
+# ---------------------------------------------------------------------------
+# Configuración del Keystore para autenticación del cliente
+# ---------------------------------------------------------------------------
+# Keystore en formato PKCS#12 que contiene el certificado del cliente.
+# Especifica la ubicación del archivo y su configuración.
+# Ejemplo:
+# keystore=certs/private/20246637998-homo.p12
 keystore=certs/private/20246637998-pc2.p12
 
-# Signer del certificado en el keystore
+# Signer del certificado almacenado en el keystore
 keystore-signer=coqui
 
 # Clave de acceso al keystore
 keystore-password=soloio
 
-# Tiempo de vida del ticket requerido
+# ---------------------------------------------------------------------------
+# Tiempo de vida del Ticket de Acceso
+# ---------------------------------------------------------------------------
+# Especifica el tiempo de vida en milisegundos.
 TicketTime=3600000
 
+# ---------------------------------------------------------------------------
+# Configuración de Logs (Opcional)
+# ---------------------------------------------------------------------------
+# Configuración básica de log para Spring Boot
+# Ejemplo:
+# logging.level.root=DEBUG
+# logging.level.org.springframework=DEBUG
+# logging.level.com.your.package=DEBUG
 
-log4j.rootLogger=DEBUG, console
-log4j.appender.console=org.apache.log4j.ConsoleAppender
-log4j.appender.console.target=System.out
-log4j.appender.console.layout=org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern=%d{ISO8601} %-5p [%t] %c{1} - %m%n
-
-
-# Configuración de nivel de log para Spring Boot
-logging.level.root=DEBUG
-
-# Configuración específica para paquetes (opcional)
-logging.level.org.springframework=DEBUG
-logging.level.com.your.package=DEBUG
-
-# Puerto configurado (por defecto 8080)
+# ---------------------------------------------------------------------------
+# Configuración del Servidor
+# ---------------------------------------------------------------------------
+# Puerto en el que se ejecutará la aplicación (por defecto 8080).
 server.port=5785
-# Dirección configurada (por defecto localhost)
+
+# Dirección en la que la aplicación estará disponible (por defecto localhost).
 server.address=localhost
