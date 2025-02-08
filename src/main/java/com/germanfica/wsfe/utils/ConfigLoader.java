@@ -1,0 +1,31 @@
+package com.germanfica.wsfe.utils;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+public class ConfigLoader {
+    private static final Properties properties = new Properties();
+
+    public static final String KEYSTORE_PATH;
+    public static final String KEYSTORE_PASSWORD;
+    public static final String KEYSTORE_SIGNER;
+    public static final String DSTDN;
+    public static final Long TICKET_TIME;
+    public static final String SERVICE;
+
+    static {
+        try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")) {
+            properties.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException("Error al cargar el archivo de configuración", e);
+        }
+
+        KEYSTORE_PATH = properties.getProperty("keystore");
+        KEYSTORE_PASSWORD = properties.getProperty("keystore-password");
+        KEYSTORE_SIGNER = properties.getProperty("keystore-signer");
+        DSTDN = properties.getProperty("dstdn", "cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239");
+        TICKET_TIME = Long.parseLong(properties.getProperty("TicketTime", "36000"));
+        SERVICE = properties.getProperty("service");
+    }
+}
