@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.util.Map;
 
 /** Base abstract class for SOAP clients used to send requests to Wsfe's API. */
+@Deprecated
 public abstract class SoapClient {
 
     @Getter(AccessLevel.PROTECTED)
