@@ -109,6 +109,7 @@ public class XMLExtractor {
         @Override
         public String toString() {
             return new Gson().toJson(this);
+            // return new Gson().newBuilder().disableHtmlEscaping().create().toJson(this);
         }
     }
 }
