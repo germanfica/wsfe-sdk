@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.service;
 
+import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.ApiService;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginCMS;
@@ -30,7 +31,7 @@ public class AuthService extends ApiService {
      * @param cmsFirmado CMS firmado digitalmente con la clave privada de la empresa.
      * @return Token de Autorización (TA) en formato XML.
      */
-    public String autenticar(String cmsFirmado) throws Exception {
+    public String autenticar(String cmsFirmado) throws ApiException {
         //return port.loginCms(cmsFirmado);
         return this.request(null, () -> port.loginCms(cmsFirmado));
     }

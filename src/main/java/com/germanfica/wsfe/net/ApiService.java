@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.net;
 
+import com.germanfica.wsfe.exception.ApiException;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -59,8 +60,7 @@ public abstract class ApiService {
      * @return El resultado de la llamada SOAP.
      * @throws Exception Si ocurre un error en la ejecución de la solicitud SOAP.
      */
-    protected <T> T request(ApiRequest request, RequestExecutor<T> executor)
-            throws Exception {
+    protected <T> T request(ApiRequest request, RequestExecutor<T> executor) throws ApiException {
         //return request.request(request, responseType);
         return soapRequestHandler.handleRequest(request, executor);
     }

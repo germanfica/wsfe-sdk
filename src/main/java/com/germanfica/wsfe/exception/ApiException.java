@@ -6,7 +6,7 @@ import lombok.Getter;
 
 
 @Getter
-public class ApiException extends RuntimeException {
+public class ApiException extends Exception {
     private final ErrorDto errorDto;
     private final HttpStatus httpStatus;
 

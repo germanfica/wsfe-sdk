@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     @Override
-    public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) {
+    public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
         try {
             return executor.execute();
         } catch (SOAPFaultException e) {
@@ -25,7 +25,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         return null; // Este return nunca se alcanzará debido a los throws
     }
 
-    private void handleSoapFault(SOAPFaultException e) {
+    private void handleSoapFault(SOAPFaultException e) throws ApiException {
         System.err.println("SOAP Fault: " + e.getFault().getFaultString());
 
         throw new ApiException(
@@ -34,7 +34,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         );
     }
 
-    private void handleWebServiceError(WebServiceException e) {
+    private void handleWebServiceError(WebServiceException e) throws ApiException {
         System.err.println("Web Service Error: " + e.getMessage());
 
         throw new ApiException(
@@ -43,7 +43,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         );
     }
 
-    private void handleUnexpectedError(Exception e) {
+    private void handleUnexpectedError(Exception e) throws ApiException {
         System.err.println("Unexpected error occurred: " + e.getMessage());
         e.printStackTrace();
 
