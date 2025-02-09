@@ -30,7 +30,8 @@ public class AuthService extends ApiService {
      * @param cmsFirmado CMS firmado digitalmente con la clave privada de la empresa.
      * @return Token de Autorización (TA) en formato XML.
      */
-    public String autenticar(String cmsFirmado) throws LoginFault {
-        return port.loginCms(cmsFirmado);
+    public String autenticar(String cmsFirmado) throws Exception {
+        //return port.loginCms(cmsFirmado);
+        return this.request(null, () -> port.loginCms(cmsFirmado));
     }
 }

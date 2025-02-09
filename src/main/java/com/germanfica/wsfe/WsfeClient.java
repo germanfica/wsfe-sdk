@@ -21,7 +21,7 @@ public class WsfeClient {
      * @param payload Contenido del mensaje SOAP en bytes.
      */
     public WsfeClient(byte[] payload) {
-        this.soapRequestHandler = new DefaultSoapRequestHandler(null);
+        this.soapRequestHandler = new DefaultSoapRequestHandler();
     }
 
 //
@@ -52,15 +52,6 @@ public class WsfeClient {
 //        // Instanciar el SoapRequestHandler con el BaseApiRequest creado
 //        this.soapRequestHandler = new DefaultSoapRequestHandler(baseApiRequest);
 //    }
-
-    /**
-     * Exponemos un método para obtener el servicio de Login (WSAA).
-     * A través de este método, evitamos instanciar servicios de forma dispersa
-     * y centralizamos la creación en WsfeClient.
-     */
-    public com.germanfica.wsfe.service.LoginService loginService() {
-        return new com.germanfica.wsfe.service.LoginService(soapRequestHandler);
-    }
 
     public com.germanfica.wsfe.service.FECAESolicitarService fecaeSolicitarService() {
         return new com.germanfica.wsfe.service.FECAESolicitarService(soapRequestHandler);
