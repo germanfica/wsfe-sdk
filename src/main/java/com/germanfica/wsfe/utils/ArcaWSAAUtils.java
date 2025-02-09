@@ -15,6 +15,7 @@ import com.germanfica.wsfe.exception.XmlMappingException;
 import com.germanfica.wsfe.model.LoginTicketRequest;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
+import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -31,6 +32,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
 
 public class ArcaWSAAUtils {
+    public static String createSignedCmsBase64(String keystorePath, String keystorePassword, String keystoreSigner, String dstdn, String service, Long ticketTime) throws Exception {
+        byte[] signedCms = create_cms(keystorePath, keystorePassword, keystoreSigner, dstdn, service, ticketTime);
+        return Base64.encodeBase64String(signedCms); // cmsFirmado
+    }
+
+    public static String createSignedCmsBase64(byte[] loginTicketRequestXmlCms) throws Exception {
+        return Base64.encodeBase64String(loginTicketRequestXmlCms); // cmsFirmado
+    }
+
     //
     // Create the CMS Message
     //
