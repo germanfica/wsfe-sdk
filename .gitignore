@@ -3,6 +3,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Utils
+CombineStagedGitDiffToOutput.ps1
+output.txt
+curl_output.html
+CombineJavaFilesToOutput.ps1
+
 # Ignore application.properties
 application.properties
 
