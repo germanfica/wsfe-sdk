@@ -1,13 +1,26 @@
 package com.germanfica.wsfe.utils;
 
-
-
+import com.germanfica.wsfe.model.LoginTicketRequest;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.StringWriter;
 
 public class XMLUtils {
+
+    public static String createLoginTicketRequest(String signerDN, String dstDN, String service, Long ticketTime) {
+        LoginTicketRequest request = LoginTicketRequest.create(signerDN, dstDN, service, ticketTime);
+        return toXML(request);
+    }
+
+//    public static String toXML(Object object) {
+//        try {
+//            XmlMapper xmlMapper = new XmlMapper();
+//            return xmlMapper.writeValueAsString(object);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error al convertir objeto a XML", e);
+//        }
+//    }
 
     public static String toXML(Object object) {
         try {
