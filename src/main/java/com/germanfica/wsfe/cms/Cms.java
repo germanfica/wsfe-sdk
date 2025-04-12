@@ -1,6 +1,5 @@
 package com.germanfica.wsfe.cms;
 
-import com.germanfica.wsfe.model.LoginTicketRequest;
 import com.germanfica.wsfe.utils.CryptoUtils;
 import com.germanfica.wsfe.utils.XMLUtils;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -21,28 +20,11 @@ import java.util.Collections;
 // TODO (#4): Evaluar si se debe abstraer la firma CMS dentro del SDK o permitir que el usuario la genere externamente.
 // Ver discusión y propuesta completa en: https://github.com/germanfica/wsfe-sdk/issues/4
 public class Cms {
-    private final String keystorePath;
-    private final String password;
-    private final String signer;
-    private final String dstDn;
-    private final String service;
-    private final Long ticketTime;
-
-    // private final String loginTicketRequestXml; // TODO: agregar esto seria buenísimo separar las responsabilidades, la creación del loginTicketRequestXml deberia hacerse en otro lado
     private final String signedCmsBase64;
-    private final byte[] signCms;
 
     public Cms(String keystorePath, String password, String signer, String dstDn, String service, Long ticketTime) {
-
-        this.keystorePath = keystorePath;
-        this.password = password;
-        this.signer = signer;
-        this.dstDn = dstDn;
-        this.service = service;
-        this.ticketTime = ticketTime;
-
-        this.signCms = CmsSigner.sign(keystorePath, password, signer, dstDn, service, ticketTime);
-        this.signedCmsBase64 = CmsSigner.encodeBase64(this.signCms);
+        byte[] signCms = CmsSigner.sign(keystorePath, password, signer, dstDn, service, ticketTime);
+        this.signedCmsBase64 = CmsSigner.encodeBase64(signCms);
     }
 
     public String getSignedValue() {
