@@ -2,6 +2,7 @@ package com.germanfica.wsfe.examples;
 
 import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
+import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.utils.ArcaWSAAUtils;
 import com.germanfica.wsfe.utils.ConfigLoader;
 import com.germanfica.wsfe.utils.XMLExtractor;
@@ -13,7 +14,7 @@ public class AuthExample {
 
         try {
             // 2) Armar CMS para WSAA
-            byte[] loginTicketRequestXmlCms = ArcaWSAAUtils.create_cms(
+            Cms cms = new Cms(
                     ConfigLoader.KEYSTORE_PATH,
                     ConfigLoader.KEYSTORE_PASSWORD,
                     ConfigLoader.KEYSTORE_SIGNER,
@@ -27,9 +28,10 @@ public class AuthExample {
             String endpointWsaa = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
 
             // 4) Crear el WsfeClient
-            WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
+            WsfeClient client = new WsfeClient(null);
 
-            String cmsFirmado = ArcaWSAAUtils.createSignedCmsBase64(loginTicketRequestXmlCms);
+            //String cmsFirmado = ArcaWSAAUtils.createSignedCmsBase64(loginTicketRequestXmlCms);
+            String cmsFirmado = cms.getSignedValue();
 
             System.out.println("cmsFirmado: " + cmsFirmado);
 

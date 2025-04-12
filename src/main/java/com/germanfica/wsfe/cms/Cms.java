@@ -18,43 +18,52 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 
+// TODO (#4): Evaluar si se debe abstraer la firma CMS dentro del SDK o permitir que el usuario la genere externamente.
+// Ver discusión y propuesta completa en: https://github.com/germanfica/wsfe-sdk/issues/4
 public class Cms {
-    private String signedCms;
-    private final byte[] unsignedCms;
+    private final String keystorePath;
+    private final String password;
+    private final String signer;
+    private final String dstDn;
+    private final String service;
+    private final Long ticketTime;
 
-    private Cms(byte[] unsignedCms) {
-        this.unsignedCms = unsignedCms;
-        this.signedCms = null;
-    }
+    // private final String loginTicketRequestXml; // TODO: agregar esto seria buenísimo separar las responsabilidades, la creación del loginTicketRequestXml deberia hacerse en otro lado
+    private final String signedCmsBase64;
+    private final byte[] signCms;
 
-    public static Cms createUnsigned(String keystorePath, String password, String signer, String dstDn, String service, Long ticketTime) {
-        byte[] cmsData = CmsSigner.generateCms(keystorePath, password, signer, dstDn, service, ticketTime);
-        return new Cms(cmsData);
-    }
+    public Cms(String keystorePath, String password, String signer, String dstDn, String service, Long ticketTime) {
 
-    public Cms sign() {
-        if (this.signedCms != null) {
-            throw new IllegalStateException("Este CMS ya está firmado.");
-        }
-        this.signedCms = CmsSigner.signCmsBase64(this.unsignedCms);
-        return this;
+        this.keystorePath = keystorePath;
+        this.password = password;
+        this.signer = signer;
+        this.dstDn = dstDn;
+        this.service = service;
+        this.ticketTime = ticketTime;
+
+        this.signCms = CmsSigner.sign(keystorePath, password, signer, dstDn, service, ticketTime);
+        this.signedCmsBase64 = CmsSigner.encodeBase64(this.signCms);
     }
 
     public String getSignedValue() {
-        if (this.signedCms == null) {
+        if (this.signedCmsBase64 == null) {
             throw new IllegalStateException("El CMS no ha sido firmado aún.");
         }
-        return signedCms;
+        return signedCmsBase64;
     }
 
     // Clase interna privada
-    private static class CmsSigner {
-        private static byte[] generateCms(String keystorePath, String password, String signer, String dstDn, String service, Long ticketTime) {
+    private static final class CmsSigner {
+        private static byte[] sign(String keystorePath, String password, String signer, String dstDn, String service, Long ticketTime) {
             PrivateKey privateKey = CryptoUtils.loadPrivateKey(keystorePath, password, signer);
             X509Certificate certificate = CryptoUtils.loadCertificate(keystorePath, password, signer);
 
             String loginTicketRequestXml = XMLUtils.createLoginTicketRequest(
                     certificate.getSubjectDN().toString(), dstDn, service, ticketTime);
+
+            //System.out.println(loginTicketRequestXml);
+            //System.out.println("SIGNER: " + signer);
+            //System.out.println("SIGNER DN: " + certificate.getSubjectDN().toString());
 
             try {
                 ContentSigner contentSigner = new JcaContentSignerBuilder("SHA1withRSA")
@@ -80,8 +89,8 @@ public class Cms {
             }
         }
 
-        private static String signCmsBase64(byte[] unsignedCms) {
-            return CryptoUtils.encodeBase64(unsignedCms);
+        private static String encodeBase64(byte[] signedCms) {
+            return CryptoUtils.encodeBase64(signedCms);
         }
     }
 }
