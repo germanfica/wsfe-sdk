@@ -2,7 +2,7 @@ package com.germanfica;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.germanfica.wsfe.exception.XmlMappingException;
-import com.germanfica.wsfe.utils.XMLExtractor;
+import com.germanfica.wsfe.util.XMLExtractor;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;

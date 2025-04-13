@@ -2,7 +2,7 @@ package com.germanfica.wsfe.examples;
 
 import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
-import com.germanfica.wsfe.utils.ArcaWSAAUtils;
+import com.germanfica.wsfe.util.ArcaWSAAUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;

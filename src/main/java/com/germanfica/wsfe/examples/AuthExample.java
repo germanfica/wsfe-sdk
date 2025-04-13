@@ -2,49 +2,45 @@ package com.germanfica.wsfe.examples;
 
 import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
-import com.germanfica.wsfe.utils.ArcaWSAAUtils;
-import com.germanfica.wsfe.utils.ConfigLoader;
-import com.germanfica.wsfe.utils.XMLExtractor;
+import com.germanfica.wsfe.cms.Cms;
+import com.germanfica.wsfe.param.CmsParams;
+import com.germanfica.wsfe.util.ConfigLoader;
+import com.germanfica.wsfe.util.XMLExtractor;
 
 public class AuthExample {
 
     public static void main(String[] args) {
-        // 1) Cargar configuración
-
         try {
-            // 2) Armar CMS para WSAA
-            byte[] loginTicketRequestXmlCms = ArcaWSAAUtils.create_cms(
-                    ConfigLoader.KEYSTORE_PATH,
-                    ConfigLoader.KEYSTORE_PASSWORD,
-                    ConfigLoader.KEYSTORE_SIGNER,
-                    ConfigLoader.DSTDN,
-                    ConfigLoader.SERVICE,
-                    ConfigLoader.TICKET_TIME
-            );
+            // 1) Armar CMS para WSAA
+            CmsParams cmsParams = CmsParams.builder()
+                    .setKeystorePath(ConfigLoader.KEYSTORE_PATH)
+                    .setPassword(ConfigLoader.KEYSTORE_PASSWORD)
+                    .setSigner(ConfigLoader.KEYSTORE_SIGNER)
+                    .setDstDn(ConfigLoader.DSTDN)
+                    .setService(ConfigLoader.SERVICE)
+                    .setTicketTime(ConfigLoader.TICKET_TIME)
+                    .build();
 
-            // 3) Endpoint de WSAA (homologación)
+            Cms cms = Cms.create(cmsParams);
+
+            // 2) Endpoint de WSAA (homologación)
             Wsfe.overrideWsaaBase(Wsfe.TEST_WSAA_API_BASE);
             String endpointWsaa = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
 
-            // 4) Crear el WsfeClient
-            WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
+            // 3) Crear el WsfeClient
+            WsfeClient client = new WsfeClient(null);
 
-            String cmsFirmado = ArcaWSAAUtils.createSignedCmsBase64(loginTicketRequestXmlCms);
-
-            System.out.println("cmsFirmado: " + cmsFirmado);
-
-            // 5) Invocar autenticación en WSAA
-            String authResponse = client.authService().autenticar(cmsFirmado);
+            // 4) Invocar autenticación en WSAA
+            String authResponse = client.authService().autenticar(cms);
 
             XMLExtractor extractor = new XMLExtractor(authResponse);
-            String token = extractor. extractValue("/ loginTicketResponse/ credentials/ token");
-            XMLExtractor. LoginTicketData data = extractor. extractLoginTicketData();
+            String token = extractor.extractToken();
+            XMLExtractor.LoginTicketData data = extractor.extractLoginTicketData();
 
-            // 6) Imprimir resultado
+            // 5) Imprimir resultado
             System.out.println("Respuesta de autenticación xml: \n" + authResponse);
             System.out.println("Respuesta de autenticación json: \n" + data);
             System.out.println("Token: \n" + token);
-
         } catch (Exception e) {
             System.err.println("Error al invocar autenticación WSAA: " + e.getMessage());
             e.printStackTrace();

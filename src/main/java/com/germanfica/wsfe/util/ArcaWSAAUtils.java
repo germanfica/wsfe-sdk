@@ -1,20 +1,13 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import java.io.FileInputStream;
-import java.io.StringReader;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.germanfica.wsfe.exception.XmlMappingException;
 import com.germanfica.wsfe.model.LoginTicketRequest;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -28,7 +21,6 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
 
 public class ArcaWSAAUtils {

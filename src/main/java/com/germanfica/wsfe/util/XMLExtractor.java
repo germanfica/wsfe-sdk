@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -73,6 +73,16 @@ public class XMLExtractor {
     public String extractValue(String expression) throws Exception {
         XPathExpression expr = xpath.compile(expression);
         return (String) expr.evaluate(document, XPathConstants.STRING);
+    }
+
+    /**
+     * Extrae únicamente el valor del token desde el XML.
+     *
+     * @return El valor del token como String.
+     * @throws Exception Si ocurre un error al extraer el valor.
+     */
+    public String extractToken() throws Exception {
+        return extractValue("/loginTicketResponse/credentials/token");
     }
 
     /**

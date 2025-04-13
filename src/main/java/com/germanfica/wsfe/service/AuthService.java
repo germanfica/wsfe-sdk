@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.service;
 
+import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.ApiService;
 import com.germanfica.wsfe.net.SoapRequestHandler;
@@ -34,5 +35,10 @@ public class AuthService extends ApiService {
     public String autenticar(String cmsFirmado) throws ApiException {
         //return port.loginCms(cmsFirmado);
         return this.request(null, () -> port.loginCms(cmsFirmado));
+    }
+
+    public String autenticar(Cms cms) throws ApiException {
+        //return port.loginCms(cmsFirmado);
+        return this.request(null, () -> port.loginCms(cms.getSignedValue()));
     }
 }
