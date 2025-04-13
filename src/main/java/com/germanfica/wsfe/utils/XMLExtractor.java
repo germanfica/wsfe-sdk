@@ -76,6 +76,16 @@ public class XMLExtractor {
     }
 
     /**
+     * Extrae únicamente el valor del token desde el XML.
+     *
+     * @return El valor del token como String.
+     * @throws Exception Si ocurre un error al extraer el valor.
+     */
+    public String extractToken() throws Exception {
+        return extractValue("/loginTicketResponse/credentials/token");
+    }
+
+    /**
      * Método de utilidad para extraer valores comunes de un `loginTicketResponse`.
      *
      * @return Un objeto `LoginTicketData` con los valores extraídos.
