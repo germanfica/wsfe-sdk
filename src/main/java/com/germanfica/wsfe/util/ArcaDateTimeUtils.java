@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

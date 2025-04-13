@@ -1,8 +1,8 @@
 package com.germanfica.wsfe.cms;
 
 import com.germanfica.wsfe.param.CmsParams;
-import com.germanfica.wsfe.utils.CryptoUtils;
-import com.germanfica.wsfe.utils.XMLUtils;
+import com.germanfica.wsfe.util.CryptoUtils;
+import com.germanfica.wsfe.util.XMLUtils;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;

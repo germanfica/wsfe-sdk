@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

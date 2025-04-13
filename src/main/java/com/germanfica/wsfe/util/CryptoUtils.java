@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;

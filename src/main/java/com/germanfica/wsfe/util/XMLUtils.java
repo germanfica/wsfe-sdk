@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.utils;
+package com.germanfica.wsfe.util;
 
 import com.germanfica.wsfe.model.LoginTicketRequest;
 import jakarta.xml.bind.JAXBContext;

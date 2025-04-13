@@ -4,8 +4,8 @@ import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.param.CmsParams;
-import com.germanfica.wsfe.utils.ConfigLoader;
-import com.germanfica.wsfe.utils.XMLExtractor;
+import com.germanfica.wsfe.util.ConfigLoader;
+import com.germanfica.wsfe.util.XMLExtractor;
 
 public class AuthExample {
 
