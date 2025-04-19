@@ -76,6 +76,16 @@ public class XMLExtractor {
     }
 
     /**
+     * Extrae únicamente el valor del sign desde el XML.
+     *
+     * @return El valor del sign como String.
+     * @throws Exception Si ocurre un error al extraer el valor.
+     */
+    public String extractSign() throws Exception {
+        return extractValue("/loginTicketResponse/credentials/sign");
+    }
+
+    /**
      * Extrae únicamente el valor del token desde el XML.
      *
      * @return El valor del token como String.
