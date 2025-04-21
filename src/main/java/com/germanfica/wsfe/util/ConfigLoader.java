@@ -13,6 +13,10 @@ public class ConfigLoader {
     public static final String DSTDN;
     public static final Long TICKET_TIME;
     public static final String SERVICE;
+    public static final String TOKEN;
+    public static final String SIGN;
+    /** Tu CUIT real/homo. */
+    public static final Long CUIT;
 
     static {
         try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")) {
@@ -27,5 +31,8 @@ public class ConfigLoader {
         DSTDN = properties.getProperty("dstdn", "cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239");
         TICKET_TIME = Long.parseLong(properties.getProperty("TicketTime", "36000"));
         SERVICE = properties.getProperty("service");
+        CUIT = Long.parseLong(properties.getProperty("cuit"));
+        TOKEN = properties.getProperty("token");
+        SIGN = properties.getProperty("sign");
     }
 }
