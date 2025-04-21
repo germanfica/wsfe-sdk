@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.examples;
 
+import com.germanfica.wsfe.util.ConfigLoader;
 import fev1.dif.afip.gov.ar.FECAEResponse;
 
 import com.germanfica.wsfe.Wsfe;
@@ -13,59 +14,18 @@ import java.util.Properties;
 public class FECAESolicitarExample {
 
         public static void main(String[] args) {
-
-            // 1) Cargar config
-            Properties properties = new Properties();
-            try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")) {
-                properties.load(input);
-            } catch (IOException e) {
-                System.err.println("Error al cargar application.properties: " + e.getMessage());
-                e.printStackTrace();
-                return;
-            }
-
-            String keystorePath = properties.getProperty("keystore");
-            String keystorePassword = properties.getProperty("keystore-password");
-            String keystoreSigner = properties.getProperty("keystore-signer");
-            String dstdn = properties.getProperty("dstdn", "cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239");
-            Long ticketTime = Long.parseLong(properties.getProperty("TicketTime", "36000"));
-            String service = properties.getProperty("service");
-            String token = properties.getProperty("token");
-            String sign  = properties.getProperty("sign");
-            long   cuit  = Long.parseLong(properties.getProperty("cuit"));  // tu CUIT real/homo
-
+            // TODO: el siguiente paso sería revisar esto. Porque Ahora existe la clase Cms. Además sería mejor que FECAE y los servicios WSFE solo requiran token y NO el Cms... ya que el Cms es parte del Wsaa
             try {
-                // 2) Armar CMS para WSAA
-                byte[] loginTicketRequestXmlCms = ArcaWSAAUtils.create_cms(
-                        keystorePath,
-                        keystorePassword,
-                        keystoreSigner,
-                        dstdn,
-                        service,
-                        ticketTime
-                );
-
-                // 3) Endpoint de WSAA (homologación)
+                // 1) Endpoint de WSAA (homologación)
                 Wsfe.overrideWsaaBase(Wsfe.TEST_WSAA_API_BASE);
-                String endpointWsaa = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
 
-                // 4) Crear el WsfeClient
-                WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
+                // 2) Crear el WsfeClient
+                WsfeClient client = new WsfeClient(null);
 
-                // 5) Invocar login WSAA para obtener Token y Sign
-//                LoginCmsResponseDto loginResp = client.loginService().invokeWsaa(loginTicketRequestXmlCms, endpointWsaa);
+                // 3) Invocar WSFE (FECAESolicitar) con las credenciales
+                FECAEResponse feResp = client.fecaeSolicitarService().invokeWsfev1(ConfigLoader.TOKEN, ConfigLoader.SIGN, ConfigLoader.CUIT);
 
-//                String token = loginResp.getCredentials().getToken();
-//                String sign  = loginResp.getCredentials().getSign();
-//                long cuit    = 20223344556L;  // tu CUIT real/homo
-
-//                System.out.println("Token: " + token);
-//                System.out.println("Sign:  " + sign);
-
-                // 6) Invocar WSFE (FECAESolicitar) con las credenciales
-                FECAEResponse feResp = client.fecaeSolicitarService().invokeWsfev1(token, sign, cuit);
-
-                // 7) Procesar la respuesta
+                // 4) Procesar la respuesta
                 if (feResp.getFeDetResp() != null && !feResp.getFeDetResp().getFECAEDetResponse().isEmpty()) {
                     var detResp = feResp.getFeDetResp().getFECAEDetResponse().get(0);
                     System.out.println("CAE: " + detResp.getCAE());

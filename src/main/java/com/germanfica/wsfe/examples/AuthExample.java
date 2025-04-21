@@ -35,12 +35,14 @@ public class AuthExample {
 
             XMLExtractor extractor = new XMLExtractor(authResponse);
             String token = extractor.extractToken();
+            String sign = extractor.extractSign();
             XMLExtractor.LoginTicketData data = extractor.extractLoginTicketData();
 
             // 5) Imprimir resultado
             System.out.println("Respuesta de autenticación xml: \n" + authResponse);
             System.out.println("Respuesta de autenticación json: \n" + data);
             System.out.println("Token: \n" + token);
+            System.out.println("Sign: \n" + sign);
         } catch (Exception e) {
             System.err.println("Error al invocar autenticación WSAA: " + e.getMessage());
             e.printStackTrace();
