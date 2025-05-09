@@ -1,0 +1,60 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+/*
+ * Modificado por German Fica en 2025 para su integración en un proyecto MIT.
+ * Este archivo conserva la licencia Apache 2.0 conforme a sus términos.
+ */
+
+package com.germanfica.wsfe.auth.credentials.internal;
+
+import com.germanfica.wsfe.auth.credentials.WebIdentityTokenCredentialsProviderFactory;
+import com.germanfica.wsfe.util.Logger;
+import com.germanfica.wsfe.util.internal.ClassLoaderHelper;
+
+import java.lang.reflect.InvocationTargetException;
+
+/**
+ * Utility class used to configure credential providers based on JWT web identity tokens.
+ */
+public final class WebIdentityCredentialsUtils {
+    private static final Logger log = Logger.loggerFor(WebIdentityCredentialsUtils.class);
+
+    private static final String STS_WEB_IDENTITY_CREDENTIALS_PROVIDER_FACTORY =
+            "software.amazon.awssdk.services.sts.internal.StsWebIdentityCredentialsProviderFactory";
+
+    private WebIdentityCredentialsUtils() {
+    }
+
+    /**
+     * Resolves the StsWebIdentityCredentialsProviderFactory from the Sts module if on the classpath to allow
+     * JWT web identity tokens to be used as credentials.
+     *
+     * @return WebIdentityTokenCredentialsProviderFactory
+     */
+    public static WebIdentityTokenCredentialsProviderFactory factory() {
+        try {
+            Class<?> stsCredentialsProviderFactory = ClassLoaderHelper.loadClass(STS_WEB_IDENTITY_CREDENTIALS_PROVIDER_FACTORY,
+                    WebIdentityCredentialsUtils.class);
+            return (WebIdentityTokenCredentialsProviderFactory) stsCredentialsProviderFactory.getConstructor().newInstance();
+        } catch (ClassNotFoundException e) {
+            String message = "To use web identity tokens, the 'sts' service module must be on the class path.";
+            log.warn(() -> message);
+            throw new IllegalStateException(message, e);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("Failed to create a web identity token credentials provider.", e);
+        }
+    }
+}
