@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.examples;
 
+import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.cms.Cms;
@@ -28,7 +29,7 @@ public class AuthExample {
             String endpointWsaa = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
 
             // 3) Crear el WsfeClient
-            WsfeClient client = new WsfeClient(null);
+            WsaaClient client = new WsaaClient();
 
             // 4) Invocar autenticación en WSAA
             String authResponse = client.authService().autenticar(cms);
@@ -36,6 +37,8 @@ public class AuthExample {
             XMLExtractor extractor = new XMLExtractor(authResponse);
             String token = extractor.extractToken();
             String sign = extractor.extractSign();
+            String generationTime = extractor.extractLoginTicketData().generationTime;
+            String expirationTime = extractor.extractLoginTicketData().expirationTime;
             XMLExtractor.LoginTicketData data = extractor.extractLoginTicketData();
 
             // 5) Imprimir resultado
@@ -43,6 +46,8 @@ public class AuthExample {
             System.out.println("Respuesta de autenticación json: \n" + data);
             System.out.println("Token: \n" + token);
             System.out.println("Sign: \n" + sign);
+            System.out.println("generationTime: \n" + generationTime);
+            System.out.println("expirationTime: \n" + expirationTime);
         } catch (Exception e) {
             System.err.println("Error al invocar autenticación WSAA: " + e.getMessage());
             e.printStackTrace();
