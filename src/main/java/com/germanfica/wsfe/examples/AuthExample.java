@@ -25,7 +25,6 @@ public class AuthExample {
 
             // 2) Endpoint de WSAA (homologación)
             Wsfe.overrideWsaaBase(Wsfe.TEST_WSAA_API_BASE);
-            String endpointWsaa = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
 
             // 3) Crear el WsfeClient
             WsaaClient client = new WsaaClient();
