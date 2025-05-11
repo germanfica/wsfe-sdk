@@ -4,22 +4,22 @@ import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.param.CmsParams;
-import com.germanfica.wsfe.util.ConfigLoader;
-import com.germanfica.wsfe.util.XMLExtractor;
+import com.germanfica.wsfe.util.*;
 
 public class AuthExample {
 
     public static void main(String[] args) {
         try {
             // 1) Armar CMS para WSAA
-            CmsParams cmsParams = CmsParams.builder()
-                    .setKeystorePath(ConfigLoader.KEYSTORE_PATH)
-                    .setPassword(ConfigLoader.KEYSTORE_PASSWORD)
-                    .setSigner(ConfigLoader.KEYSTORE_SIGNER)
-                    .setDstDn(ConfigLoader.DSTDN)
-                    .setService(ConfigLoader.SERVICE)
-                    .setTicketTime(ConfigLoader.TICKET_TIME)
+            // Crear ProviderChain que obtiene CmsParams desde múltiples fuentes
+            ProviderChain<CmsParams> providerChain = ProviderChain.<CmsParams>builder()
+                    .addProvider(new EnvironmentCmsParamsProvider())    // Usa variables de entorno
+                    .addProvider(new SystemPropertyCmsParamsProvider()) // Usa propiedades del sistema
+                    .addProvider(new ApplicationPropertiesCmsParamsProvider())
                     .build();
+
+            CmsParams cmsParams = providerChain.resolve()
+                    .orElseThrow(() -> new IllegalStateException("No se pudieron obtener los CmsParams."));
 
             Cms cms = Cms.create(cmsParams);
 
