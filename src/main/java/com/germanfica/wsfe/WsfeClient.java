@@ -24,35 +24,6 @@ public class WsfeClient {
         this.soapRequestHandler = new DefaultSoapRequestHandler();
     }
 
-//
-//    /**
-//     * Constructor que recibe parámetros para inicializar un BaseApiRequest.
-//     *
-//     * @param soapAction Acción SOAP a realizar.
-//     * @param payload Contenido del mensaje SOAP en bytes.
-//     * @param namespace Espacio de nombres para la operación SOAP.
-//     * @param operation Nombre de la operación SOAP.
-//     * @param bodyElements Elementos del cuerpo del mensaje SOAP.
-//     * @param endpoint URL del servicio SOAP.
-//     * @param responseType Clase de la respuesta esperada.
-//     */
-//    public WsfeClient(String soapAction, byte[] payload, String namespace, String operation,
-//                      Map<String, String> bodyElements, String endpoint, Class<?> responseType) {
-//        // Construir instancia de BaseApiRequest con los parámetros proporcionados
-//        BaseApiRequest baseApiRequest = builder()
-//                .setSoapAction(soapAction)
-//                .setPayload(payload)
-//                .setNamespace(namespace)
-//                .setOperation(operation)
-//                .setBodyElements(bodyElements)
-//                .setEndpoint(endpoint)
-//                .setResponseType(responseType)
-//                .buildOptions();
-//
-//        // Instanciar el SoapRequestHandler con el BaseApiRequest creado
-//        this.soapRequestHandler = new DefaultSoapRequestHandler(baseApiRequest);
-//    }
-
     public com.germanfica.wsfe.service.FECAESolicitarService fecaeSolicitarService() {
         return new com.germanfica.wsfe.service.FECAESolicitarService(soapRequestHandler);
     }
@@ -64,16 +35,6 @@ public class WsfeClient {
     public com.germanfica.wsfe.service.AuthService authService() throws MalformedURLException {
         return new com.germanfica.wsfe.service.AuthService(soapRequestHandler);
     }
-
-    // Aquí podrías seguir añadiendo métodos para exponer tus otros servicios:
-    // public SomeOtherService someOtherService() {
-    //     return new SomeOtherService(soapRequestHandler);
-    // }
-
-    // Métodos para configurar o sobrecargar comportamiento en tiempo de ejecución (opcional):
-    // - setApiKey(...)
-    // - setConnectionTimeout(...)
-    // etc.
 
     static class ClientWsfeResponseGetterOptions extends BaseApiRequest {
         ClientWsfeResponseGetterOptions(
@@ -140,30 +101,6 @@ public class WsfeClient {
             this.responseType = responseType;
             return this;
         }
-
-//        public WsfeClient build() {
-//            return new WsfeClient(
-//                    this.soapAction,
-//                    this.payload,
-//                    this.namespace,
-//                    this.operation,
-//                    this.bodyElements,
-//                    this.endpoint,
-//                    this.responseType
-//            );
-//        }
-
-//        public WsfeClient build() {
-//            return new WsfeClient(
-//                    buildOptions().getSoapAction(),
-//                    buildOptions().getPayload(),
-//                    buildOptions().getNamespace(),
-//                    buildOptions().getOperation(),
-//                    buildOptions().getBodyElements(),
-//                    buildOptions().getEndpoint(),
-//                    buildOptions().getResponseType()
-//            );
-//        }
 
         /** Constructs a {@link BaseApiRequest} with the specified values. */
         public WsfeClient build() {
