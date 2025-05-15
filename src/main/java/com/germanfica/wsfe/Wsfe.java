@@ -16,10 +16,8 @@ public abstract class Wsfe {
     public static final int DEFAULT_READ_TIMEOUT = 80 * 1000;
 
     // API Bases
-    public static final String TEST_WSAA_API_BASE = "https://wsaahomo.afip.gov.ar";
-    public static final String PROD_WSAA_API_BASE = "https://wsaa.afip.gov.ar";
-    public static final String TEST_WSFE_API_BASE = "https://wswhomo.afip.gov.ar";
-    public static final String PROD_WSFE_API_BASE = "https://servicios1.afip.gov.ar";
+    public static final String TEST_API_BASE = "https://wswhomo.afip.gov.ar";
+    public static final String PROD_API_BASE = "https://servicios1.afip.gov.ar";
 
     // Version
     public static final String VERSION = "1.0.0";
@@ -36,8 +34,8 @@ public abstract class Wsfe {
     private static volatile Map<String, String> appInfo = null;
 
     // API Base Overrides
-    private static volatile String wsaaBase = PROD_WSAA_API_BASE;
-    private static volatile String wsfeBase = PROD_WSFE_API_BASE;
+    private static volatile String wsaaBase = TEST_API_BASE;
+    private static volatile String wsfeBase = PROD_API_BASE;
 
     /**
      * (FOR TESTING ONLY) If you'd like your WSAA requests to hit your own (mocked) server, you can set
@@ -45,7 +43,7 @@ public abstract class Wsfe {
      *
      * @param overriddenWsaaBase the new base URL for WSAA requests.
      */
-    public static void overrideWsaaBase(final String overriddenWsaaBase) {
+    public static void overrideApiBase(final String overriddenWsaaBase) {
         wsaaBase = overriddenWsaaBase;
     }
 

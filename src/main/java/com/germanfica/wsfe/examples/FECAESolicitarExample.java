@@ -5,11 +5,6 @@ import fev1.dif.afip.gov.ar.FECAEResponse;
 
 import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.WsfeClient;
-import com.germanfica.wsfe.util.ArcaWSAAUtils;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 public class FECAESolicitarExample {
 
@@ -17,7 +12,7 @@ public class FECAESolicitarExample {
             // TODO: el siguiente paso sería revisar esto. Porque Ahora existe la clase Cms. Además sería mejor que FECAE y los servicios WSFE solo requiran token y NO el Cms... ya que el Cms es parte del Wsaa
             try {
                 // 1) Endpoint de WSAA (homologación)
-                Wsfe.overrideWsaaBase(Wsfe.TEST_WSAA_API_BASE);
+                Wsfe.overrideApiBase(Wsfe.TEST_API_BASE);
 
                 // 2) Crear el WsfeClient
                 WsfeClient client = new WsfeClient(null);
