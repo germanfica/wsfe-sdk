@@ -1,15 +1,18 @@
 package com.germanfica.wsfe.net;
 
-import com.germanfica.wsfe.exception.SoapProcessingException;
 import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginFault;
-import jakarta.xml.soap.SOAPException;
-import jakarta.xml.soap.SOAPMessage;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
-import org.w3c.dom.Node;
 
+/**
+ * Similar a lo que Stripe denomina LiveStripeResponseGetter.
+ *
+ * Esta clase actúa como punto central para enviar solicitudes SOAP y manejar los errores resultantes.
+ * Se dejó el nombre DefaultSoapRequestHandler por claridad en el dominio ARCA, pero su rol funcional
+ * es equivalente al ResponseGetter de SDKs como Stripe.
+ */
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     @Override

@@ -1,7 +1,7 @@
 package com.germanfica.wsfe.examples;
 
+import com.germanfica.wsfe.Wsaa;
 import com.germanfica.wsfe.WsaaClient;
-import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.*;
@@ -24,7 +24,7 @@ public class AuthExample {
             Cms cms = Cms.create(cmsParams);
 
             // 2) Endpoint de WSAA (homologación)
-            Wsfe.overrideWsaaBase(Wsfe.TEST_WSAA_API_BASE);
+            Wsaa.overrideApiBase(Wsaa.TEST_API_BASE);
 
             // 3) Crear el WsfeClient
             WsaaClient client = new WsaaClient();

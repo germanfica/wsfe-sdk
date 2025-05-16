@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  WSAA (Web Services de Autenticación y Autorización): El WSAA valida que se tengan las credenciales correctas para acceder a los servicios de ARCA (AFIP).
  *  WSFE (Web Services de Factura Electrónica).
  * */
 public abstract class Wsfe {
@@ -16,10 +15,8 @@ public abstract class Wsfe {
     public static final int DEFAULT_READ_TIMEOUT = 80 * 1000;
 
     // API Bases
-    public static final String TEST_WSAA_API_BASE = "https://wsaahomo.afip.gov.ar";
-    public static final String PROD_WSAA_API_BASE = "https://wsaa.afip.gov.ar";
-    public static final String TEST_WSFE_API_BASE = "https://wswhomo.afip.gov.ar";
-    public static final String PROD_WSFE_API_BASE = "https://servicios1.afip.gov.ar";
+    public static final String TEST_API_BASE = "https://wswhomo.afip.gov.ar";
+    public static final String PROD_API_BASE = "https://servicios1.afip.gov.ar";
 
     // Version
     public static final String VERSION = "1.0.0";
@@ -36,45 +33,25 @@ public abstract class Wsfe {
     private static volatile Map<String, String> appInfo = null;
 
     // API Base Overrides
-    private static volatile String wsaaBase = PROD_WSAA_API_BASE;
-    private static volatile String wsfeBase = PROD_WSFE_API_BASE;
+    private static volatile String apiBase = TEST_API_BASE;
 
     /**
-     * (FOR TESTING ONLY) If you'd like your WSAA requests to hit your own (mocked) server, you can set
-     * this up here by overriding the base WSAA URL.
+     * (FOR TESTING ONLY) If you'd like your API requests to hit your own (mocked) server, you can set
+     * this up here by overriding the base API URL.
      *
-     * @param overriddenWsaaBase the new base URL for WSAA requests.
+     * @param overriddenApiBase the new base URL for API requests.
      */
-    public static void overrideWsaaBase(final String overriddenWsaaBase) {
-        wsaaBase = overriddenWsaaBase;
+    public static void overrideApiBase(final String overriddenApiBase) {
+        apiBase = overriddenApiBase;
     }
 
     /**
-     * Returns the base URL for WSAA requests.
+     * Returns the base URL for API requests.
      *
-     * @return the base URL for WSAA.
+     * @return the base URL for API.
      */
-    public static String getWsaaBase() {
-        return wsaaBase;
-    }
-
-    /**
-     * (FOR TESTING ONLY) If you'd like your WSFE requests to hit your own (mocked) server, you can set
-     * this up here by overriding the base WSFE URL.
-     *
-     * @param overriddenWsfeBase the new base URL for WSFE requests.
-     */
-    public static void overrideWsfeBase(final String overriddenWsfeBase) {
-        wsfeBase = overriddenWsfeBase;
-    }
-
-    /**
-     * Returns the base URL for WSFE requests.
-     *
-     * @return the base URL for WSFE.
-     */
-    public static String getWsfeBase() {
-        return wsfeBase;
+    public static String getApiBase() {
+        return apiBase;
     }
 
     /**
