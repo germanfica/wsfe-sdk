@@ -15,7 +15,7 @@ public class FECAESolicitarExample {
                 Wsfe.overrideApiBase(Wsfe.TEST_API_BASE);
 
                 // 2) Crear el WsfeClient
-                WsfeClient client = new WsfeClient(null);
+                WsfeClient client = new WsfeClient();
 
                 // 3) Invocar WSFE (FECAESolicitar) con las credenciales
                 FECAEResponse feResp = client.fecaeSolicitarService().invokeWsfev1(ConfigLoader.TOKEN, ConfigLoader.SIGN, ConfigLoader.CUIT);

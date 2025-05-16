@@ -2,7 +2,6 @@ package com.germanfica.wsfe.examples;
 
 import com.germanfica.wsfe.Wsaa;
 import com.germanfica.wsfe.WsaaClient;
-
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.*;

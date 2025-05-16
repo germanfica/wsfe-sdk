@@ -39,7 +39,7 @@ public class FECompUltimoAutorizadoExample {
             String endpointWsaa = Wsfe.getApiBase() + "/ws/services/LoginCms";
 
             // 4) Crear el WsfeClient
-            WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
+            WsfeClient client = new WsfeClient();
 
             // 5) Invocar login WSAA para obtener Token y Sign
 //            LoginCmsResponseDto loginResp = client.loginService().invokeWsaa(loginTicketRequestXmlCms, endpointWsaa);

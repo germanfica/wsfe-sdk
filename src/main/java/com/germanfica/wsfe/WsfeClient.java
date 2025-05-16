@@ -1,11 +1,11 @@
 package com.germanfica.wsfe;
 
+import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.BaseApiRequest;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 
 import java.net.MalformedURLException;
-import java.util.Map;
 
 /**
  * This is the primary entrypoint to make requests against WSFE's API. It provides a means of
@@ -17,10 +17,8 @@ public class WsfeClient {
 
     /**
      * Constructor que recibe parámetros para inicializar un BaseApiRequest.
-     *
-     * @param payload Contenido del mensaje SOAP en bytes.
      */
-    public WsfeClient(byte[] payload) {
+    public WsfeClient() {
         this.soapRequestHandler = new DefaultSoapRequestHandler();
     }
 
@@ -37,16 +35,8 @@ public class WsfeClient {
     }
 
     static class ClientWsfeResponseGetterOptions extends BaseApiRequest {
-        ClientWsfeResponseGetterOptions(
-                String soapAction,
-                byte[] payload,
-                String namespace,
-                String operation,
-                Map<String, String> bodyElements,
-                String endpoint,
-                Class<?> responseType
-        ) {
-            super(soapAction, payload, namespace, operation, bodyElements, endpoint, responseType);
+        public ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String apiBase) {
+            super(token, sign, cuit, apiBase);
         }
     }
 
@@ -54,74 +44,47 @@ public class WsfeClient {
      * Builder class for creating a {@link WsfeClient} instance. Allows you to specify settings like
      * the API key, connect and read timeouts, and proxy settings.
      */
-    public static WsfeClientBuilder builder() {
-        return new WsfeClientBuilder();
+    public static WsfeClient.WsfeClientBuilder builder() {
+        return new WsfeClient.WsfeClientBuilder();
     }
 
     public static final class WsfeClientBuilder {
-        private String soapAction;
-        private byte[] payload;
-        private String namespace;
-        private String operation;
-        private Map<String, String> bodyElements;
-        private String endpoint;
-        private Class<?> responseType;
+        private String token;
+        private String sign;
+        private Long cuit;
+        private String apiBase;
 
-        public WsfeClientBuilder setSoapAction(String soapAction) {
-            this.soapAction = soapAction;
+        public WsfeClientBuilder setToken(String token) {
+            this.token = token;
             return this;
         }
 
-        public WsfeClientBuilder setPayload(byte[] payload) {
-            this.payload = payload;
+        public WsfeClientBuilder setSign(String sign) {
+            this.sign = sign;
             return this;
         }
 
-        public WsfeClientBuilder setNamespace(String namespace) {
-            this.namespace = namespace;
+        public WsfeClientBuilder setCuit(Long cuit) {
+            this.cuit = cuit;
             return this;
         }
 
-        public WsfeClientBuilder setOperation(String operation) {
-            this.operation = operation;
+        public WsfeClientBuilder setApiBase(String apiBase) {
+            this.apiBase = apiBase;
             return this;
         }
 
-        public WsfeClientBuilder setBodyElements(Map<String, String> bodyElements) {
-            this.bodyElements = bodyElements;
-            return this;
-        }
-
-        public WsfeClientBuilder setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-            return this;
-        }
-
-        public WsfeClientBuilder setResponseType(Class<?> responseType) {
-            this.responseType = responseType;
-            return this;
-        }
-
-        /** Constructs a {@link BaseApiRequest} with the specified values. */
         public WsfeClient build() {
-            return new WsfeClient(buildOptions().getPayload());
+            BaseApiRequest request = buildOptions();
+            return new WsfeClient();
         }
 
-        /**
-         * Constructs a request options builder with the global parameters (API key and client ID) as
-         * default values.
-         */
-        public WsfeClientBuilder() {}
-
-        BaseApiRequest buildOptions() {
+        private BaseApiRequest buildOptions() {
             return new ClientWsfeResponseGetterOptions(
-                    this.soapAction,
-                    this.payload,
-                    this.namespace,
-                    this.operation,
-                    this.bodyElements,
-                    this.endpoint,
-                    this.responseType
+                    this.token,
+                    this.sign,
+                    this.cuit,
+                    this.apiBase
             );
         }
     }
