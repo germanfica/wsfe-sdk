@@ -22,16 +22,12 @@ public class WsfeClient {
         this.soapRequestHandler = new DefaultSoapRequestHandler();
     }
 
-    public com.germanfica.wsfe.service.FECAESolicitarService fecaeSolicitarService() {
-        return new com.germanfica.wsfe.service.FECAESolicitarService(soapRequestHandler);
+    public ar.gov.afip.wsfe.test.FECAEResponse fecaeSolicitar(ar.gov.afip.wsfe.test.FEAuthRequest auth, ar.gov.afip.wsfe.test.FECAERequest feCAEReq) throws ApiException {
+        return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler).fecaeSolicitar(auth, feCAEReq);
     }
 
-    public com.germanfica.wsfe.service.FECompUltimoAutorizadoService feCompUltimoAutorizadoService() {
-        return new com.germanfica.wsfe.service.FECompUltimoAutorizadoService(soapRequestHandler);
-    }
-
-    public com.germanfica.wsfe.service.AuthService authService() throws MalformedURLException {
-        return new com.germanfica.wsfe.service.AuthService(soapRequestHandler);
+    public ar.gov.afip.wsfe.test.FERecuperaLastCbteResponse feCompUltimoAutorizado(ar.gov.afip.wsfe.test.FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
+        return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler).feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
     }
 
     static class ClientWsfeResponseGetterOptions extends BaseApiRequest {
