@@ -1,5 +1,8 @@
 package com.germanfica.wsfe;
 
+/**
+ * WSAA (Web Services de Autenticación y Autorización): El WSAA valida que se tengan las credenciales correctas para acceder a los servicios de ARCA (AFIP).
+ */
 public abstract class Wsaa {
 
     public static final String VERSION = "1.0.0";

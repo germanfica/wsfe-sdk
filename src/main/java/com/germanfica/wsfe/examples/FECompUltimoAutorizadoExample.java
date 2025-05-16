@@ -36,7 +36,7 @@ public class FECompUltimoAutorizadoExample {
 
             // 3) Endpoint de WSAA (homologación)
             Wsfe.overrideApiBase(Wsfe.TEST_API_BASE);
-            String endpointWsaa = Wsfe.getWsaaBase() + "/ws/services/LoginCms";
+            String endpointWsaa = Wsfe.getApiBase() + "/ws/services/LoginCms";
 
             // 4) Crear el WsfeClient
             WsfeClient client = new WsfeClient(loginTicketRequestXmlCms);
