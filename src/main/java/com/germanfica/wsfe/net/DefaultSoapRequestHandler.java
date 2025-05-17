@@ -1,10 +1,12 @@
 package com.germanfica.wsfe.net;
 
-import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginFault;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import https.wsaa_afip_gov_ar.ws.services.logincms.LoginFault;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
+
+import java.net.MalformedURLException;
 
 /**
  * Similar a lo que Stripe denomina LiveStripeResponseGetter.
@@ -25,6 +27,8 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
             handleSoapFault(e);
         } catch (WebServiceException e) {
             handleWebServiceError(e);
+        } catch (MalformedURLException e) {
+            handleMalformedUrlError(e);
         } catch (Exception e) {
             handleUnexpectedError(e);
         }
@@ -56,6 +60,15 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         throw new ApiException(
                 new ErrorDto("webservice_error", "Error de comunicación con AFIP", null),
                 HttpStatus.BAD_GATEWAY
+        );
+    }
+
+    private void handleMalformedUrlError(MalformedURLException e) throws ApiException {
+        System.err.println("Malformed URL: " + e.getMessage());
+
+        throw new ApiException(
+            new ErrorDto("malformed_url", "La URL del WSDL es inválida o está mal formada: " + e.getMessage(), null),
+            HttpStatus.BAD_REQUEST
         );
     }
 

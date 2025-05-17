@@ -4,6 +4,11 @@ import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.BaseApiRequest;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
+import com.germanfica.wsfe.service.WsfeService;
+import fev1.dif.afip.gov.ar.FEAuthRequest;
+import fev1.dif.afip.gov.ar.FECAERequest;
+import fev1.dif.afip.gov.ar.FECAEResponse;
+import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
 
 import java.net.MalformedURLException;
 
@@ -22,11 +27,11 @@ public class WsfeClient {
         this.soapRequestHandler = new DefaultSoapRequestHandler();
     }
 
-    public ar.gov.afip.wsfe.test.FECAEResponse fecaeSolicitar(ar.gov.afip.wsfe.test.FEAuthRequest auth, ar.gov.afip.wsfe.test.FECAERequest feCAEReq) throws ApiException {
-        return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler).fecaeSolicitar(auth, feCAEReq);
+    public FECAEResponse fecaeSolicitar(FEAuthRequest auth, FECAERequest feCAEReq) throws ApiException {
+        return new WsfeService(soapRequestHandler).fecaeSolicitar(auth, feCAEReq);
     }
 
-    public ar.gov.afip.wsfe.test.FERecuperaLastCbteResponse feCompUltimoAutorizado(ar.gov.afip.wsfe.test.FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
+    public FERecuperaLastCbteResponse feCompUltimoAutorizado(FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
         return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler).feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
     }
 

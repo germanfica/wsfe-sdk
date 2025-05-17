@@ -1,10 +1,10 @@
 package com.germanfica.wsfe.examples;
 
-import ar.gov.afip.wsfe.test.FEAuthRequest;
-import ar.gov.afip.wsfe.test.FERecuperaLastCbteResponse;
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.util.ConfigLoader;
+import fev1.dif.afip.gov.ar.FEAuthRequest;
+import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
 
 public class FECompUltimoAutorizadoExample {
 
