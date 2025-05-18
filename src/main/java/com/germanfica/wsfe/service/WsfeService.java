@@ -16,7 +16,6 @@ public class WsfeService extends ApiService {
 
     public FERecuperaLastCbteResponse feCompUltimoAutorizado(FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
         return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo));
-        //return this.request(null, () -> port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo));
     }
 
     /**
@@ -28,6 +27,5 @@ public class WsfeService extends ApiService {
      */
     public int obtenerUltimoComprobante(FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
         return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo).getCbteNro());
-        //return port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo).getCbteNro();
     }
 }
