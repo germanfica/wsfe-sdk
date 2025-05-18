@@ -1,9 +1,9 @@
 package com.germanfica.wsfe.examples;
 
-import ar.gov.afip.wsfe.test.*;
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.util.ConfigLoader;
+import fev1.dif.afip.gov.ar.*;
 
 public class FECAESolicitarExample {
 

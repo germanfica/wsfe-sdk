@@ -4,26 +4,11 @@ import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.ApiService;
 import com.germanfica.wsfe.net.SoapRequestHandler;
-import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginCMS;
-import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginCMSService;
-import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginFault;
-
-import javax.xml.namespace.QName;
-import java.net.MalformedURLException;
-import java.net.URL;
+import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMS;
 
 public class AuthService extends ApiService {
-    // URL del WSDL de AFIP para LoginCms en Homologación
-    private static final String WSDL_URL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL";
-    private static final QName SERVICE_NAME = new QName("https://wsaahomo.afip.gov.ar/ws/services/LoginCms", "LoginCMSService");
-
-    private final LoginCMS port;
-
-    public AuthService(SoapRequestHandler soapRequestHandler) throws MalformedURLException {
+    public AuthService(SoapRequestHandler soapRequestHandler) throws ApiException {
         super(soapRequestHandler);
-        // Inicializar el servicio SOAP
-        LoginCMSService service = new LoginCMSService(new URL(WSDL_URL), SERVICE_NAME);
-        this.port = service.getLoginCms();
     }
 
     /**
@@ -33,12 +18,10 @@ public class AuthService extends ApiService {
      * @return Token de Autorización (TA) en formato XML.
      */
     public String autenticar(String cmsFirmado) throws ApiException {
-        //return port.loginCms(cmsFirmado);
-        return this.request(null, () -> port.loginCms(cmsFirmado));
+        return this.invoke(null, LoginCMS.class, port -> port.loginCms(cmsFirmado));
     }
 
     public String autenticar(Cms cms) throws ApiException {
-        //return port.loginCms(cmsFirmado);
-        return this.request(null, () -> port.loginCms(cms.getSignedValue()));
+        return this.invoke(null, LoginCMS.class, port -> port.loginCms(cms.getSignedValue()));
     }
 }

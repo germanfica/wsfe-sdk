@@ -142,29 +142,13 @@
                         </goals>
                         <configuration>
                             <wsdlOptions>
-                                <!-- WSAA Test -->
-                                <wsdlOption>
-                                    <wsdl>https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl</wsdl>
-                                </wsdlOption>
                                 <!-- WSAA Prod  -->
                                 <wsdlOption>
                                     <wsdl>https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl</wsdl>
                                 </wsdlOption>
-                                <!-- WSFE Test  -->
-                                <wsdlOption>
-                                    <wsdl>https://wswhomo.afip.gov.ar/wsfev1/service.asmx?wsdl</wsdl>
-                                    <extraargs>
-                                        <extraarg>-p</extraarg>
-                                        <extraarg>ar.gov.afip.wsfe.test</extraarg>
-                                    </extraargs>
-                                </wsdlOption>
                                 <!-- WSFE Prod  -->
                                 <wsdlOption>
                                     <wsdl>https://servicios1.afip.gov.ar/wsfev1/service.asmx?wsdl</wsdl>
-                                    <extraargs>
-                                        <extraarg>-p</extraarg>
-                                        <extraarg>ar.gov.afip.wsfe.prod</extraarg>
-                                    </extraargs>
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>

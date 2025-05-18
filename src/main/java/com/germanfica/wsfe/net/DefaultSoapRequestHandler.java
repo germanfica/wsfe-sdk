@@ -1,10 +1,12 @@
 package com.germanfica.wsfe.net;
 
-import https.wsaahomo_afip_gov_ar.ws.services.logincms.LoginFault;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import https.wsaa_afip_gov_ar.ws.services.logincms.LoginFault;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
+
+import java.net.MalformedURLException;
 
 /**
  * Similar a lo que Stripe denomina LiveStripeResponseGetter.
@@ -14,6 +16,7 @@ import jakarta.xml.ws.soap.SOAPFaultException;
  * es equivalente al ResponseGetter de SDKs como Stripe.
  */
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
+    private final PortProvider portProvider = new DefaultSoapPortResolver();
 
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
@@ -25,10 +28,23 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
             handleSoapFault(e);
         } catch (WebServiceException e) {
             handleWebServiceError(e);
+        } catch (MalformedURLException e) {
+            handleMalformedUrlError(e);
         } catch (Exception e) {
             handleUnexpectedError(e);
         }
         return null; // Este return nunca se alcanzará debido a los throws
+    }
+
+    public <P, R> R invoke(ApiRequest apiRequest, Class<P> portClass, PortInvoker<P, R> invoker) throws ApiException {
+        return handleRequest(apiRequest, () -> {
+            P port = portProvider.getPort(portClass, apiRequest);
+            return invoker.invoke(port);
+        });
+    }
+
+    private static PortProvider buildDefaultPortProvider() {
+        return new DefaultSoapPortResolver();
     }
 
     private void handleLoginFault(LoginFault e) throws ApiException {
@@ -56,6 +72,15 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         throw new ApiException(
                 new ErrorDto("webservice_error", "Error de comunicación con AFIP", null),
                 HttpStatus.BAD_GATEWAY
+        );
+    }
+
+    private void handleMalformedUrlError(MalformedURLException e) throws ApiException {
+        System.err.println("Malformed URL: " + e.getMessage());
+
+        throw new ApiException(
+            new ErrorDto("malformed_url", "La URL del WSDL es inválida o está mal formada: " + e.getMessage(), null),
+            HttpStatus.BAD_REQUEST
         );
     }
 
