@@ -1,8 +1,15 @@
 package com.germanfica.wsfe.net;
 
+import com.germanfica.wsfe.Wsaa;
+import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import fev1.dif.afip.gov.ar.Service;
+import fev1.dif.afip.gov.ar.ServiceSoap;
+import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMS;
+import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMSService;
 import https.wsaa_afip_gov_ar.ws.services.logincms.LoginFault;
+import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
 
@@ -16,8 +23,6 @@ import java.net.MalformedURLException;
  * es equivalente al ResponseGetter de SDKs como Stripe.
  */
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
-    private final PortProvider portProvider = new DefaultSoapPortResolver();
-
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
         try {
@@ -38,13 +43,9 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     public <P, R> R invoke(ApiRequest apiRequest, Class<P> portClass, PortInvoker<P, R> invoker) throws ApiException {
         return handleRequest(apiRequest, () -> {
-            P port = portProvider.getPort(portClass, apiRequest);
+            P port = resolvePort(apiRequest, portClass);
             return invoker.invoke(port);
         });
-    }
-
-    private static PortProvider buildDefaultPortProvider() {
-        return new DefaultSoapPortResolver();
     }
 
     private void handleLoginFault(LoginFault e) throws ApiException {
@@ -92,5 +93,33 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                 new ErrorDto("unexpected_error", "Unexpected error occurred", null),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
+    }
+
+    private <T> T resolvePort(ApiRequest request, Class<T> portClass) {
+        String endpoint = (request != null && request.getApiBase() != null)
+            ? request.getApiBase()
+            : resolveDefaultApiBase(portClass);
+
+        if (portClass.equals(ServiceSoap.class)) {
+            ServiceSoap port = new Service().getServiceSoap();
+            ((BindingProvider) port).getRequestContext()
+                .put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint + "/wsfev1/service.asmx");
+            return portClass.cast(port);
+        }
+
+        if (portClass.equals(LoginCMS.class)) {
+            LoginCMS port = new LoginCMSService().getLoginCms();
+            ((BindingProvider) port).getRequestContext()
+                .put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint + "/ws/services/LoginCms");
+            return portClass.cast(port);
+        }
+
+        throw new IllegalArgumentException("Unsupported port class: " + portClass);
+    }
+
+    private String resolveDefaultApiBase(Class<?> portClass) {
+        if (portClass.equals(ServiceSoap.class)) return Wsfe.getApiBase();
+        if (portClass.equals(LoginCMS.class)) return Wsaa.getApiBase();
+        throw new IllegalArgumentException("No default API base configured for port: " + portClass);
     }
 }
