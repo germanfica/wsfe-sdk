@@ -5,23 +5,10 @@ import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.ApiService;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMS;
-import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMSService;
-import jakarta.xml.ws.BindingProvider;
 
 public class AuthService extends ApiService {
-    // URL del WSDL de AFIP para LoginCms en Homologación
-    private static final String URL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms";
-
-    private final LoginCMS port;
-
     public AuthService(SoapRequestHandler soapRequestHandler) throws ApiException {
         super(soapRequestHandler);
-        // Inicializar el servicio SOAP
-        LoginCMSService service = new LoginCMSService(); // usa el WSDL embebido (de producción)
-        port = service.getLoginCms();
-
-        // Sobrescribir el endpoint para usar homologación (aunque la clase es de producción)
-        ((BindingProvider) this.port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, URL);
     }
 
     /**
@@ -31,12 +18,10 @@ public class AuthService extends ApiService {
      * @return Token de Autorización (TA) en formato XML.
      */
     public String autenticar(String cmsFirmado) throws ApiException {
-        //return port.loginCms(cmsFirmado);
-        return this.request(null, () -> port.loginCms(cmsFirmado));
+        return this.invoke(null, LoginCMS.class, port -> port.loginCms(cmsFirmado));
     }
 
     public String autenticar(Cms cms) throws ApiException {
-        //return port.loginCms(cmsFirmado);
-        return this.request(null, () -> port.loginCms(cms.getSignedValue()));
+        return this.invoke(null, LoginCMS.class, port -> port.loginCms(cms.getSignedValue()));
     }
 }

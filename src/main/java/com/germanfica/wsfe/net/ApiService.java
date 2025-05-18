@@ -64,4 +64,34 @@ public abstract class ApiService {
         //return request.request(request, responseType);
         return soapRequestHandler.handleRequest(request, executor);
     }
+
+    /**
+     * Ejecuta una operación SOAP sobre un port configurado dinámicamente con manejo de errores.
+     *
+     * <p>
+     * Este método encapsula la lógica para obtener el port adecuado según el tipo de servicio solicitado
+     * (por ejemplo, `LoginCMS`, `ServiceSoap`), configurarlo con los datos de `ApiRequest` si se proporcionan,
+     * y luego invocar la operación especificada mediante una expresión lambda o método de referencia.
+     * </p>
+     *
+     * <p><b>Ejemplo de uso:</b></p>
+     * <pre>{@code
+     * public class AuthService extends ApiService {
+     *     public String autenticar(String cmsFirmado) throws ApiException {
+     *         return this.invoke(null, LoginCMS.class, port -> port.loginCms(cmsFirmado));
+     *     }
+     * }
+     * }</pre>
+     *
+     * @param request   Datos opcionales que pueden incluir la URL base del endpoint (opcional).
+     * @param portClass Clase del port SOAP que se desea utilizar (por ejemplo, `ServiceSoap.class`).
+     * @param invoker   Operación a ejecutar sobre el port, encapsulada en una lambda o referencia a método.
+     * @param <P>       Tipo del port SOAP.
+     * @param <R>       Tipo de resultado devuelto por la operación SOAP.
+     * @return Resultado devuelto por el método SOAP invocado.
+     * @throws ApiException Si ocurre un error durante la configuración o ejecución de la llamada SOAP.
+     */
+    protected <P, R> R invoke(ApiRequest request, Class<P> portClass, PortInvoker<P, R> invoker) throws ApiException {
+        return soapRequestHandler.invoke(request, portClass, invoker);
+    }
 }

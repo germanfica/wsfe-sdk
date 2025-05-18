@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
  * es equivalente al ResponseGetter de SDKs como Stripe.
  */
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
+    private final PortProvider portProvider = new DefaultSoapPortResolver();
 
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
@@ -33,6 +34,17 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
             handleUnexpectedError(e);
         }
         return null; // Este return nunca se alcanzará debido a los throws
+    }
+
+    public <P, R> R invoke(ApiRequest apiRequest, Class<P> portClass, PortInvoker<P, R> invoker) throws ApiException {
+        return handleRequest(apiRequest, () -> {
+            P port = portProvider.getPort(portClass, apiRequest);
+            return invoker.invoke(port);
+        });
+    }
+
+    private static PortProvider buildDefaultPortProvider() {
+        return new DefaultSoapPortResolver();
     }
 
     private void handleLoginFault(LoginFault e) throws ApiException {
