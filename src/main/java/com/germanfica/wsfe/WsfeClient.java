@@ -1,7 +1,7 @@
 package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.BaseApiRequest;
+import com.germanfica.wsfe.net.SoapResponseGetterOptions;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.service.WsfeService;
@@ -9,8 +9,7 @@ import fev1.dif.afip.gov.ar.FEAuthRequest;
 import fev1.dif.afip.gov.ar.FECAERequest;
 import fev1.dif.afip.gov.ar.FECAEResponse;
 import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
-
-import java.net.MalformedURLException;
+import lombok.Getter;
 
 /**
  * This is the primary entrypoint to make requests against WSFE's API. It provides a means of
@@ -24,7 +23,11 @@ public class WsfeClient {
      * Constructor que recibe parámetros para inicializar un BaseApiRequest.
      */
     public WsfeClient() {
-        this.soapRequestHandler = new DefaultSoapRequestHandler();
+        this.soapRequestHandler = new DefaultSoapRequestHandler(builder().buildOptions());
+    }
+
+    public WsfeClient(SoapRequestHandler requestHandler) {
+        this.soapRequestHandler = requestHandler;
     }
 
     public FECAEResponse fecaeSolicitar(FEAuthRequest auth, FECAERequest feCAEReq) throws ApiException {
@@ -35,9 +38,12 @@ public class WsfeClient {
         return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler).feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
     }
 
-    static class ClientWsfeResponseGetterOptions extends BaseApiRequest {
-        public ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String apiBase) {
-            super(token, sign, cuit, apiBase);
+    static class ClientWsfeResponseGetterOptions extends SoapResponseGetterOptions {
+        @Getter(onMethod_ = {@Override})
+        private final String urlBase;
+
+        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase) {
+            this.urlBase = urlBase;
         }
     }
 
@@ -76,11 +82,10 @@ public class WsfeClient {
         }
 
         public WsfeClient build() {
-            BaseApiRequest request = buildOptions();
-            return new WsfeClient();
+            return new WsfeClient(new DefaultSoapRequestHandler(builder().buildOptions()));
         }
 
-        private BaseApiRequest buildOptions() {
+        private SoapResponseGetterOptions buildOptions() {
             return new ClientWsfeResponseGetterOptions(
                     this.token,
                     this.sign,
