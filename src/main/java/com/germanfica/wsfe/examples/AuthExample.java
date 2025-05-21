@@ -24,10 +24,9 @@ public class AuthExample {
             Cms cms = Cms.create(cmsParams);
 
             // 2) Crear el WsfeClient
-            //WsaaClient client = new WsaaClient(); // (1)
-            WsaaClient client = WsaaClient.builder().build(); // (2)
+            WsaaClient client = WsaaClient.builder().build(); // (1)
             // Endpoint de WSAA (homologación)
-            //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build(); // (3)
+            //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build(); // (2)
 
             // 3) Invocar autenticación en WSAA
             String authResponse = client.authService().autenticar(cms);
