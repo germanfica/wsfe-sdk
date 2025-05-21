@@ -25,7 +25,6 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     public DefaultSoapRequestHandler(SoapResponseGetterOptions options) {
         this.options = options;
-        System.out.println("URL BASE DEL COSNTRUCTOR: "+ options.getUrlBase());
     }
 
     @Override
@@ -103,15 +102,9 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     private <T> T resolvePort(BaseApiRequest request, Class<T> portClass) {
         RequestOptions mergedOptions = RequestOptions.merge(this.options, request != null ? request.getOptions() : null);
 
-        System.out.println("URL BASE: !!!!!"+ mergedOptions.getUrlBase());
-
         String endpoint = mergedOptions.getUrlBase() != null
             ? mergedOptions.getUrlBase()
             : resolveDefaultApiBase(portClass, mergedOptions.getApiEnvironment());
-
-        System.out.println("EL ENV: " + mergedOptions.getApiEnvironment());
-
-        System.out.println("Endpoint final: "+ endpoint);
 
         if(endpoint == null) throw new IllegalArgumentException("No default default endpoint configured.");
 
