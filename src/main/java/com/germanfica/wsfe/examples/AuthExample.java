@@ -23,13 +23,13 @@ public class AuthExample {
 
             Cms cms = Cms.create(cmsParams);
 
-            // 2) Endpoint de WSAA (homologación)
-            Wsaa.overrideApiBase(Wsaa.TEST_API_BASE);
+            // 2) Crear el WsfeClient
+            //WsaaClient client = new WsaaClient(); // (1)
+            WsaaClient client = WsaaClient.builder().build(); // (2)
+            // Endpoint de WSAA (homologación)
+            //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build(); // (3)
 
-            // 3) Crear el WsfeClient
-            WsaaClient client = new WsaaClient();
-
-            // 4) Invocar autenticación en WSAA
+            // 3) Invocar autenticación en WSAA
             String authResponse = client.authService().autenticar(cms);
 
             XMLExtractor extractor = new XMLExtractor(authResponse);
@@ -39,7 +39,7 @@ public class AuthExample {
             String expirationTime = extractor.extractLoginTicketData().expirationTime;
             XMLExtractor.LoginTicketData data = extractor.extractLoginTicketData();
 
-            // 5) Imprimir resultado
+            // 4) Imprimir resultado
             System.out.println("Respuesta de autenticación xml: \n" + authResponse);
             System.out.println("Respuesta de autenticación json: \n" + data);
             System.out.println("Token: \n" + token);

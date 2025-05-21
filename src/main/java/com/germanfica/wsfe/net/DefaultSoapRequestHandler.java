@@ -23,6 +23,13 @@ import java.net.MalformedURLException;
  * es equivalente al ResponseGetter de SDKs como Stripe.
  */
 public class DefaultSoapRequestHandler implements SoapRequestHandler {
+    private final SoapResponseGetterOptions options;
+
+    public DefaultSoapRequestHandler(SoapResponseGetterOptions options) {
+        this.options = options;
+        System.out.println("URL BASE DEL COSNTRUCTOR: "+ options.getUrlBase());
+    }
+
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
         try {
@@ -96,9 +103,15 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     }
 
     private <T> T resolvePort(ApiRequest request, Class<T> portClass) {
-        String endpoint = (request != null && request.getApiBase() != null)
-            ? request.getApiBase()
+        RequestOptions mergedOptions = RequestOptions.merge(this.options, request != null ? request.getOptions() : null);
+
+        System.out.println("URL BASE: !!!!!"+ mergedOptions.getUrlBase());
+
+        String endpoint = mergedOptions.getUrlBase() != null
+            ? mergedOptions.getUrlBase()
             : resolveDefaultApiBase(portClass);
+
+        System.out.println("Endpoint final: "+ endpoint);
 
         if (portClass.equals(ServiceSoap.class)) {
             ServiceSoap port = new Service().getServiceSoap();
@@ -118,8 +131,8 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     }
 
     private String resolveDefaultApiBase(Class<?> portClass) {
-        if (portClass.equals(ServiceSoap.class)) return Wsfe.getApiBase();
-        if (portClass.equals(LoginCMS.class)) return Wsaa.getApiBase();
+        if (portClass.equals(ServiceSoap.class)) return Wsfe.PROD_API_BASE;
+        if (portClass.equals(LoginCMS.class)) return Wsaa.PROD_API_BASE;
         throw new IllegalArgumentException("No default API base configured for port: " + portClass);
     }
 }

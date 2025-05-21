@@ -33,7 +33,7 @@ public abstract class Wsfe {
     private static volatile Map<String, String> appInfo = null;
 
     // API Base Overrides
-    private static volatile String apiBase = TEST_API_BASE;
+    private static volatile String apiBase = PROD_API_BASE;
 
     /**
      * (FOR TESTING ONLY) If you'd like your API requests to hit your own (mocked) server, you can set
