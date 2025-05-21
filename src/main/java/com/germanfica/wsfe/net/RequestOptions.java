@@ -10,12 +10,14 @@ public class RequestOptions {
     private final String sign;
     private final Long cuit;
     private final String urlBase;
+    private final ApiEnvironment apiEnvironment;
 
-    private RequestOptions(String token, String sign, Long cuit, String urlBase) {
+    private RequestOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment) {
         this.token = normalizeToken(token);
         this.sign = normalizeSign(sign);
         this.cuit = cuit;
         this.urlBase = normalizeUrlBase(urlBase);
+        this.apiEnvironment = apiEnvironment;
     }
 
     public static RequestOptionsBuilder builder() {
@@ -56,6 +58,7 @@ public class RequestOptions {
         private String sign;
         private Long cuit;
         private String urlBase;
+        private ApiEnvironment apiEnvironment;
 
         public RequestOptionsBuilder setToken(String token) {
             this.token = token;
@@ -76,9 +79,13 @@ public class RequestOptions {
             this.urlBase = urlBase;
             return this;
         }
+        public RequestOptionsBuilder setBaseAddress(ApiEnvironment apiEnvironment) {
+            this.apiEnvironment = apiEnvironment;
+            return this;
+        }
 
         public RequestOptions build() {
-            return new RequestOptions(token, sign, cuit, urlBase);
+            return new RequestOptions(token, sign, cuit, urlBase, apiEnvironment);
         }
     }
 
@@ -93,6 +100,7 @@ public class RequestOptions {
 //                .setSign(globalOptions.getSign())
 //                .setCuit(globalOptions.getCuit())
                 .setUrlBase(globalOptions.getUrlBase())
+                .setBaseAddress(globalOptions.getApiEnvironment())
                 .build();
         }
 
@@ -101,6 +109,7 @@ public class RequestOptions {
 //            .setSign(localOptions.getSign() != null ? localOptions.getSign() : globalOptions.getSign())
 //            .setCuit(localOptions.getCuit() != null ? localOptions.getCuit() : globalOptions.getCuit())
             .setUrlBase(localOptions.getUrlBase() != null ? localOptions.getUrlBase() : globalOptions.getUrlBase())
+            .setBaseAddress(localOptions.getApiEnvironment() != null ? localOptions.getApiEnvironment() : globalOptions.getApiEnvironment())
             .build();
     }
 

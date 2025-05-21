@@ -1,7 +1,5 @@
 package com.germanfica.wsfe.net;
 
-import com.germanfica.wsfe.Wsaa;
-import com.germanfica.wsfe.Wsfe;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
 import fev1.dif.afip.gov.ar.Service;
@@ -102,16 +100,20 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         );
     }
 
-    private <T> T resolvePort(ApiRequest request, Class<T> portClass) {
+    private <T> T resolvePort(BaseApiRequest request, Class<T> portClass) {
         RequestOptions mergedOptions = RequestOptions.merge(this.options, request != null ? request.getOptions() : null);
 
         System.out.println("URL BASE: !!!!!"+ mergedOptions.getUrlBase());
 
         String endpoint = mergedOptions.getUrlBase() != null
             ? mergedOptions.getUrlBase()
-            : resolveDefaultApiBase(portClass);
+            : resolveDefaultApiBase(portClass, mergedOptions.getApiEnvironment());
+
+        System.out.println("EL ENV: " + mergedOptions.getApiEnvironment());
 
         System.out.println("Endpoint final: "+ endpoint);
+
+        if(endpoint == null) throw new IllegalArgumentException("No default default endpoint configured.");
 
         if (portClass.equals(ServiceSoap.class)) {
             ServiceSoap port = new Service().getServiceSoap();
@@ -130,9 +132,8 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         throw new IllegalArgumentException("Unsupported port class: " + portClass);
     }
 
-    private String resolveDefaultApiBase(Class<?> portClass) {
-        if (portClass.equals(ServiceSoap.class)) return Wsfe.PROD_API_BASE;
-        if (portClass.equals(LoginCMS.class)) return Wsaa.PROD_API_BASE;
+    private String resolveDefaultApiBase(Class<?> portClass, ApiEnvironment env) {
+        if (env != null) return env.getUrlFor(portClass);
         throw new IllegalArgumentException("No default API base configured for port: " + portClass);
     }
 }

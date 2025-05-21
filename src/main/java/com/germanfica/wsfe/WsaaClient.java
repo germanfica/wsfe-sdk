@@ -1,6 +1,7 @@
 package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.net.ApiEnvironment;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.net.SoapResponseGetterOptions;
@@ -31,9 +32,12 @@ public class WsaaClient {
     static class ClientWsaaResponseGetterOptions extends SoapResponseGetterOptions {
         @Getter(onMethod_ = {@Override})
         private final String urlBase;
+        @Getter(onMethod_ = {@Override})
+        private final ApiEnvironment apiEnvironment;
 
-        ClientWsaaResponseGetterOptions(String urlBase) {
+        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment) {
             this.urlBase = urlBase;
+            this.apiEnvironment = apiEnvironment;
         }
     }
 
@@ -42,10 +46,16 @@ public class WsaaClient {
     }
 
     public static final class WsaaClientBuilder {
-        private String apiBase = Wsaa.PROD_API_BASE; // default value
+        private String apiBase;
+        private ApiEnvironment apiEnvironment;
 
         public WsaaClientBuilder setApiBase(String apiBase) {
             this.apiBase = apiBase;
+            return this;
+        }
+
+        public WsaaClient.WsaaClientBuilder setApiEnvironment(ApiEnvironment apiEnvironment) {
+            this.apiEnvironment = apiEnvironment;
             return this;
         }
 
@@ -54,7 +64,7 @@ public class WsaaClient {
         }
 
         private SoapResponseGetterOptions buildOptions() {
-            return new ClientWsaaResponseGetterOptions(this.apiBase);
+            return new ClientWsaaResponseGetterOptions(this.apiBase, this.apiEnvironment);
         }
     }
 }

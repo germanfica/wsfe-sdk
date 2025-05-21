@@ -1,6 +1,7 @@
 package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.net.ApiEnvironment;
 import com.germanfica.wsfe.net.SoapResponseGetterOptions;
 import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
 import com.germanfica.wsfe.net.SoapRequestHandler;
@@ -40,9 +41,12 @@ public class WsfeClient {
     static class ClientWsfeResponseGetterOptions extends SoapResponseGetterOptions {
         @Getter(onMethod_ = {@Override})
         private final String urlBase;
+        @Getter(onMethod_ = {@Override})
+        private final ApiEnvironment apiEnvironment;
 
-        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase) {
+        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment) {
             this.urlBase = urlBase;
+            this.apiEnvironment = apiEnvironment;
         }
     }
 
@@ -59,6 +63,7 @@ public class WsfeClient {
         private String sign;
         private Long cuit;
         private String apiBase;
+        ApiEnvironment apiEnvironment;
 
         public WsfeClientBuilder setToken(String token) {
             this.token = token;
@@ -80,6 +85,11 @@ public class WsfeClient {
             return this;
         }
 
+        public WsfeClientBuilder setApiEnvironment(ApiEnvironment apiEnvironment) {
+            this.apiEnvironment = apiEnvironment;
+            return this;
+        }
+
         public WsfeClient build() {
             return new WsfeClient(new DefaultSoapRequestHandler(builder().buildOptions()));
         }
@@ -89,7 +99,8 @@ public class WsfeClient {
                     this.token,
                     this.sign,
                     this.cuit,
-                    this.apiBase
+                    this.apiBase,
+                    this.apiEnvironment
             );
         }
     }
