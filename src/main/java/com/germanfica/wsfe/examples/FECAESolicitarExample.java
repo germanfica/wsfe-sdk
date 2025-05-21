@@ -16,7 +16,7 @@ public class FECAESolicitarExample {
         int cbteTipo = 11;
 
         // 1) Crear el WsfeClient
-        WsfeClient client = new WsfeClient();
+        WsfeClient client = WsfeClient.builder().build();
 
         // 2) Armar el objeto FEAuthRequest con las credenciales
         FEAuthRequest auth = new FEAuthRequest();

@@ -20,12 +20,11 @@ public class WsfeClient {
     private final SoapRequestHandler soapRequestHandler;
 
     /**
-     * Constructor que recibe parámetros para inicializar un BaseApiRequest.
+     * Creates a WsfeClient using a custom SoapRequestHandler.
+     *
+     * <p>This is intended for testing or advanced scenarios where you need full control
+     * over how requests are handled by the WsfeClient.
      */
-    public WsfeClient() {
-        this.soapRequestHandler = new DefaultSoapRequestHandler(builder().buildOptions());
-    }
-
     public WsfeClient(SoapRequestHandler requestHandler) {
         this.soapRequestHandler = requestHandler;
     }

@@ -15,12 +15,11 @@ public class WsaaClient {
     private final SoapRequestHandler soapRequestHandler;
 
     /**
-     * Constructor que recibe parámetros para inicializar un BaseApiRequest.
+     * Creates a WsaaClient using a custom SoapRequestHandler.
+     *
+     * <p>This is intended for testing or advanced scenarios where you need full control
+     * over how requests are handled by the WsaaClient.
      */
-    public WsaaClient() {
-        this.soapRequestHandler = new DefaultSoapRequestHandler(builder().buildOptions());
-    }
-
     public WsaaClient(SoapRequestHandler requestHandler) {
         this.soapRequestHandler = requestHandler;
     }
