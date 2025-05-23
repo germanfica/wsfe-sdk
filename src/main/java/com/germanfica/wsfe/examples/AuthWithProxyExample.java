@@ -13,9 +13,7 @@ public class AuthWithProxyExample {
 
     public static void main(String[] args) {
         try {
-
-            //System.setProperty("javax.net.ssl.trustStore", "C:/Users/germa/.mitmproxy/truststore.jks");
-            System.setProperty("javax.net.ssl.trustStore", "C:/Users/germa/workspace/proxy-merge-truststores-java/merged-truststore.jks");
+            System.setProperty("javax.net.ssl.trustStore", "certs/private/merged-truststore.jks");
             System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
 
             // 1) Armar CMS para WSAA
