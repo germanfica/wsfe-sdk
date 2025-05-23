@@ -7,6 +7,8 @@ import com.germanfica.wsfe.net.SoapRequestHandler;
 import com.germanfica.wsfe.net.SoapResponseGetterOptions;
 import lombok.Getter;
 
+import java.net.Proxy;
+
 /**
  * This is the primary entrypoint to make requests against WSAA's API. It provides a means of
  * accessing all the methods on the WSAA API, and the ability to set configuration such as apiKey
@@ -34,10 +36,13 @@ public class WsaaClient {
         private final String urlBase;
         @Getter(onMethod_ = {@Override})
         private final ApiEnvironment apiEnvironment;
+        @Getter(onMethod_ = {@Override})
+        private final Proxy proxy;
 
-        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment) {
+        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment, Proxy proxy) {
             this.urlBase = urlBase;
             this.apiEnvironment = apiEnvironment;
+            this.proxy = proxy;
         }
     }
 
@@ -46,16 +51,22 @@ public class WsaaClient {
     }
 
     public static final class WsaaClientBuilder {
-        private String apiBase;
+        private String urlBase;
         private ApiEnvironment apiEnvironment;
+        private Proxy proxy;
 
-        public WsaaClientBuilder setApiBase(String apiBase) {
-            this.apiBase = apiBase;
+        public WsaaClientBuilder setUrlBase(String urlBase) {
+            this.urlBase = urlBase;
             return this;
         }
 
-        public WsaaClient.WsaaClientBuilder setApiEnvironment(ApiEnvironment apiEnvironment) {
+        public WsaaClientBuilder setApiEnvironment(ApiEnvironment apiEnvironment) {
             this.apiEnvironment = apiEnvironment;
+            return this;
+        }
+
+        public WsaaClientBuilder setProxy(Proxy proxy) {
+            this.proxy = proxy;
             return this;
         }
 
@@ -64,7 +75,7 @@ public class WsaaClient {
         }
 
         private SoapResponseGetterOptions buildOptions() {
-            return new ClientWsaaResponseGetterOptions(this.apiBase, this.apiEnvironment);
+            return new ClientWsaaResponseGetterOptions(this.urlBase, this.apiEnvironment, this.proxy);
         }
     }
 }

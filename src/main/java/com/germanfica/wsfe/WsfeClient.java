@@ -11,6 +11,10 @@ import fev1.dif.afip.gov.ar.FECAERequest;
 import fev1.dif.afip.gov.ar.FECAEResponse;
 import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import java.net.Proxy;
 
 /**
  * This is the primary entrypoint to make requests against WSFE's API. It provides a means of
@@ -43,10 +47,13 @@ public class WsfeClient {
         private final String urlBase;
         @Getter(onMethod_ = {@Override})
         private final ApiEnvironment apiEnvironment;
+        @Getter(onMethod_ = {@Override})
+        private final Proxy proxy;
 
-        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment) {
+        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, Proxy proxy) {
             this.urlBase = urlBase;
             this.apiEnvironment = apiEnvironment;
+            this.proxy = proxy;
         }
     }
 
@@ -58,40 +65,18 @@ public class WsfeClient {
         return new WsfeClient.WsfeClientBuilder();
     }
 
+    @Setter
+    @Accessors(chain = true)
     public static final class WsfeClientBuilder {
         private String token;
         private String sign;
         private Long cuit;
         private String apiBase;
         ApiEnvironment apiEnvironment;
-
-        public WsfeClientBuilder setToken(String token) {
-            this.token = token;
-            return this;
-        }
-
-        public WsfeClientBuilder setSign(String sign) {
-            this.sign = sign;
-            return this;
-        }
-
-        public WsfeClientBuilder setCuit(Long cuit) {
-            this.cuit = cuit;
-            return this;
-        }
-
-        public WsfeClientBuilder setApiBase(String apiBase) {
-            this.apiBase = apiBase;
-            return this;
-        }
-
-        public WsfeClientBuilder setApiEnvironment(ApiEnvironment apiEnvironment) {
-            this.apiEnvironment = apiEnvironment;
-            return this;
-        }
+        Proxy proxy;
 
         public WsfeClient build() {
-            return new WsfeClient(new DefaultSoapRequestHandler(builder().buildOptions()));
+            return new WsfeClient(new DefaultSoapRequestHandler(buildOptions()));
         }
 
         private SoapResponseGetterOptions buildOptions() {
@@ -100,7 +85,8 @@ public class WsfeClient {
                     this.sign,
                     this.cuit,
                     this.apiBase,
-                    this.apiEnvironment
+                    this.apiEnvironment,
+                    this.proxy
             );
         }
     }

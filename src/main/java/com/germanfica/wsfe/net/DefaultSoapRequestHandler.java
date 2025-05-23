@@ -2,6 +2,7 @@ package com.germanfica.wsfe.net;
 
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.util.ProxyUtils;
 import fev1.dif.afip.gov.ar.Service;
 import fev1.dif.afip.gov.ar.ServiceSoap;
 import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMS;
@@ -10,6 +11,9 @@ import https.wsaa_afip_gov_ar.ws.services.logincms.LoginFault;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 import java.net.MalformedURLException;
 
@@ -102,23 +106,45 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     private <T> T resolvePort(BaseApiRequest request, Class<T> portClass) {
         RequestOptions mergedOptions = RequestOptions.merge(this.options, request != null ? request.getOptions() : null);
 
+        System.out.println(mergedOptions.getApiEnvironment());
+
         String endpoint = mergedOptions.getUrlBase() != null
             ? mergedOptions.getUrlBase()
             : resolveDefaultApiBase(portClass, mergedOptions.getApiEnvironment());
 
+        System.out.println("ENDPOINT: " + endpoint);
+
+        System.out.println("Has proxy? " + mergedOptions.hasProxy());
+
+        System.out.println("proxy " + mergedOptions.getProxy());
+
         if(endpoint == null) throw new IllegalArgumentException("No default default endpoint configured.");
 
         if (portClass.equals(ServiceSoap.class)) {
-            ServiceSoap port = new Service().getServiceSoap();
-            ((BindingProvider) port).getRequestContext()
-                .put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint + "/wsfev1/service.asmx");
+//            ServiceSoap port = new Service().getServiceSoap();
+            ServiceSoap port = ProxyUtils.withTemporaryProxy(
+                mergedOptions.getProxy(),
+                () -> new Service().getServiceSoap()
+            );
+
+            BindingProvider provider = (BindingProvider) port;
+            provider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint + "/wsfev1/service.asmx");
+            //configureProxy(provider, mergedOptions);
+
             return portClass.cast(port);
         }
 
         if (portClass.equals(LoginCMS.class)) {
-            LoginCMS port = new LoginCMSService().getLoginCms();
-            ((BindingProvider) port).getRequestContext()
-                .put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint + "/ws/services/LoginCms");
+//            LoginCMS port = new LoginCMSService().getLoginCms();
+            LoginCMS port = ProxyUtils.withTemporaryProxy(
+                mergedOptions.getProxy(),
+                () -> new LoginCMSService().getLoginCms()
+            );
+
+            BindingProvider provider = (BindingProvider) port;
+            provider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint + "/ws/services/LoginCms");
+            //configureProxy(provider, mergedOptions);
+
             return portClass.cast(port);
         }
 
@@ -128,5 +154,15 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     private String resolveDefaultApiBase(Class<?> portClass, ApiEnvironment env) {
         if (env != null) return env.getUrlFor(portClass);
         throw new IllegalArgumentException("No default API base configured for port: " + portClass);
+    }
+
+    @Deprecated
+    private void configureProxy(BindingProvider provider, RequestOptions options) {
+        if (options.hasProxy()) {
+            provider.getRequestContext().put(
+                "com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.proxy",
+                options.getProxy()
+            );
+        }
     }
 }
