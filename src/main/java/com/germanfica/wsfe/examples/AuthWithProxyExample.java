@@ -3,6 +3,7 @@ package com.germanfica.wsfe.examples;
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.net.ApiEnvironment;
+import com.germanfica.wsfe.net.ProxyOptions;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.*;
 
@@ -29,14 +30,20 @@ public class AuthWithProxyExample {
 
             Cms cms = Cms.create(cmsParams);
 
-            // 2) Crear el WsfeClient
+            // 2) Configurar el proxy
+            ProxyOptions proxyOptions = ProxyOptions.builder()
+                .setHost("127.0.0.1")
+                .setPort(8080)
+                .build();
+
+            // 3) Crear el WsfeClient
             //WsaaClient client = WsaaClient.builder().build(); // (1)
             // Endpoint de WSAA (homologación)
             //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build(); // (2)
             //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build();
             WsaaClient client = WsaaClient.builder()
                 .setApiEnvironment(ApiEnvironment.PROD)
-                .setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8080)))
+                .setProxyOptions(proxyOptions)
                 .build();
 
             //WsaaClient client = WsaaClient.builder().build();

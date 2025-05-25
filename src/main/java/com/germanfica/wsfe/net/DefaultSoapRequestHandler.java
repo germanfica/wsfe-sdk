@@ -17,6 +17,8 @@ import java.net.Proxy;
 
 import java.net.MalformedURLException;
 
+import static com.germanfica.wsfe.util.ProxyUtils.createProxyIfPresent;
+
 /**
  * Similar a lo que Stripe denomina LiveStripeResponseGetter.
  *
@@ -116,14 +118,14 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
         System.out.println("Has proxy? " + mergedOptions.hasProxy());
 
-        System.out.println("proxy " + mergedOptions.getProxy());
+        System.out.println("proxy " + mergedOptions.getProxyOptions());
 
         if(endpoint == null) throw new IllegalArgumentException("No default default endpoint configured.");
 
         if (portClass.equals(ServiceSoap.class)) {
 //            ServiceSoap port = new Service().getServiceSoap();
             ServiceSoap port = ProxyUtils.withTemporaryProxy(
-                mergedOptions.getProxy(),
+                createProxyIfPresent(mergedOptions.getProxyOptions()),
                 () -> new Service().getServiceSoap()
             );
 
@@ -137,7 +139,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         if (portClass.equals(LoginCMS.class)) {
 //            LoginCMS port = new LoginCMSService().getLoginCms();
             LoginCMS port = ProxyUtils.withTemporaryProxy(
-                mergedOptions.getProxy(),
+                createProxyIfPresent(mergedOptions.getProxyOptions()),
                 () -> new LoginCMSService().getLoginCms()
             );
 
@@ -161,7 +163,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         if (options.hasProxy()) {
             provider.getRequestContext().put(
                 "com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.proxy",
-                options.getProxy()
+                createProxyIfPresent(options.getProxyOptions())
             );
         }
     }

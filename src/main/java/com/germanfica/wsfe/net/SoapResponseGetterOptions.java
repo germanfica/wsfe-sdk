@@ -5,5 +5,5 @@ import java.net.Proxy;
 public abstract class SoapResponseGetterOptions {
     public abstract String getUrlBase();
     public abstract ApiEnvironment getApiEnvironment();
-    public abstract Proxy getProxy();
+    public abstract ProxyOptions getProxyOptions();
 }

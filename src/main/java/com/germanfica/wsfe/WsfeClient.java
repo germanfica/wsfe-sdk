@@ -1,10 +1,7 @@
 package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.ApiEnvironment;
-import com.germanfica.wsfe.net.SoapResponseGetterOptions;
-import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
-import com.germanfica.wsfe.net.SoapRequestHandler;
+import com.germanfica.wsfe.net.*;
 import com.germanfica.wsfe.service.WsfeService;
 import fev1.dif.afip.gov.ar.FEAuthRequest;
 import fev1.dif.afip.gov.ar.FECAERequest;
@@ -48,12 +45,12 @@ public class WsfeClient {
         @Getter(onMethod_ = {@Override})
         private final ApiEnvironment apiEnvironment;
         @Getter(onMethod_ = {@Override})
-        private final Proxy proxy;
+        private final ProxyOptions proxyOptions;
 
-        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, Proxy proxy) {
+        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
             this.urlBase = urlBase;
             this.apiEnvironment = apiEnvironment;
-            this.proxy = proxy;
+            this.proxyOptions = proxyOptions;
         }
     }
 
@@ -73,7 +70,7 @@ public class WsfeClient {
         private Long cuit;
         private String apiBase;
         ApiEnvironment apiEnvironment;
-        Proxy proxy;
+        ProxyOptions proxyOptions;
 
         public WsfeClient build() {
             return new WsfeClient(new DefaultSoapRequestHandler(buildOptions()));
@@ -86,7 +83,7 @@ public class WsfeClient {
                     this.cuit,
                     this.apiBase,
                     this.apiEnvironment,
-                    this.proxy
+                    this.proxyOptions
             );
         }
     }

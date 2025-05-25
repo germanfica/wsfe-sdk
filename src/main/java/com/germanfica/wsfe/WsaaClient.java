@@ -1,10 +1,7 @@
 package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.ApiEnvironment;
-import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
-import com.germanfica.wsfe.net.SoapRequestHandler;
-import com.germanfica.wsfe.net.SoapResponseGetterOptions;
+import com.germanfica.wsfe.net.*;
 import lombok.Getter;
 
 import java.net.Proxy;
@@ -37,12 +34,12 @@ public class WsaaClient {
         @Getter(onMethod_ = {@Override})
         private final ApiEnvironment apiEnvironment;
         @Getter(onMethod_ = {@Override})
-        private final Proxy proxy;
+        private final ProxyOptions proxyOptions;
 
-        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment, Proxy proxy) {
+        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
             this.urlBase = urlBase;
             this.apiEnvironment = apiEnvironment;
-            this.proxy = proxy;
+            this.proxyOptions = proxyOptions;
         }
     }
 
@@ -53,7 +50,7 @@ public class WsaaClient {
     public static final class WsaaClientBuilder {
         private String urlBase;
         private ApiEnvironment apiEnvironment;
-        private Proxy proxy;
+        private ProxyOptions proxyOptions;
 
         public WsaaClientBuilder setUrlBase(String urlBase) {
             this.urlBase = urlBase;
@@ -65,8 +62,8 @@ public class WsaaClient {
             return this;
         }
 
-        public WsaaClientBuilder setProxy(Proxy proxy) {
-            this.proxy = proxy;
+        public WsaaClientBuilder setProxyOptions(ProxyOptions proxyOptions) {
+            this.proxyOptions = proxyOptions;
             return this;
         }
 
@@ -75,7 +72,7 @@ public class WsaaClient {
         }
 
         private SoapResponseGetterOptions buildOptions() {
-            return new ClientWsaaResponseGetterOptions(this.urlBase, this.apiEnvironment, this.proxy);
+            return new ClientWsaaResponseGetterOptions(this.urlBase, this.apiEnvironment, this.proxyOptions);
         }
     }
 }
