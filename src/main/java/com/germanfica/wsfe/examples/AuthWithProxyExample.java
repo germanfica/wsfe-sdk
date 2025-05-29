@@ -7,9 +7,6 @@ import com.germanfica.wsfe.net.ProxyOptions;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.*;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-
 public class AuthWithProxyExample {
 
     public static void main(String[] args) {
@@ -34,19 +31,18 @@ public class AuthWithProxyExample {
             ProxyOptions proxyOptions = ProxyOptions.builder()
                 .setHost("127.0.0.1")
                 .setPort(8080)
+                //.setUsername("usuario")
+                //.setPassword("clave")
                 .build();
 
             // 3) Crear el WsfeClient
             //WsaaClient client = WsaaClient.builder().build(); // (1)
             // Endpoint de WSAA (homologación)
             //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build(); // (2)
-            //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build();
             WsaaClient client = WsaaClient.builder()
                 .setApiEnvironment(ApiEnvironment.PROD)
                 .setProxyOptions(proxyOptions)
                 .build();
-
-            //WsaaClient client = WsaaClient.builder().build();
 
             // 3) Invocar autenticación en WSAA
             String authResponse = client.authService().autenticar(cms);
@@ -67,6 +63,7 @@ public class AuthWithProxyExample {
             System.out.println("expirationTime: \n" + expirationTime);
         } catch (Exception e) {
             System.err.println("Error al invocar autenticación WSAA: " + e.getMessage());
+
             e.printStackTrace();
         }
     }

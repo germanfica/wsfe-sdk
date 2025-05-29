@@ -2,6 +2,7 @@ package com.germanfica.wsfe.net;
 
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.exception.UnsupportedProxyAuthException;
 import com.germanfica.wsfe.util.ProxyUtils;
 import fev1.dif.afip.gov.ar.Service;
 import fev1.dif.afip.gov.ar.ServiceSoap;
@@ -11,9 +12,6 @@ import https.wsaa_afip_gov_ar.ws.services.logincms.LoginFault;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
-
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 
 import java.net.MalformedURLException;
 
@@ -36,6 +34,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
         try {
+            validateUnsupportedFeatures();
             return executor.execute();
         } catch (LoginFault e) {
             handleLoginFault(e);
@@ -103,6 +102,12 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
                 new ErrorDto("unexpected_error", "Unexpected error occurred", null),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
+    }
+
+    private void validateUnsupportedFeatures() throws ApiException {
+        if (options.getProxyOptions() != null && options.getProxyOptions().hasCredentials()) {
+            throw new UnsupportedProxyAuthException();
+        }
     }
 
     private <T> T resolvePort(BaseApiRequest request, Class<T> portClass) {
