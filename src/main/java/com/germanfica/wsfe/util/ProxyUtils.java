@@ -8,11 +8,13 @@ import java.util.function.Supplier;
 
 public class ProxyUtils {
 
+    @Deprecated
     public static Proxy createProxyIfPresent(ProxyOptions proxyOptions) {
         if(proxyOptions != null && proxyOptions.isValid())  return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyOptions.getHost(), proxyOptions.getPort()));
         return Proxy.NO_PROXY;
     }
 
+    @Deprecated
     public static <T> T withTemporaryProxy(Proxy proxy, Supplier<T> supplier) {
         if (proxy == null || proxy.type() == Proxy.Type.DIRECT) {
             return supplier.get(); // Sin proxy, ejecutamos directamente
