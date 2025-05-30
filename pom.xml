@@ -42,9 +42,17 @@
 
         <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-transports-http -->
         <!-- Apache CXF Runtime HTTP Transport -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${cxf.version}</version>
+        </dependency> -->
+
+        <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-transports-http-hc5 -->
+        <!-- Apache CXF Runtime HTTP Async Transport -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-hc5</artifactId>
             <version>${cxf.version}</version>
         </dependency>
 
