@@ -10,12 +10,20 @@ public class RequestOptions {
     private final String sign;
     private final Long cuit;
     private final String urlBase;
+    private final ApiEnvironment apiEnvironment;
+    private final ProxyOptions proxyOptions;
 
-    private RequestOptions(String token, String sign, Long cuit, String urlBase) {
+    private RequestOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
         this.token = normalizeToken(token);
         this.sign = normalizeSign(sign);
         this.cuit = cuit;
         this.urlBase = normalizeUrlBase(urlBase);
+        this.apiEnvironment = apiEnvironment;
+        this.proxyOptions = proxyOptions;
+    }
+
+    public boolean hasProxy() {
+        return proxyOptions != null && proxyOptions.isValid();
     }
 
     public static RequestOptionsBuilder builder() {
@@ -56,6 +64,8 @@ public class RequestOptions {
         private String sign;
         private Long cuit;
         private String urlBase;
+        private ApiEnvironment apiEnvironment;
+        private ProxyOptions proxyOptions;
 
         public RequestOptionsBuilder setToken(String token) {
             this.token = token;
@@ -77,8 +87,18 @@ public class RequestOptions {
             return this;
         }
 
+        public RequestOptionsBuilder setApiEnvironment(ApiEnvironment apiEnvironment) {
+            this.apiEnvironment = apiEnvironment;
+            return this;
+        }
+
+        public RequestOptionsBuilder setProxyOptions(ProxyOptions proxyOptions) {
+            this.proxyOptions = proxyOptions;
+            return this;
+        }
+
         public RequestOptions build() {
-            return new RequestOptions(token, sign, cuit, urlBase);
+            return new RequestOptions(token, sign, cuit, urlBase, apiEnvironment, proxyOptions);
         }
     }
 
@@ -93,6 +113,8 @@ public class RequestOptions {
 //                .setSign(globalOptions.getSign())
 //                .setCuit(globalOptions.getCuit())
                 .setUrlBase(globalOptions.getUrlBase())
+                .setApiEnvironment(globalOptions.getApiEnvironment())
+                .setProxyOptions(globalOptions.getProxyOptions())
                 .build();
         }
 
@@ -101,6 +123,8 @@ public class RequestOptions {
 //            .setSign(localOptions.getSign() != null ? localOptions.getSign() : globalOptions.getSign())
 //            .setCuit(localOptions.getCuit() != null ? localOptions.getCuit() : globalOptions.getCuit())
             .setUrlBase(localOptions.getUrlBase() != null ? localOptions.getUrlBase() : globalOptions.getUrlBase())
+            .setApiEnvironment(localOptions.getApiEnvironment() != null ? localOptions.getApiEnvironment() : globalOptions.getApiEnvironment())
+            .setProxyOptions(localOptions.getProxyOptions() != null ? localOptions.getProxyOptions() : globalOptions.getProxyOptions())
             .build();
     }
 

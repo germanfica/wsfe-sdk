@@ -1,15 +1,17 @@
 package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
-import com.germanfica.wsfe.net.SoapResponseGetterOptions;
-import com.germanfica.wsfe.net.DefaultSoapRequestHandler;
-import com.germanfica.wsfe.net.SoapRequestHandler;
+import com.germanfica.wsfe.net.*;
 import com.germanfica.wsfe.service.WsfeService;
 import fev1.dif.afip.gov.ar.FEAuthRequest;
 import fev1.dif.afip.gov.ar.FECAERequest;
 import fev1.dif.afip.gov.ar.FECAEResponse;
 import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import java.net.Proxy;
 
 /**
  * This is the primary entrypoint to make requests against WSFE's API. It provides a means of
@@ -20,12 +22,11 @@ public class WsfeClient {
     private final SoapRequestHandler soapRequestHandler;
 
     /**
-     * Constructor que recibe parámetros para inicializar un BaseApiRequest.
+     * Creates a WsfeClient using a custom SoapRequestHandler.
+     *
+     * <p>This is intended for testing or advanced scenarios where you need full control
+     * over how requests are handled by the WsfeClient.
      */
-    public WsfeClient() {
-        this.soapRequestHandler = new DefaultSoapRequestHandler(builder().buildOptions());
-    }
-
     public WsfeClient(SoapRequestHandler requestHandler) {
         this.soapRequestHandler = requestHandler;
     }
@@ -41,9 +42,15 @@ public class WsfeClient {
     static class ClientWsfeResponseGetterOptions extends SoapResponseGetterOptions {
         @Getter(onMethod_ = {@Override})
         private final String urlBase;
+        @Getter(onMethod_ = {@Override})
+        private final ApiEnvironment apiEnvironment;
+        @Getter(onMethod_ = {@Override})
+        private final ProxyOptions proxyOptions;
 
-        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase) {
+        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
             this.urlBase = urlBase;
+            this.apiEnvironment = apiEnvironment;
+            this.proxyOptions = proxyOptions;
         }
     }
 
@@ -55,34 +62,18 @@ public class WsfeClient {
         return new WsfeClient.WsfeClientBuilder();
     }
 
+    @Setter
+    @Accessors(chain = true)
     public static final class WsfeClientBuilder {
         private String token;
         private String sign;
         private Long cuit;
         private String apiBase;
-
-        public WsfeClientBuilder setToken(String token) {
-            this.token = token;
-            return this;
-        }
-
-        public WsfeClientBuilder setSign(String sign) {
-            this.sign = sign;
-            return this;
-        }
-
-        public WsfeClientBuilder setCuit(Long cuit) {
-            this.cuit = cuit;
-            return this;
-        }
-
-        public WsfeClientBuilder setApiBase(String apiBase) {
-            this.apiBase = apiBase;
-            return this;
-        }
+        ApiEnvironment apiEnvironment;
+        ProxyOptions proxyOptions;
 
         public WsfeClient build() {
-            return new WsfeClient(new DefaultSoapRequestHandler(builder().buildOptions()));
+            return new WsfeClient(new DefaultSoapRequestHandler(buildOptions()));
         }
 
         private SoapResponseGetterOptions buildOptions() {
@@ -90,7 +81,9 @@ public class WsfeClient {
                     this.token,
                     this.sign,
                     this.cuit,
-                    this.apiBase
+                    this.apiBase,
+                    this.apiEnvironment,
+                    this.proxyOptions
             );
         }
     }
