@@ -12,10 +12,14 @@ import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
 
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.configuration.security.ProxyAuthorizationPolicy;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transport.http.asyncclient.hc5.AsyncHTTPConduit;
+
 import java.net.MalformedURLException;
 
 /**
@@ -34,8 +38,13 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     @Override
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
+        Bus previousBus = BusFactory.getThreadDefaultBus(false);
+        Bus threadBus = BusFactory.newInstance().createBus();
+        threadBus.setProperty(AsyncHTTPConduit.USE_ASYNC, Boolean.TRUE);
+        threadBus.setProperty(AsyncHTTPConduit.ENABLE_HTTP2, Boolean.TRUE);
+        BusFactory.setThreadDefaultBus(threadBus);
+
         try {
-            validateUnsupportedFeatures();
             return executor.execute();
         } catch (LoginFault e) {
             handleLoginFault(e);
@@ -47,7 +56,11 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
             handleMalformedUrlError(e);
         } catch (Exception e) {
             handleUnexpectedError(e);
+        } finally {
+            BusFactory.setThreadDefaultBus(previousBus);
+            threadBus.shutdown(true); // cerramos recursos correctamente
         }
+
         return null; // Este return nunca se alcanzará debido a los throws
     }
 
@@ -105,6 +118,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         );
     }
 
+    @Deprecated
     private void validateUnsupportedFeatures() throws ApiException {
         if (options.getProxyOptions() != null && options.getProxyOptions().hasCredentials()) {
             throw new UnsupportedProxyAuthException();
