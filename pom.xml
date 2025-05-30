@@ -26,6 +26,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jaxb.version>3.0.0</jaxb.version>
         <gson.version>2.11.0</gson.version>
+        <cxf.version>4.1.0</cxf.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
@@ -36,7 +37,7 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>4.1.0</version>
+            <version>${cxf.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-transports-http -->
@@ -44,7 +45,7 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <version>4.1.0</version>
+            <version>${cxf.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.sun.xml.messaging.saaj/saaj-impl -->
@@ -132,7 +133,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
-                <version>4.1.0</version>
+                <version>${cxf.version}</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>
