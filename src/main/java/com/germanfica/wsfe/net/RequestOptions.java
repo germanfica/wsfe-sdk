@@ -12,14 +12,16 @@ public class RequestOptions {
     private final String urlBase;
     private final ApiEnvironment apiEnvironment;
     private final ProxyOptions proxyOptions;
+    private final HttpTransportMode httpTransportMode;
 
-    private RequestOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
+    private RequestOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions, HttpTransportMode httpTransportMode) {
         this.token = normalizeToken(token);
         this.sign = normalizeSign(sign);
         this.cuit = cuit;
         this.urlBase = normalizeUrlBase(urlBase);
         this.apiEnvironment = apiEnvironment;
         this.proxyOptions = proxyOptions;
+        this.httpTransportMode = httpTransportMode;
     }
 
     public boolean hasProxy() {
@@ -66,6 +68,7 @@ public class RequestOptions {
         private String urlBase;
         private ApiEnvironment apiEnvironment;
         private ProxyOptions proxyOptions;
+        private HttpTransportMode httpTransportMode;
 
         public RequestOptionsBuilder setToken(String token) {
             this.token = token;
@@ -97,8 +100,13 @@ public class RequestOptions {
             return this;
         }
 
+        public RequestOptionsBuilder setHttpTransportMode(HttpTransportMode httpTransportMode) {
+            this.httpTransportMode = httpTransportMode;
+            return this;
+        }
+
         public RequestOptions build() {
-            return new RequestOptions(token, sign, cuit, urlBase, apiEnvironment, proxyOptions);
+            return new RequestOptions(token, sign, cuit, urlBase, apiEnvironment, proxyOptions, httpTransportMode);
         }
     }
 
@@ -115,6 +123,7 @@ public class RequestOptions {
                 .setUrlBase(globalOptions.getUrlBase())
                 .setApiEnvironment(globalOptions.getApiEnvironment())
                 .setProxyOptions(globalOptions.getProxyOptions())
+                .setHttpTransportMode(globalOptions.getHttpTransportMode())
                 .build();
         }
 
@@ -125,6 +134,7 @@ public class RequestOptions {
             .setUrlBase(localOptions.getUrlBase() != null ? localOptions.getUrlBase() : globalOptions.getUrlBase())
             .setApiEnvironment(localOptions.getApiEnvironment() != null ? localOptions.getApiEnvironment() : globalOptions.getApiEnvironment())
             .setProxyOptions(localOptions.getProxyOptions() != null ? localOptions.getProxyOptions() : globalOptions.getProxyOptions())
+            .setHttpTransportMode(localOptions.getHttpTransportMode() != null ? localOptions.getHttpTransportMode() : globalOptions.getHttpTransportMode())
             .build();
     }
 

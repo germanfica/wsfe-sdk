@@ -3,6 +3,7 @@ package com.germanfica.wsfe.examples;
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.net.ApiEnvironment;
+import com.germanfica.wsfe.net.HttpTransportMode;
 import com.germanfica.wsfe.net.ProxyOptions;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.*;
@@ -42,6 +43,7 @@ public class AuthWithProxyExample {
             WsaaClient client = WsaaClient.builder()
                 .setApiEnvironment(ApiEnvironment.PROD)
                 .setProxyOptions(proxyOptions)
+                //.setHttpTransportMode(HttpTransportMode.HTTP_HC5) // Add RFC 7235 support
                 .build();
 
             // 3) Invocar autenticación en WSAA

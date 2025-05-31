@@ -46,11 +46,14 @@ public class WsfeClient {
         private final ApiEnvironment apiEnvironment;
         @Getter(onMethod_ = {@Override})
         private final ProxyOptions proxyOptions;
+        @Getter(onMethod_ = {@Override})
+        private final HttpTransportMode httpTransportMode;
 
-        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
+        ClientWsfeResponseGetterOptions(String token, String sign, Long cuit, String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions, HttpTransportMode httpTransportMode) {
             this.urlBase = urlBase;
             this.apiEnvironment = apiEnvironment;
             this.proxyOptions = proxyOptions;
+            this.httpTransportMode = httpTransportMode;
         }
     }
 
@@ -68,9 +71,10 @@ public class WsfeClient {
         private String token;
         private String sign;
         private Long cuit;
-        private String apiBase;
-        ApiEnvironment apiEnvironment;
-        ProxyOptions proxyOptions;
+        private String urlBase;
+        private ApiEnvironment apiEnvironment;
+        private ProxyOptions proxyOptions;
+        private HttpTransportMode httpTransportMode;
 
         public WsfeClient build() {
             return new WsfeClient(new DefaultSoapRequestHandler(buildOptions()));
@@ -81,9 +85,10 @@ public class WsfeClient {
                     this.token,
                     this.sign,
                     this.cuit,
-                    this.apiBase,
+                    this.urlBase,
                     this.apiEnvironment,
-                    this.proxyOptions
+                    this.proxyOptions,
+                    this.httpTransportMode != null ? this.httpTransportMode : HttpTransportMode.HTTP
             );
         }
     }
