@@ -2,6 +2,7 @@ package com.germanfica.wsfe.net;
 
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.exception.MissingHttpTransportSupportException;
 import com.germanfica.wsfe.exception.UnsupportedProxyAuthException;
 import fev1.dif.afip.gov.ar.Service;
 import fev1.dif.afip.gov.ar.ServiceSoap;
@@ -40,11 +41,12 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     public <T> T handleRequest(ApiRequest apiRequest, RequestExecutor<T> executor) throws ApiException {
         Bus previousBus = BusFactory.getThreadDefaultBus(false);
         Bus threadBus = BusFactory.newInstance().createBus();
-        threadBus.setProperty(AsyncHTTPConduit.USE_ASYNC, Boolean.TRUE);
+        threadBus.setProperty(AsyncHTTPConduit.USE_ASYNC, resolveUseAsync(apiRequest));
         threadBus.setProperty(AsyncHTTPConduit.ENABLE_HTTP2, Boolean.TRUE);
         BusFactory.setThreadDefaultBus(threadBus);
 
         try {
+            validateUnsupportedFeatures(apiRequest);
             return executor.execute();
         } catch (LoginFault e) {
             handleLoginFault(e);
@@ -118,11 +120,46 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
         );
     }
 
+    /**
+     * Devuelve TRUE si el modo de transporte requiere AsyncHTTPConduit.
+     */
+    private Boolean resolveUseAsync(BaseApiRequest request) {
+        RequestOptions mergedOptions = mergeRequestOptions(request);
+        return mergedOptions.getHttpTransportMode() == HttpTransportMode.HTTP_HC5
+            ? Boolean.TRUE
+            : Boolean.FALSE;
+    }
+
+    /**
+     * Determina si se debe utilizar AsyncHTTPConduit en función de si se ha configurado un proxy con credenciales.
+     * Esto activa el transporte asíncrono en Apache CXF.
+     *
+     * @param request La solicitud actual con posibles opciones específicas.
+     * @return Boolean.TRUE si se requiere AsyncHTTPConduit, de lo contrario Boolean.FALSE.
+     */
     @Deprecated
-    private void validateUnsupportedFeatures() throws ApiException {
-        if (options.getProxyOptions() != null && options.getProxyOptions().hasCredentials()) {
-            throw new UnsupportedProxyAuthException();
+    private Boolean asyncConduitRequired(BaseApiRequest request) {
+        RequestOptions mergedOptions = mergeRequestOptions(request);;
+        return (mergedOptions.hasProxy() && mergedOptions.getProxyOptions().hasCredentials()) ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    private void validateUnsupportedFeatures(BaseApiRequest request) throws ApiException {
+        //validateProxyAuthSupport(request);
+        validateAuthenticatedProxyRequiresHttpHc5(request);
+    }
+
+    private void validateAuthenticatedProxyRequiresHttpHc5(BaseApiRequest request) throws MissingHttpTransportSupportException {
+        RequestOptions mergedOptions = mergeRequestOptions(request);
+        if (mergedOptions.hasProxy() && mergedOptions.getProxyOptions().hasCredentials()) {
+            HttpTransportMode mode = mergedOptions.getHttpTransportMode();
+            if (mode != HttpTransportMode.HTTP_HC5) throw new MissingHttpTransportSupportException();
         }
+    }
+
+    @Deprecated
+    private void validateProxyAuthSupport(BaseApiRequest request) throws UnsupportedProxyAuthException {
+        RequestOptions mergedOptions = mergeRequestOptions(request);
+        if (mergedOptions.getProxyOptions() != null && mergedOptions.getProxyOptions().hasCredentials()) throw new UnsupportedProxyAuthException();
     }
 
     private <T> T resolvePort(Class<T> portClass, String endpoint) {
@@ -162,7 +199,7 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     }
 
     private <T> T resolveConfiguredPort(BaseApiRequest request, Class<T> portClass) {
-        RequestOptions mergedOptions = RequestOptions.merge(this.options, request != null ? request.getOptions() : null);
+        RequestOptions mergedOptions = mergeRequestOptions(request);;
 
         String endpoint = mergedOptions.getUrlBase() != null
             ? mergedOptions.getUrlBase()
@@ -176,5 +213,9 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
     private String resolveDefaultApiBase(Class<?> portClass, ApiEnvironment env) {
         if (env != null) return env.getUrlFor(portClass);
         throw new IllegalArgumentException("No default API base configured for port: " + portClass);
+    }
+
+    private RequestOptions mergeRequestOptions(BaseApiRequest request) {
+        return RequestOptions.merge(this.options, request != null ? request.getOptions() : null);
     }
 }

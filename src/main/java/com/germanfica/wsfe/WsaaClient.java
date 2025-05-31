@@ -35,11 +35,14 @@ public class WsaaClient {
         private final ApiEnvironment apiEnvironment;
         @Getter(onMethod_ = {@Override})
         private final ProxyOptions proxyOptions;
+        @Getter(onMethod_ = {@Override})
+        private final HttpTransportMode httpTransportMode;
 
-        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions) {
+        ClientWsaaResponseGetterOptions(String urlBase, ApiEnvironment apiEnvironment, ProxyOptions proxyOptions, HttpTransportMode httpTransportMode) {
             this.urlBase = urlBase;
             this.apiEnvironment = apiEnvironment;
             this.proxyOptions = proxyOptions;
+            this.httpTransportMode = httpTransportMode;
         }
     }
 
@@ -51,6 +54,7 @@ public class WsaaClient {
         private String urlBase;
         private ApiEnvironment apiEnvironment;
         private ProxyOptions proxyOptions;
+        private HttpTransportMode httpTransportMode;
 
         public WsaaClientBuilder setUrlBase(String urlBase) {
             this.urlBase = urlBase;
@@ -66,13 +70,22 @@ public class WsaaClient {
             this.proxyOptions = proxyOptions;
             return this;
         }
+        public WsaaClientBuilder setHttpTransportMode(HttpTransportMode httpTransportMode) {
+            this.httpTransportMode = httpTransportMode;
+            return this;
+        }
 
         public WsaaClient build() {
             return new WsaaClient(new DefaultSoapRequestHandler(buildOptions()));
         }
 
         private SoapResponseGetterOptions buildOptions() {
-            return new ClientWsaaResponseGetterOptions(this.urlBase, this.apiEnvironment, this.proxyOptions);
+            return new ClientWsaaResponseGetterOptions(
+                this.urlBase,
+                this.apiEnvironment,
+                this.proxyOptions,
+                this.httpTransportMode != null ? this.httpTransportMode : HttpTransportMode.HTTP
+            );
         }
     }
 }
