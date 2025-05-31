@@ -6,7 +6,7 @@ import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMS;
 /** The base address to use for the request. */
 public enum ApiEnvironment {
     PROD("https://wsaa.afip.gov.ar", "https://servicios1.afip.gov.ar"),
-    TEST("https://wsaahomo.afip.gov.ar", "https://wswhomo.afip.gov.ar");
+    HOMO("https://wsaahomo.afip.gov.ar", "https://wswhomo.afip.gov.ar");
 
     private final String wsaaUrl;
     private final String wsfeUrl;

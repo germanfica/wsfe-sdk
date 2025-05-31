@@ -27,7 +27,7 @@ public class AuthExample {
             //WsaaClient client = WsaaClient.builder().build(); // (1)
             // Endpoint de WSAA (homologación)
             //WsaaClient client = WsaaClient.builder().setUrlBase("https://wsaa.afip.gov.ar").build();
-            //WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.TEST).build(); // (2)
+            //WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.HOMO).build(); // (2)
             WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.PROD).build();
 
             // 3) Invocar autenticación en WSAA
