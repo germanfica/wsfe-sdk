@@ -26,10 +26,9 @@ public class AuthExample {
             // 2) Crear el WsfeClient
             //WsaaClient client = WsaaClient.builder().build(); // (1)
             // Endpoint de WSAA (homologación)
-            //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build(); // (2)
-            //WsaaClient client = WsaaClient.builder().setApiBase(Wsaa.TEST_API_BASE).build();
+            //WsaaClient client = WsaaClient.builder().setUrlBase("https://wsaa.afip.gov.ar").build();
+            //WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.TEST).build(); // (2)
             WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.PROD).build();
-            //WsaaClient client = WsaaClient.builder().build();
 
             // 3) Invocar autenticación en WSAA
             String authResponse = client.authService().autenticar(cms);
