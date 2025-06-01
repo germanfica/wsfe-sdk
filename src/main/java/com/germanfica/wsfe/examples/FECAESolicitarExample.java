@@ -35,7 +35,7 @@ public class FECAESolicitarExample {
         det.setConcepto(2);      // 2 = Servicios
         det.setDocTipo(99);      // 99 = Consumidor final / Doc. no informado
         det.setDocNro(0);        // 0 (anónimo)
-        FERecuperaLastCbteResponse feRecuperaLastCbteResponse = client.feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
+        FERecuperaLastCbteResponse feRecuperaLastCbteResponse = client.feCompUltimoAutorizado(ptoVta, cbteTipo);
         det.setCbteDesde(feRecuperaLastCbteResponse.getCbteNro() + 1);     // Número de comprobante desde - FECompUltimoAutorizado + 1
         det.setCbteHasta(feRecuperaLastCbteResponse.getCbteNro() + 1);     // Número de comprobante hasta - FECompUltimoAutorizado + 1
         det.setCbteFch("20250131");  // Fecha de emisión (AAAAMMDD)
@@ -63,6 +63,6 @@ public class FECAESolicitarExample {
         feCaeReq.setFeDetReq(detalles);
 
         // 6) Invocar a AFIP
-        FECAEResponse response = client.fecaeSolicitar(auth, feCaeReq);
+        FECAEResponse response = client.fecaeSolicitar(feCaeReq);
     }
 }

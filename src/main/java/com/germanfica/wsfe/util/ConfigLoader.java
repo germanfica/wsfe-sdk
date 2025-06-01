@@ -20,6 +20,8 @@ public class ConfigLoader {
     public static final String SIGN;
     /** Tu CUIT real/homo. */
     public static final Long CUIT;
+    public static final String GENERATION_TIME;
+    public static final String EXPIRATION_TIME;
 
     static {
         try (FileInputStream input = new FileInputStream("src/main/resources/application.properties")) {
@@ -40,5 +42,7 @@ public class ConfigLoader {
         CUIT = Long.parseLong(properties.getProperty("wsfe.cuit"));
         TOKEN = properties.getProperty("wsfe.token");
         SIGN = properties.getProperty("wsfe.sign");
+        GENERATION_TIME = properties.getProperty("wsfe.generation-time");
+        EXPIRATION_TIME = properties.getProperty("wsfe.expiration-time");
     }
 }

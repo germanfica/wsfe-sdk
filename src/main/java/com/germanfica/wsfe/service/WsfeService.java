@@ -3,29 +3,32 @@ package com.germanfica.wsfe.service;
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.ApiService;
 import com.germanfica.wsfe.net.SoapRequestHandler;
+import com.germanfica.wsfe.provider.feauth.FEAuthProvider;
 import fev1.dif.afip.gov.ar.*;
 
 public class WsfeService extends ApiService {
-    public WsfeService(SoapRequestHandler soapRequestHandler) throws ApiException {
+    private final FEAuthProvider authProvider;
+
+    public WsfeService(SoapRequestHandler soapRequestHandler, FEAuthProvider feAuthProvider) throws ApiException {
         super(soapRequestHandler);
+        this.authProvider = feAuthProvider;
     }
 
-    public FECAEResponse fecaeSolicitar(FEAuthRequest auth, FECAERequest feCAEReq) throws ApiException {
-        return invoke(null, ServiceSoap.class, port -> port.fecaeSolicitar(auth, feCAEReq));
+    public FECAEResponse fecaeSolicitar(FECAERequest feCAEReq) throws ApiException {
+        return invoke(null, ServiceSoap.class, port -> port.fecaeSolicitar(authProvider.getAuth(), feCAEReq));
     }
 
-    public FERecuperaLastCbteResponse feCompUltimoAutorizado(FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
-        return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo));
+    public FERecuperaLastCbteResponse feCompUltimoAutorizado(int ptoVta, int cbteTipo) throws ApiException {
+        return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(authProvider.getAuth(), ptoVta, cbteTipo));
     }
 
     /**
      * Obtiene el último comprobante autorizado para un punto de venta y tipo de comprobante específicos.
-     * @param auth Objeto de autenticación que contiene el token, sign y CUIT
      * @param ptoVta Punto de venta
      * @param cbteTipo Tipo de comprobante (Ej: 11 para Factura C)
      * @return Número del último comprobante autorizado
      */
-    public int obtenerUltimoComprobante(FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
-        return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(auth, ptoVta, cbteTipo).getCbteNro());
+    public int obtenerUltimoComprobante(int ptoVta, int cbteTipo) throws ApiException {
+        return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(authProvider.getAuth(), ptoVta, cbteTipo).getCbteNro());
     }
 }

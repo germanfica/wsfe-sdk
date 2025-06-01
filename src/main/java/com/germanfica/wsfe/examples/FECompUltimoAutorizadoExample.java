@@ -26,7 +26,7 @@ public class FECompUltimoAutorizadoExample {
         auth.setCuit(cuit);
 
         // 3) Consultar comprobante
-        FERecuperaLastCbteResponse response = client.feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
+        FERecuperaLastCbteResponse response = client.feCompUltimoAutorizado(ptoVta, cbteTipo);
         System.out.println(response.getCbteNro());
     }
 }
