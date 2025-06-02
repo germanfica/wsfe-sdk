@@ -151,11 +151,11 @@
                         </goals>
                         <configuration>
                             <wsdlOptions>
-                                <!-- WSAA Prod  -->
+                                <!-- WSAA Prod WSDL -->
                                 <wsdlOption>
                                     <wsdl>https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl</wsdl>
                                 </wsdlOption>
-                                <!-- WSFE Prod  -->
+                                <!-- WSFE Prod WSDL -->
                                 <wsdlOption>
                                     <wsdl>https://servicios1.afip.gov.ar/wsfev1/service.asmx?wsdl</wsdl>
                                 </wsdlOption>
