@@ -1,6 +1,7 @@
 package com.germanfica.wsfe.cms;
 
 import com.germanfica.wsfe.param.CmsParams;
+import com.germanfica.wsfe.util.CmsFormatInspector;
 import com.germanfica.wsfe.util.CryptoUtils;
 import com.germanfica.wsfe.util.X500Utils;
 import com.germanfica.wsfe.util.XMLUtils;
@@ -50,6 +51,34 @@ public class Cms {
 
         Cms cms = new Cms();
         cms.signedCmsBase64 = base64;
+        cms.subjectCuit = cuit;
+        return cms;
+    }
+
+    // -------------------------------------------------------------------------
+    //  NUEVO  factory method: crea un Cms desde un CMS ya firmado (Base64)
+    // -------------------------------------------------------------------------
+    /**
+     * Construye una instancia {@code Cms} a partir de un CMS ya firmado
+     * (codificado en Base64).  Útil para CLIs, micro-servicios o apps de
+     * escritorio donde el CMS se genera fuera del runtime.
+     *
+     * @param signedCmsBase64 CMS firmado en Base64 (“cmsFirmado”)
+     * @return objeto {@code Cms} listo para usarse con WSAA/WSFE
+     * @throws IllegalArgumentException si la cadena es nula/vacía o no es un CMS
+     */
+    public static Cms create(String signedCmsBase64) {
+        if (signedCmsBase64 == null || signedCmsBase64.isBlank()) {
+            throw new IllegalArgumentException("signedCmsBase64 vacío o nulo");
+        }
+        if (!CmsFormatInspector.isCmsSigned(signedCmsBase64)) {
+            throw new IllegalArgumentException("El valor provisto no es un CMS válido");
+        }
+
+        long cuit = CmsCuitExtractor.extractSubjectCuit(signedCmsBase64);
+
+        Cms cms = new Cms();
+        cms.signedCmsBase64 = signedCmsBase64.trim();
         cms.subjectCuit = cuit;
         return cms;
     }
