@@ -2,6 +2,7 @@ package com.germanfica.wsfe.cms;
 
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.CryptoUtils;
+import com.germanfica.wsfe.util.X500Utils;
 import com.germanfica.wsfe.util.XMLUtils;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -14,6 +15,10 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+import javax.security.auth.x500.X500Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -26,6 +31,7 @@ import java.util.Collections;
  */
 public class Cms {
     private String signedCmsBase64;
+    private long subjectCuit;
 
     // Constructor privado para forzar el uso del método create()
     private Cms() {
@@ -40,9 +46,11 @@ public class Cms {
     public static Cms create(CmsParams params) {
         byte[] signedBytes = CmsSigner.sign(params);
         String base64 = CmsSigner.encodeBase64(signedBytes);
+        long cuit = CmsCuitExtractor.extractSubjectCuit(signedBytes);
 
         Cms cms = new Cms();
         cms.signedCmsBase64 = base64;
+        cms.subjectCuit = cuit;
         return cms;
     }
 
@@ -57,6 +65,23 @@ public class Cms {
             throw new IllegalStateException("El CMS no ha sido firmado aún.");
         }
         return signedCmsBase64;
+    }
+
+    /**
+     * Devuelve el CUIT del titular del certificado, también conocido como <i>subject</i>.
+     *
+     * <p>Este CUIT se extrae del campo {@code SERIALNUMBER} del Distinguished Name (DN)
+     * del certificado, donde se espera el formato {@code "CUIT 30XXXXXXXXX"} según lo definido
+     * por ARCA/AFIP.</p>
+     *
+     * @return CUIT del sujeto del certificado digital (titular)
+     * @throws IllegalStateException si el CMS no fue firmado aún
+     */
+    public long getSubjectCuit() {
+        if (this.signedCmsBase64 == null) {
+            throw new IllegalStateException("El CMS no ha sido firmado aún.");
+        }
+        return subjectCuit;
     }
 
     /**
@@ -109,6 +134,45 @@ public class Cms {
 
         private static String encodeBase64(byte[] signedCms) {
             return CryptoUtils.encodeBase64(signedCms);
+        }
+    }
+    private static final class CmsCuitExtractor {
+        private CmsCuitExtractor() {}  // utility class
+
+        static long extractSubjectCuit(byte[] cmsBytes) {
+            X509Certificate certificate = CryptoUtils.extractCertificate(cmsBytes);
+            return extractSubjectCuit(certificate.getSubjectX500Principal());
+        }
+
+        static long extractSubjectCuit(String cmsBase64) {
+            return extractSubjectCuit(CryptoUtils.decodeBase64(cmsBase64));
+        }
+
+        /**
+         * Extract the CUIT from the <i>SERIALNUMBER</i> RDN within the given principal.
+         * Expected AFIP formatting: {@code "CUIT 30711222334"}.
+         *
+         * @param principal X.500 principal to inspect
+         * @return CUIT as {@code long}
+         * @throws IllegalStateException if the CUIT cannot be found or parsed
+         */
+        public static long extractSubjectCuit(X500Principal principal) {
+            try {
+                LdapName dn = new LdapName(principal.getName(X500Principal.RFC2253));
+                for (Rdn rdn : dn.getRdns()) {
+                    String type = X500Utils.normalizeType(rdn.getType());
+                    if ("SERIALNUMBER".equalsIgnoreCase(type)) {
+                        String value = X500Utils.decodeRdnValue(rdn.getValue());
+                        String[] parts = value.split("\\s+");
+                        if (parts.length == 2 && "CUIT".equalsIgnoreCase(parts[0])) {
+                            return Long.parseLong(parts[1]);
+                        }
+                    }
+                }
+                throw new IllegalStateException("CUIT (SERIALNUMBER) not found in DN: " + dn);
+            } catch (InvalidNameException e) {
+                throw new RuntimeException("Invalid DN: " + principal, e);
+            }
         }
     }
 }
