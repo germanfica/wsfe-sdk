@@ -1,6 +1,5 @@
 package com.germanfica.wsfe.provider.feauth;
 
-
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.dto.ErrorDto;
@@ -13,40 +12,57 @@ import com.germanfica.wsfe.util.*;
 import fev1.dif.afip.gov.ar.FEAuthRequest;
 
 public class RefreshingAuthProvider implements FEAuthProvider {
-    private final WsaaClient wsaa;            // ya lo tenés
-    private FEAuthParams cache;
+    private final WsaaClient wsaa;            // WSAA
+    private volatile FEAuthParams cache;               // TA cacheado mientras no expire
 
     public RefreshingAuthProvider(WsaaClient wsaa) {
         this.wsaa = wsaa;
     }
 
     @Override
-    public synchronized FEAuthRequest getAuth() throws ApiException {
-        if (cache == null || cache.isExpired()) {
-            String xml = wsaa.authService().autenticar(buildCmsAutomatically());
-
-            try {
-                XMLExtractor.LoginTicketData data = new XMLExtractor(xml).extractLoginTicketData();
-
-                cache = FEAuthParams.builder()
-                    .setToken(data.token)
-                    .setSign(data.sign)
-                    .setCuit(cache.getCuit())                       // CUIT real no requiere renovación
-                    .setGenerationTime(ArcaDateTime.parse(data.generationTime))
-                    .setExpirationTime(ArcaDateTime.parse(data.expirationTime))
-                    .build();
-
-            } catch (Exception e) {
-                throw new ApiException(
-                    new ErrorDto("invalid_xml", "No se pudo parsear loginTicketResponse", null),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-                );
+    public FEAuthRequest getAuth() throws ApiException {
+        FEAuthParams local = cache;
+        if (local == null || local.isExpired()) {
+            synchronized (this) {
+                local = cache;
+                if (local == null || local.isExpired()) {
+                    refresh();                     // (re)genera TA y actualiza cache
+                    local = cache;
+                }
             }
         }
-        return toFEAuthRequest(cache);
+        return toFEAuthRequest(local);
     }
 
-    private String buildCmsAutomatically() {
+    private void refresh() throws ApiException {
+        Cms cms = buildCmsAutomatically();
+        String xml = wsaa.authService().autenticar(cms);
+
+        try {
+            XMLExtractor.LoginTicketData data = new XMLExtractor(xml).extractLoginTicketData();
+
+            cache = FEAuthParams.builder()
+                .setToken(data.token)
+                .setSign(data.sign)
+                .setCuit(cms.getSubjectCuit())         // CUIT del titular del certificado que firma el CMS
+                .setGenerationTime(ArcaDateTime.parse(data.generationTime))
+                .setExpirationTime(ArcaDateTime.parse(data.expirationTime))
+                .build();
+        } catch (Exception e) {
+            throw new ApiException(
+                new ErrorDto("invalid_xml", "No se pudo parsear loginTicketResponse", null),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /**
+      * Genera un nuevo CMS (y con él su Subject CUIT) cada vez que necesitemos
+      * refrescar el Ticket de Acceso.  Si tu certificado tiene una validez de
+      * ~2 años y prefieres reutilizarlo, puedes cachear el {@code Cms} aquí del
+      * mismo modo que el TA (cache) —quedó listo para añadir esa optimización.
+      */
+    private Cms buildCmsAutomatically() {
         CmsParams cmsParams = ProviderChain.<CmsParams>builder()
             .addProvider(new EnvironmentCmsParamsProvider())
             .addProvider(new SystemPropertyCmsParamsProvider())
@@ -55,7 +71,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
             .resolve()
             .orElseThrow(() -> new IllegalStateException("No se pudieron resolver CmsParams"));
 
-        return Cms.create(cmsParams).getSignedValue();   // Base64 listo
+        return Cms.create(cmsParams);
     }
 
     private static FEAuthRequest toFEAuthRequest(FEAuthParams p) {
