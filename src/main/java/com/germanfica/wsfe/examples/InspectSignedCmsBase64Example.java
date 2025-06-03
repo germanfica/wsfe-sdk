@@ -1,7 +1,7 @@
 package com.germanfica.wsfe.examples;
 
 import com.germanfica.wsfe.cms.Cms;
-import com.germanfica.wsfe.util.CMSSignedInspector;
+import com.germanfica.wsfe.util.CmsSignedInspector;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,8 +21,8 @@ public class InspectSignedCmsBase64Example {
             String signedCmsBase64 = properties.getProperty("wsaa.cms.signed-cms-base64");
             Cms cms = Cms.create(signedCmsBase64);
 
-            CMSSignedInspector cmsSignedInspector = new CMSSignedInspector();
-            CMSSignedInspector.CmsTimestamps cmsTimestamps = cmsSignedInspector.inspect(signedCmsBase64);
+            CmsSignedInspector cmsSignedInspector = new CmsSignedInspector();
+            CmsSignedInspector.CmsTimestamps cmsTimestamps = cmsSignedInspector.inspect(signedCmsBase64);
 
             System.out.println("signingTime: " + cmsTimestamps.signingTime().toString());
             System.out.println("generationTime: "+ cmsTimestamps.generationTime().toString());

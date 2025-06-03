@@ -1,7 +1,6 @@
 package com.germanfica.wsfe.util;
 
 import com.germanfica.wsfe.time.ArcaDateTime;
-import com.germanfica.wsfe.model.LoginTicketData;
 import com.germanfica.wsfe.model.LoginTicketRequestData;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 
@@ -11,11 +10,9 @@ import org.bouncycastle.cms.SignerInformation;
 
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
 
-public class CMSSignedInspector {
+public class CmsSignedInspector {
     public record CmsTimestamps(
         ArcaDateTime signingTime,
         ArcaDateTime generationTime,
