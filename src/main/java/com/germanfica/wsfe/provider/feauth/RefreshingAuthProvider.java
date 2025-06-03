@@ -4,6 +4,7 @@ import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.model.LoginTicketResponseData;
 import com.germanfica.wsfe.net.HttpStatus;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.param.FEAuthParams;
@@ -50,14 +51,14 @@ public class RefreshingAuthProvider implements FEAuthProvider {
         String xml = wsaa.authService().autenticar(cms);
 
         try {
-            XMLExtractor.LoginTicketData data = new XMLExtractor(xml).extractLoginTicketData();
+            LoginTicketResponseData data = (LoginTicketResponseData) LoginTicketParser.parse(xml);
 
             cache = FEAuthParams.builder()
-                .setToken(data.token)
-                .setSign(data.sign)
+                .setToken(data.token())
+                .setSign(data.sign())
                 .setCuit(cms.getSubjectCuit())         // CUIT del titular del certificado que firma el CMS
-                .setGenerationTime(ArcaDateTime.parse(data.generationTime))
-                .setExpirationTime(ArcaDateTime.parse(data.expirationTime))
+                .setGenerationTime(ArcaDateTime.parse(data.generationTime()))
+                .setExpirationTime(ArcaDateTime.parse(data.expirationTime()))
                 .build();
         } catch (Exception e) {
             throw new ApiException(
@@ -78,7 +79,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
       */
     private Cms buildCmsAutomatically() {
         String signedCmsBase64 = ProviderChain.<String>builder()
-            //.addProvider(new FileSignedCmsProvider())      // primero busca en el archivo
+            .addProvider(new FileSignedCmsProvider())      // primero busca en el archivo
             //.addProvider(new EnvironmentSignedCmsProvider()) // (opcional) WSAA_SIGNED_CMS env var
             // ... cualquier otro provider (SystemProperty, etc.)
             .build()

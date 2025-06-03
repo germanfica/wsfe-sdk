@@ -8,6 +8,10 @@ The SDK is not intended to serve as a comprehensive SOAP API client. Instead, it
 
 By focusing on high-level abstraction and simplifying the integration process, the SDK enhances developer productivity and facilitates efficient interaction with the ARCA SOAP API, making it a practical and developer-friendly solution.
 
+## Requirements
+
+- Java 17 or later
+
 ## Maven goals
 
 ```maven

@@ -42,6 +42,28 @@ public final class ArcaDateTime implements Serializable {
     }
 
     /**
+     * Creates an {@code ArcaDateTime} from a given {@link Instant}.
+     *
+     * <p>The provided {@code Instant} is interpreted as an instant on the UTC time-line,
+     * and is then converted to an {@link OffsetDateTime} using the Argentina time-zone offset (-03:00).
+     * Consequently, if one supplies an {@code Instant} representing {@code "2025-06-02T18:30:00Z"},
+     * the resulting {@code ArcaDateTime} will represent {@code "2025-06-02T15:30:00-03:00"}.
+     *
+     * <p>Typical ways to obtain an {@code Instant} include:
+     * <ul>
+     *     <li>{@code Instant.now()} for the current moment in UTC.</li>
+     *     <li>{@code Instant.parse("2025-06-02T18:30:00Z")} to parse an ISO-8601 string in UTC.</li>
+     * </ul>
+     *
+     * @param instant the {@code Instant} to convert; must not be null.
+     * @return an {@code ArcaDateTime} representing the same instant in the Argentina offset (-03:00).
+     * @throws IllegalArgumentException if {@code instant} is null.
+     */
+    public static ArcaDateTime of(Instant instant) {
+        return new ArcaDateTime(instant.atOffset(ArcaDateTimeUtils.TimeZoneOffset.ARGENTINA.getZoneOffset()));
+    }
+
+    /**
      * Parses an ISO‐8601 string (e.g. "2025-06-02T15:30:00-03:00") into ArcaDateTime.
      * @throws DateTimeParseException if the text cannot be parsed.
      */

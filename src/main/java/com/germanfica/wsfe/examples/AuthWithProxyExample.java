@@ -2,6 +2,7 @@ package com.germanfica.wsfe.examples;
 
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
+import com.germanfica.wsfe.model.LoginTicketResponseData;
 import com.germanfica.wsfe.net.ApiEnvironment;
 import com.germanfica.wsfe.net.HttpTransportMode;
 import com.germanfica.wsfe.net.ProxyOptions;
@@ -50,20 +51,15 @@ public class AuthWithProxyExample {
             // 3) Invocar autenticación en WSAA
             String authResponse = client.authService().autenticar(cms);
 
-            XMLExtractor extractor = new XMLExtractor(authResponse);
-            String token = extractor.extractToken();
-            String sign = extractor.extractSign();
-            String generationTime = extractor.extractLoginTicketData().generationTime;
-            String expirationTime = extractor.extractLoginTicketData().expirationTime;
-            XMLExtractor.LoginTicketData data = extractor.extractLoginTicketData();
+            LoginTicketResponseData data = (LoginTicketResponseData) LoginTicketParser.parse(authResponse);
 
             // 4) Imprimir resultado
             System.out.println("Respuesta de autenticación xml: \n" + authResponse);
             System.out.println("Respuesta de autenticación json: \n" + data);
-            System.out.println("Token: \n" + token);
-            System.out.println("Sign: \n" + sign);
-            System.out.println("generationTime: \n" + generationTime);
-            System.out.println("expirationTime: \n" + expirationTime);
+            System.out.println("Token: \n" + data.token());
+            System.out.println("Sign: \n" + data.sign());
+            System.out.println("generationTime: \n" + data.generationTime());
+            System.out.println("expirationTime: \n" + data.expirationTime());
         } catch (Exception e) {
             System.err.println("Error al invocar autenticación WSAA: " + e.getMessage());
 
