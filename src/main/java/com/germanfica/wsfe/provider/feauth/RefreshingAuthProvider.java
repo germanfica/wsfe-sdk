@@ -7,6 +7,7 @@ import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.HttpStatus;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.param.FEAuthParams;
+import com.germanfica.wsfe.provider.cms.FileSignedCmsProvider;
 import com.germanfica.wsfe.time.ArcaDateTime;
 import com.germanfica.wsfe.util.*;
 import fev1.dif.afip.gov.ar.FEAuthRequest;
@@ -35,6 +36,16 @@ public class RefreshingAuthProvider implements FEAuthProvider {
     }
 
     private void refresh() throws ApiException {
+        // (1) Intenta cargar un TA válido desde disco
+        cache = ProviderChain.<FEAuthParams>builder()
+            .addProvider(new FileFEAuthParamsProvider())
+            .build()
+            .resolve()
+            .orElse(null);
+
+        if (cache != null) return;  // TA vigente, no hace nada
+
+        // (2) No había TA o estaba vencido -> pedir uno nuevo a WSAA
         Cms cms = buildCmsAutomatically();
         String xml = wsaa.authService().autenticar(cms);
 
@@ -54,6 +65,9 @@ public class RefreshingAuthProvider implements FEAuthProvider {
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+
+        // (3) Persistir en disco para la próxima ejecución
+        FileFEAuthParamsProvider.save(cache);
     }
 
     /**
@@ -63,15 +77,27 @@ public class RefreshingAuthProvider implements FEAuthProvider {
       * mismo modo que el TA (cache) —quedó listo para añadir esa optimización.
       */
     private Cms buildCmsAutomatically() {
-        CmsParams cmsParams = ProviderChain.<CmsParams>builder()
-            .addProvider(new EnvironmentCmsParamsProvider())
-            .addProvider(new SystemPropertyCmsParamsProvider())
-            .addProvider(new ApplicationPropertiesCmsParamsProvider())
+        String signedCmsBase64 = ProviderChain.<String>builder()
+            //.addProvider(new FileSignedCmsProvider())      // primero busca en el archivo
+            //.addProvider(new EnvironmentSignedCmsProvider()) // (opcional) WSAA_SIGNED_CMS env var
+            // ... cualquier otro provider (SystemProperty, etc.)
             .build()
             .resolve()
-            .orElseThrow(() -> new IllegalStateException("No se pudieron resolver CmsParams"));
+            .orElseGet(() -> {
+                CmsParams cmsParams = ProviderChain.<CmsParams>builder()
+                    .addProvider(new EnvironmentCmsParamsProvider())
+                    .addProvider(new SystemPropertyCmsParamsProvider())
+                    .addProvider(new ApplicationPropertiesCmsParamsProvider())
+                    .build()
+                    .resolve()
+                    .orElseThrow(() -> new IllegalStateException("No se pudieron resolver CmsParams"));
 
-        return Cms.create(cmsParams);
+                Cms cms = Cms.create(cmsParams);
+                FileSignedCmsProvider.save(cms.getSignedValue());
+                return cms.getSignedValue();
+            });
+
+        return Cms.create(signedCmsBase64);
     }
 
     private static FEAuthRequest toFEAuthRequest(FEAuthParams p) {
