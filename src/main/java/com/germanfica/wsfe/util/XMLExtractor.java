@@ -5,7 +5,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 
-import com.google.gson.Gson;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -36,8 +35,7 @@ import java.nio.charset.StandardCharsets;
  * {@code
  * XMLExtractor extractor = new XMLExtractor(xmlResponse);
  * String token = extractor.extractValue("/loginTicketResponse/credentials/token");
- * XMLExtractor.LoginTicketData data = extractor.extractLoginTicketData();
- * System.out.println("LoginTicketData: " + data);
+ * System.out.println("Token: " + token);
  * }
  * </pre>
  *
@@ -74,63 +72,5 @@ public class XMLExtractor {
     public String extractValue(String expression) throws XPathExpressionException {
         XPathExpression expr = xpath.compile(expression);
         return (String) expr.evaluate(document, XPathConstants.STRING);
-    }
-
-    /**
-     * Extrae únicamente el valor del sign desde el XML.
-     *
-     * @return El valor del sign como String.
-     * @throws Exception Si ocurre un error al extraer el valor.
-     */
-    public String extractSign() throws Exception {
-        return extractValue("/loginTicketResponse/credentials/sign");
-    }
-
-    /**
-     * Extrae únicamente el valor del token desde el XML.
-     *
-     * @return El valor del token como String.
-     * @throws Exception Si ocurre un error al extraer el valor.
-     */
-    public String extractToken() throws Exception {
-        return extractValue("/loginTicketResponse/credentials/token");
-    }
-
-    /**
-     * Método de utilidad para extraer valores comunes de un `loginTicketResponse`.
-     *
-     * @return Un objeto `LoginTicketData` con los valores extraídos.
-     * @throws Exception Si ocurre un error al extraer los datos.
-     */
-    public LoginTicketData extractLoginTicketData() throws Exception {
-        return new LoginTicketData(
-                extractValue("/loginTicketResponse/credentials/token"),
-                extractValue("/loginTicketResponse/credentials/sign"),
-                extractValue("/loginTicketResponse/header/generationTime"),
-                extractValue("/loginTicketResponse/header/expirationTime")
-        );
-    }
-
-    /**
-     * Clase interna que representa los datos extraídos del loginTicketResponse.
-     */
-    public static class LoginTicketData {
-        public final String token;
-        public final String sign;
-        public final String generationTime;
-        public final String expirationTime;
-
-        public LoginTicketData(String token, String sign, String generationTime, String expirationTime) {
-            this.token = token;
-            this.sign = sign;
-            this.generationTime = generationTime;
-            this.expirationTime = expirationTime;
-        }
-
-        @Override
-        public String toString() {
-            return new Gson().toJson(this);
-            // return new Gson().newBuilder().disableHtmlEscaping().create().toJson(this);
-        }
     }
 }
