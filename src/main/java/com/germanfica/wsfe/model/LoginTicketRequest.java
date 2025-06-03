@@ -1,12 +1,11 @@
 package com.germanfica.wsfe.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.germanfica.wsfe.time.ArcaDateTime;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @XmlRootElement(name = "loginTicketRequest")
 @JacksonXmlRootElement(localName = "loginTicketRequest")
@@ -106,12 +105,11 @@ public class LoginTicketRequest {
         header.setDestination(destination);
         header.setUniqueId(String.valueOf(System.currentTimeMillis() / 1000));
 
-        LocalDateTime generationTime = LocalDateTime.now().minusMinutes(10);
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(10);
+        ArcaDateTime generationTime = ArcaDateTime.now();
+        ArcaDateTime expirationTime = ArcaDateTime.now().plusMinutes(10);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        header.setGenerationTime(generationTime.format(formatter));
-        header.setExpirationTime(expirationTime.format(formatter));
+        header.setGenerationTime(generationTime.toString());
+        header.setExpirationTime(expirationTime.toString());
 
         request.setHeader(header);
         request.setService(service);
