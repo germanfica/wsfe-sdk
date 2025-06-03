@@ -136,7 +136,7 @@ public class ArcaWSAAUtils {
     //
     public static String create_LoginTicketRequest(String SignerDN, String dstDN, String service, Long TicketTime) {
         LoginTicketRequest request = LoginTicketRequest.create(SignerDN, dstDN, service, TicketTime);
-        return XMLUtils.toXML(request);
+        return XmlUtils.toXML(request);
     }
 
 //    /**

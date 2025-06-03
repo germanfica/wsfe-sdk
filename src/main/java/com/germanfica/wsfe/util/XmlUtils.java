@@ -6,7 +6,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.StringWriter;
 
-public class XMLUtils {
+public class XmlUtils {
 
     public static String createLoginTicketRequest(String signerDN, String dstDN, String service, Long ticketTime) {
         LoginTicketRequest request = LoginTicketRequest.create(signerDN, dstDN, service, ticketTime);
