@@ -10,6 +10,7 @@ import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.param.FEAuthParams;
 import com.germanfica.wsfe.provider.ProviderChain;
 import com.germanfica.wsfe.provider.cms.ApplicationPropertiesCmsParamsProvider;
+import com.germanfica.wsfe.provider.cms.EnvironmentCmsParamsProvider;
 import com.germanfica.wsfe.provider.cms.FileSignedCmsProvider;
 import com.germanfica.wsfe.time.ArcaDateTime;
 import com.germanfica.wsfe.util.*;

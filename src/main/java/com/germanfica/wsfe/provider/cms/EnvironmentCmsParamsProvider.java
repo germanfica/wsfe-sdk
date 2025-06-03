@@ -1,7 +1,8 @@
-package com.germanfica.wsfe.util;
+package com.germanfica.wsfe.provider.cms;
 
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.provider.CredentialsProvider;
+import com.germanfica.wsfe.util.ConfigUtils;
 
 import java.util.Optional;
 
