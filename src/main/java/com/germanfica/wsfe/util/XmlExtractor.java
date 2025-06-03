@@ -42,7 +42,7 @@ import java.nio.charset.StandardCharsets;
  * @author German Fica
  * @version 1.0
  */
-public class XMLExtractor {
+public class XmlExtractor {
 
     private final Document document;
     private final XPath xpath;
@@ -53,7 +53,7 @@ public class XMLExtractor {
      * @param xmlResponse El XML en formato String.
      * @throws Exception Si hay un error al procesar el XML.
      */
-    public XMLExtractor(String xmlResponse) throws ParserConfigurationException, IOException, SAXException {
+    public XmlExtractor(String xmlResponse) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
