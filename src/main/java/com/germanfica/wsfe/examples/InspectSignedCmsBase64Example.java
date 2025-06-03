@@ -22,7 +22,12 @@ public class InspectSignedCmsBase64Example {
             Cms cms = Cms.create(signedCmsBase64);
 
             CMSSignedInspector cmsSignedInspector = new CMSSignedInspector();
-            cmsSignedInspector.inspect(signedCmsBase64);
+            CMSSignedInspector.CmsTimestamps cmsTimestamps = cmsSignedInspector.inspect(signedCmsBase64);
+
+            System.out.println("signingTime: " + cmsTimestamps.signingTime().toString());
+            System.out.println("generationTime: "+ cmsTimestamps.generationTime().toString());
+            System.out.println("cms certNotBefore:" + cmsTimestamps.certNotBefore().toString());
+            System.out.println("cms certNotAfter" + cmsTimestamps.certNotAfter().toString());
 
         } catch (Exception e) {
             System.err.println("Error desconocido: " + e.getMessage());
