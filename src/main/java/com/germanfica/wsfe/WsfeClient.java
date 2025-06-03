@@ -2,16 +2,20 @@ package com.germanfica.wsfe;
 
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.net.*;
+import com.germanfica.wsfe.param.FEAuthParams;
+import com.germanfica.wsfe.provider.feauth.ConfigFileFEAuthParamsProvider;
+import com.germanfica.wsfe.provider.feauth.EnvironmentFEAuthParamsProvider;
 import com.germanfica.wsfe.service.WsfeService;
-import fev1.dif.afip.gov.ar.FEAuthRequest;
+import com.germanfica.wsfe.provider.feauth.FEAuthProvider;
+import com.germanfica.wsfe.util.ProviderChain;
+import com.germanfica.wsfe.provider.feauth.StaticAuthProvider;
 import fev1.dif.afip.gov.ar.FECAERequest;
 import fev1.dif.afip.gov.ar.FECAEResponse;
 import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.net.Proxy;
 
 /**
  * This is the primary entrypoint to make requests against WSFE's API. It provides a means of
@@ -20,6 +24,7 @@ import java.net.Proxy;
  */
 public class WsfeClient {
     private final SoapRequestHandler soapRequestHandler;
+    private final FEAuthProvider authProvider;
 
     /**
      * Creates a WsfeClient using a custom SoapRequestHandler.
@@ -27,16 +32,17 @@ public class WsfeClient {
      * <p>This is intended for testing or advanced scenarios where you need full control
      * over how requests are handled by the WsfeClient.
      */
-    public WsfeClient(SoapRequestHandler requestHandler) {
+    public WsfeClient(SoapRequestHandler requestHandler, FEAuthProvider feAuthProvider) {
         this.soapRequestHandler = requestHandler;
+        this.authProvider = feAuthProvider;
     }
 
-    public FECAEResponse fecaeSolicitar(FEAuthRequest auth, FECAERequest feCAEReq) throws ApiException {
-        return new WsfeService(soapRequestHandler).fecaeSolicitar(auth, feCAEReq);
+    public FECAEResponse fecaeSolicitar(FECAERequest feCAEReq) throws ApiException {
+        return new WsfeService(soapRequestHandler, authProvider).fecaeSolicitar(feCAEReq);
     }
 
-    public FERecuperaLastCbteResponse feCompUltimoAutorizado(FEAuthRequest auth, int ptoVta, int cbteTipo) throws ApiException {
-        return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler).feCompUltimoAutorizado(auth, ptoVta, cbteTipo);
+    public FERecuperaLastCbteResponse feCompUltimoAutorizado(int ptoVta, int cbteTipo) throws ApiException {
+        return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler, authProvider).feCompUltimoAutorizado(ptoVta, cbteTipo);
     }
 
     static class ClientWsfeResponseGetterOptions extends SoapResponseGetterOptions {
@@ -68,6 +74,8 @@ public class WsfeClient {
     @Setter
     @Accessors(chain = true)
     public static final class WsfeClientBuilder {
+        @Setter(AccessLevel.NONE)
+        private FEAuthProvider feAuthProvider;
         private String token;
         private String sign;
         private Long cuit;
@@ -76,8 +84,32 @@ public class WsfeClient {
         private ProxyOptions proxyOptions;
         private HttpTransportMode httpTransportMode;
 
+        public WsfeClientBuilder setFEAuthProvider(FEAuthProvider feAuthProvider) {
+            this.feAuthProvider = feAuthProvider;
+            return this;
+        }
+
+        public WsfeClientBuilder setFEAuthParams(FEAuthParams params) {
+            this.feAuthProvider = new StaticAuthProvider(params);
+            return this;
+        }
+
         public WsfeClient build() {
-            return new WsfeClient(new DefaultSoapRequestHandler(buildOptions()));
+            return new WsfeClient(
+                new DefaultSoapRequestHandler(buildOptions()),
+                this.feAuthProvider != null ? this.feAuthProvider : defaultProviderChain()
+            );
+        }
+
+        private FEAuthProvider defaultProviderChain() {
+            return new StaticAuthProvider(
+                ProviderChain.<FEAuthParams>builder()
+                    //.addProvider(new ConfigFileFEAuthParamsProvider())
+                    //.addProvider(new EnvironmentFEAuthParamsProvider())
+                    .build()
+                    .resolve()
+                    .orElseThrow(() -> new IllegalStateException("No FEAuthParams found"))
+            );
         }
 
         private SoapResponseGetterOptions buildOptions() {
