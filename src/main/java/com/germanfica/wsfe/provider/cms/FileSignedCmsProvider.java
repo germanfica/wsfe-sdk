@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.provider.cms;
 
+import com.germanfica.wsfe.provider.ProviderChain;
 import com.germanfica.wsfe.util.CredentialsProvider;
 import com.germanfica.wsfe.util.SimpleIni;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
  * Persiste y recupera el valor {@code signedCmsBase64} empleando un fichero
  * INI (parseado con {@link SimpleIni}) en <code>~/.wsfe/cms.ini</code>.
  *
- * <p>La idea es que cualquier {@link com.germanfica.wsfe.util.ProviderChain} pueda
+ * <p>La idea es que cualquier {@link ProviderChain} pueda
  * incluir este provider para reutilizar el CMS ya firmado (válido ≈ 2 años)
  * sin obligar al dev a volver a firmarlo en cada ejecución.</p>
  *
