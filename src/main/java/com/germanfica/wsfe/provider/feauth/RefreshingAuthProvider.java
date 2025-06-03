@@ -78,7 +78,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
       */
     private Cms buildCmsAutomatically() {
         String signedCmsBase64 = ProviderChain.<String>builder()
-            //.addProvider(new FileSignedCmsProvider())      // primero busca en el archivo
+            .addProvider(new FileSignedCmsProvider())      // primero busca en el archivo
             //.addProvider(new EnvironmentSignedCmsProvider()) // (opcional) WSAA_SIGNED_CMS env var
             // ... cualquier otro provider (SystemProperty, etc.)
             .build()
