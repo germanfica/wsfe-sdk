@@ -2,7 +2,7 @@ package com.germanfica;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.germanfica.wsfe.exception.XmlMappingException;
-import com.germanfica.wsfe.util.XMLExtractor;
+import com.germanfica.wsfe.util.XmlExtractor;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
@@ -30,9 +30,9 @@ public class SoapEnvelopeTest {
                 </loginTicketResponse>
                 """;
 
-        XMLExtractor extractor = new XMLExtractor(xmlResponse);
+        XmlExtractor extractor = new XmlExtractor(xmlResponse);
         String token = extractor.extractValue("/ loginTicketResponse/ credentials/ token");
-        XMLExtractor. LoginTicketData data = extractor. extractLoginTicketData();
+        XmlExtractor. LoginTicketData data = extractor. extractLoginTicketData();
 
         // Imprimir resultados
         System.out.println("Respuesta de autenticación xml: \n" + xmlResponse);

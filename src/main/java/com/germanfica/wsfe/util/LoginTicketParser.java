@@ -13,7 +13,7 @@ public final class LoginTicketParser {
     /** Parsea el XML y devuelve la representación tipada correspondiente. */
     public static LoginTicketData parse(String xml) throws LoginTicketParseException {
         try {
-            XMLExtractor x   = new XMLExtractor(xml);
+            XmlExtractor x   = new XmlExtractor(xml);
             String       tag = x.extractValue("local-name(/*)");
 
             return switch (tag) {

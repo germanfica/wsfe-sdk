@@ -4,7 +4,7 @@ import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.util.CmsFormatInspector;
 import com.germanfica.wsfe.util.CryptoUtils;
 import com.germanfica.wsfe.util.X500Utils;
-import com.germanfica.wsfe.util.XMLUtils;
+import com.germanfica.wsfe.util.XmlUtils;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;
@@ -125,7 +125,7 @@ public class Cms {
                     params.getKeystorePath(), params.getPassword(), params.getSigner()
             );
 
-            String loginTicketRequestXml = XMLUtils.createLoginTicketRequest(
+            String loginTicketRequestXml = XmlUtils.createLoginTicketRequest(
                     certificate.getSubjectDN().toString(),
                     params.getDstDn(),
                     params.getService(),
