@@ -1,7 +1,5 @@
 package com.germanfica.wsfe.provider;
 
-import com.germanfica.wsfe.util.CredentialsProvider;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

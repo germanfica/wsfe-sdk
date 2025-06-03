@@ -1,7 +1,7 @@
 package com.germanfica.wsfe.provider.cms;
 
 import com.germanfica.wsfe.provider.ProviderChain;
-import com.germanfica.wsfe.util.CredentialsProvider;
+import com.germanfica.wsfe.provider.CredentialsProvider;
 import com.germanfica.wsfe.util.SimpleIni;
 
 import java.io.IOException;
