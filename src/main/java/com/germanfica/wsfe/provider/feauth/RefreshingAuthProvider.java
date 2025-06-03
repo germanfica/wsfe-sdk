@@ -12,6 +12,7 @@ import com.germanfica.wsfe.provider.ProviderChain;
 import com.germanfica.wsfe.provider.cms.ApplicationPropertiesCmsParamsProvider;
 import com.germanfica.wsfe.provider.cms.EnvironmentCmsParamsProvider;
 import com.germanfica.wsfe.provider.cms.FileSignedCmsProvider;
+import com.germanfica.wsfe.provider.cms.SystemPropertyCmsParamsProvider;
 import com.germanfica.wsfe.time.ArcaDateTime;
 import com.germanfica.wsfe.util.*;
 import fev1.dif.afip.gov.ar.FEAuthRequest;
