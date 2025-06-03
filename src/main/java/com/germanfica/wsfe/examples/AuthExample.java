@@ -5,6 +5,10 @@ import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.model.LoginTicketResponseData;
 import com.germanfica.wsfe.net.ApiEnvironment;
 import com.germanfica.wsfe.param.CmsParams;
+import com.germanfica.wsfe.provider.ProviderChain;
+import com.germanfica.wsfe.provider.cms.ApplicationPropertiesCmsParamsProvider;
+import com.germanfica.wsfe.provider.cms.EnvironmentCmsParamsProvider;
+import com.germanfica.wsfe.provider.cms.SystemPropertyCmsParamsProvider;
 import com.germanfica.wsfe.util.*;
 
 public class AuthExample {

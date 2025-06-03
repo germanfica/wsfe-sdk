@@ -3,7 +3,7 @@ package com.germanfica.wsfe.provider.feauth;
 import com.germanfica.wsfe.param.FEAuthParams;
 import com.germanfica.wsfe.time.ArcaDateTime;
 import com.germanfica.wsfe.util.ConfigUtils;
-import com.germanfica.wsfe.util.CredentialsProvider;
+import com.germanfica.wsfe.provider.CredentialsProvider;
 
 import java.util.Optional;
 
