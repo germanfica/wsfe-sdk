@@ -38,23 +38,6 @@ public class Cms {
     private Cms() {
     }
 
-    /**
-     * Crea un CMS firmado utilizando los parámetros provistos.
-     *
-     * @param params Instancia de CmsParams con los datos necesarios para generar el CMS.
-     * @return Objeto Cms listo para ser utilizado.
-     */
-    public static Cms create(CmsParams params) {
-        byte[] signedBytes = CmsSigner.sign(params);
-        String base64 = CmsSigner.encodeBase64(signedBytes);
-        long cuit = CmsCuitExtractor.extractSubjectCuit(signedBytes);
-
-        Cms cms = new Cms();
-        cms.signedCmsBase64 = base64;
-        cms.subjectCuit = cuit;
-        return cms;
-    }
-
     // -------------------------------------------------------------------------
     //  NUEVO  factory method: crea un Cms desde un CMS ya firmado (Base64)
     // -------------------------------------------------------------------------
@@ -75,12 +58,24 @@ public class Cms {
             throw new IllegalArgumentException("El valor provisto no es un CMS válido");
         }
 
-        long cuit = CmsCuitExtractor.extractSubjectCuit(signedCmsBase64);
-
         Cms cms = new Cms();
         cms.signedCmsBase64 = signedCmsBase64.trim();
-        cms.subjectCuit = cuit;
+        cms.subjectCuit = CmsCuitExtractor.extractSubjectCuit(signedCmsBase64);
         return cms;
+    }
+
+    /**
+     * Crea un CMS firmado utilizando los parámetros provistos.
+     *
+     * @param params Instancia de CmsParams con los datos necesarios para generar el CMS.
+     * @return Objeto Cms listo para ser utilizado.
+     */
+    public static Cms create(CmsParams params) {
+        // (1) Sign and Base64-encode in one shot
+        String signedCmsBase64 = CmsSigner.encodeBase64(CmsSigner.sign(params));
+
+        // (2) Delegate to the single-source constructor
+        return create(signedCmsBase64);
     }
 
     /**
