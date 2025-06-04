@@ -33,6 +33,7 @@ import java.util.Collections;
 public class Cms {
     private String signedCmsBase64;
     private long subjectCuit;
+    private CMSSignedData cmsSignedData;
 
     // Constructor privado para forzar el uso del método create()
     private Cms() {
@@ -78,6 +79,7 @@ public class Cms {
         Cms cms                = new Cms();
         cms.signedCmsBase64    = CryptoUtils.encodeBase64(cmsBytes);
         cms.subjectCuit        = CmsCuitExtractor.extractSubjectCuit(cmsBytes);
+        cms.cmsSignedData      = createSignedCms(cmsBytes);
         return cms;
     }
 
@@ -109,6 +111,19 @@ public class Cms {
             throw new IllegalStateException("El CMS no ha sido firmado aún.");
         }
         return subjectCuit;
+    }
+
+    private static CMSSignedData createSignedCms(byte[] cmsBytes) {
+        try {
+            return new CMSSignedData(cmsBytes);
+        } catch (org.bouncycastle.cms.CMSException e) {
+            // El wrapper en IllegalArgumentException mantiene la API consistente
+            throw new IllegalArgumentException("The provided Base64 does not represent a valid CMSSignedData", e);
+        }
+    }
+
+    private static CMSSignedData createSignedCms(String base64) {
+        return createSignedCms(CryptoUtils.decodeBase64(base64));
     }
 
     /**
