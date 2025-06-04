@@ -21,21 +21,23 @@ public class ConfigFileFEAuthParamsProvider implements CredentialsProvider<FEAut
         String token = ConfigLoader.TOKEN;
         String sign  = ConfigLoader.SIGN;
         Long   cuit  = ConfigLoader.CUIT;
+        String gen = ConfigLoader.GENERATION_TIME;
+        String exp = ConfigLoader.EXPIRATION_TIME;
 
-        if (token == null || sign == null || cuit == null) {
+        if (token == null || sign == null || cuit == null || gen == null || exp == null) {
             return Optional.empty();
         }
 
         FEAuthParams.FEAuthParamsBuilder b = FEAuthParams.builder()
             .setToken(token)
             .setSign(sign)
-            .setCuit(cuit);
+            .setCuit(cuit)
+            .setGenerationTime(ArcaDateTime.parse(gen))
+            .setExpirationTime(ArcaDateTime.parse(exp));
 
-        String gen = ConfigLoader.GENERATION_TIME;
-        String exp = ConfigLoader.EXPIRATION_TIME;
-        if (gen != null) b.setGenerationTime(ArcaDateTime.parse(gen));
-        if (exp != null) b.setExpirationTime(ArcaDateTime.parse(exp));
+        FEAuthParams feAuthParams = b.build();
+        if(feAuthParams.isExpired()) return Optional.empty(); // ticket vencido -> forzar refresco
 
-        return Optional.of(b.build());
+        return Optional.of(feAuthParams);
     }
 }
