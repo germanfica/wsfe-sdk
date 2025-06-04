@@ -3,7 +3,6 @@ package com.germanfica.wsfe.util;
 import com.germanfica.wsfe.time.ArcaDateTime;
 import com.germanfica.wsfe.model.LoginTicketRequestData;
 import org.bouncycastle.asn1.cms.CMSAttributes;
-
 import org.bouncycastle.asn1.x509.Time;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
@@ -13,6 +12,9 @@ import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 public class CmsSignedInspector {
+
+    private CmsSignedInspector() { }
+
     public record CmsTimestamps(
         ArcaDateTime signingTime,
         ArcaDateTime generationTime,
@@ -20,13 +22,21 @@ public class CmsSignedInspector {
         ArcaDateTime certNotBefore,
         ArcaDateTime certNotAfter) { }
 
-    public CmsTimestamps inspect(String signedCmsBase64) throws Exception {
+    /**
+     * Inspects a Base64-encoded CMS structure and extracts relevant timestamps.
+     *
+     * @param signedCmsBase64 the CMS content encoded in Base64.
+     * @return a CmsTimestamps object containing signing time, generation time,
+     *         expiration time, and certificate validity period.
+     * @throws Exception if parsing or data extraction fails.
+     */
+    public static CmsTimestamps inspect(String signedCmsBase64) throws Exception {
         CMSSignedData cms = new CMSSignedData(CryptoUtils.decodeBase64(signedCmsBase64));
 
-        // 1) signingTime (atributo CMS)
-        SignerInformation si = cms.getSignerInfos().getSigners().iterator().next();
+        // 1) Extract signingTime attribute from CMS
+        SignerInformation signerInfo = cms.getSignerInfos().getSigners().iterator().next();
         ArcaDateTime signingTime = Optional.ofNullable(
-                si.getSignedAttributes().get(CMSAttributes.signingTime))
+                signerInfo.getSignedAttributes().get(CMSAttributes.signingTime))
             .map(attr -> {
                 var asn1Obj = attr.getAttrValues().getObjectAt(0).toASN1Primitive();
                 Time time = Time.getInstance(asn1Obj);
@@ -34,22 +44,12 @@ public class CmsSignedInspector {
             })
             .orElse(null);
 
-        // 2) Certificado
+        // 2) Extract X509 certificate from CMS
         X509Certificate cert = CryptoUtils.extractCertificate(signedCmsBase64);
 
-        // 3) Valores del LTR
+        // 3) Extract raw XML and parse Login Ticket Request data
         String rawXml = getRawXml(cms);
-
-        System.out.println(rawXml);
-
         LoginTicketRequestData ticket = (LoginTicketRequestData) LoginTicketParser.parse(rawXml);
-
-        System.out.println(ticket.source());
-        System.out.println(ticket.destination());
-        System.out.println(ticket.uniqueId());
-        System.out.println(ticket.generationTime());
-        System.out.println(ticket.expirationTime());
-        System.out.println(ticket.service());
 
         ArcaDateTime generationTime = ArcaDateTime.parse(ticket.generationTime());
         ArcaDateTime expirationTime = ArcaDateTime.parse(ticket.expirationTime());
@@ -64,15 +64,13 @@ public class CmsSignedInspector {
     }
 
     /**
-     * Returns the raw XML payload embedded in the given {@link CMSSignedData}.
+     * Retrieves the raw XML payload embedded in the given CMSSignedData.
      *
-     * <p>This simply casts the CMS signed content to a byte[] and builds a UTF-8 string.</p>
-     *
-     * @param cms a {@link CMSSignedData} instance containing the signed content.
-     * @return the XML as a UTF-8 string.
+     * @param cms a CMSSignedData instance containing the signed content.
+     * @return the XML payload as a UTF-8 string.
      */
-    private String getRawXml(final CMSSignedData cms) {
-        var contentBytes = (byte[]) cms.getSignedContent().getContent();
+    private static String getRawXml(final CMSSignedData cms) {
+        byte[] contentBytes = (byte[]) cms.getSignedContent().getContent();
         return new String(contentBytes, StandardCharsets.UTF_8);
     }
 }
