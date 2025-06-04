@@ -1,7 +1,8 @@
 package com.germanfica.wsfe.examples;
 
-import com.germanfica.wsfe.cms.Cms;
-import com.germanfica.wsfe.util.CmsSignedInspector;
+import com.germanfica.wsfe.util.CmsSignedExtractor;
+import com.germanfica.wsfe.util.CryptoUtils;
+import org.bouncycastle.cms.CMSSignedData;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,14 +20,13 @@ public class InspectSignedCmsBase64Example {
 
             // 1) Armar CMS para WSAA
             String signedCmsBase64 = properties.getProperty("wsaa.cms.signed-cms-base64");
-            Cms cms = Cms.create(signedCmsBase64);
+            CMSSignedData cmsSignedData = new CMSSignedData(CryptoUtils.decodeBase64(signedCmsBase64));
 
-            CmsSignedInspector.CmsTimestamps cmsTimestamps = CmsSignedInspector.inspect(signedCmsBase64);
-
-            System.out.println("signingTime: " + cmsTimestamps.signingTime().toString());
-            System.out.println("generationTime: "+ cmsTimestamps.generationTime().toString());
-            System.out.println("cms certNotBefore:" + cmsTimestamps.certNotBefore().toString());
-            System.out.println("cms certNotAfter" + cmsTimestamps.certNotAfter().toString());
+            System.out.println("ticket signingTime: " + CmsSignedExtractor.extractSigningTime(cmsSignedData));
+            System.out.println("ticket generationTime: "+ CmsSignedExtractor.extractTicketGenerationTime(cmsSignedData));
+            System.out.println("ticket expirationTime: "+ CmsSignedExtractor.extractTicketExpirationTime(cmsSignedData));
+            System.out.println("certificate valid from: " + CmsSignedExtractor.extractCertificateValidFrom(cmsSignedData));
+            System.out.println("certificate valid to: " + CmsSignedExtractor.extractCertificateValidTo(cmsSignedData));
 
         } catch (Exception e) {
             System.err.println("Error desconocido: " + e.getMessage());
