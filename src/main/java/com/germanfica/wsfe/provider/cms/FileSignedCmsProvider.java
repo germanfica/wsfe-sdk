@@ -1,5 +1,6 @@
 package com.germanfica.wsfe.provider.cms;
 
+import com.germanfica.wsfe.cms.Cms;
 import com.germanfica.wsfe.provider.ProviderChain;
 import com.germanfica.wsfe.provider.CredentialsProvider;
 import com.germanfica.wsfe.util.SimpleIni;
@@ -47,7 +48,20 @@ public final class FileSignedCmsProvider implements CredentialsProvider<String> 
 
             SimpleIni ini = SimpleIni.load(CMS_FILE);
             String cms = ini.get(SECTION, KEY);
-            return (cms == null || cms.isBlank()) ? Optional.empty() : Optional.of(cms.trim());
+            if (cms == null || cms.isBlank()) return Optional.empty();
+
+            Cms cmsObj = Cms.create(cms.trim());
+
+            /* ───────── validaciones del CMS ───────── */
+            if (cmsObj.isCertExpired()) {
+                throw new IllegalStateException("Certificate expired: " + cmsObj.getSubjectCuit());
+            }
+            if (cmsObj.isTicketExpired()) {
+                return Optional.empty();           // ticket vencido -> forzar refresco
+            }
+            /* ─────────────────────────────────────── */
+
+            return Optional.of(cms.trim());
         } catch (IOException e) {
             // Problemas de lectura se tratan como "no encontrado" para no abortar la cadena.
             return Optional.empty();
