@@ -9,6 +9,8 @@ import java.security.cert.X509Certificate;
 
 public class CmsFormatInspector {
 
+    private CmsFormatInspector() { }
+
     public enum Format {
         CMS_SIGNED,
         CERTIFICATE,

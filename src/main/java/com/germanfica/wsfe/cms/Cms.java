@@ -1,10 +1,8 @@
 package com.germanfica.wsfe.cms;
 
 import com.germanfica.wsfe.param.CmsParams;
-import com.germanfica.wsfe.util.CmsFormatInspector;
-import com.germanfica.wsfe.util.CryptoUtils;
-import com.germanfica.wsfe.util.X500Utils;
-import com.germanfica.wsfe.util.XmlUtils;
+import com.germanfica.wsfe.time.ArcaDateTime;
+import com.germanfica.wsfe.util.*;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;
@@ -33,26 +31,10 @@ import java.util.Collections;
 public class Cms {
     private String signedCmsBase64;
     private long subjectCuit;
+    private CMSSignedData cmsSignedData;
 
     // Constructor privado para forzar el uso del método create()
     private Cms() {
-    }
-
-    /**
-     * Crea un CMS firmado utilizando los parámetros provistos.
-     *
-     * @param params Instancia de CmsParams con los datos necesarios para generar el CMS.
-     * @return Objeto Cms listo para ser utilizado.
-     */
-    public static Cms create(CmsParams params) {
-        byte[] signedBytes = CmsSigner.sign(params);
-        String base64 = CmsSigner.encodeBase64(signedBytes);
-        long cuit = CmsCuitExtractor.extractSubjectCuit(signedBytes);
-
-        Cms cms = new Cms();
-        cms.signedCmsBase64 = base64;
-        cms.subjectCuit = cuit;
-        return cms;
     }
 
     // -------------------------------------------------------------------------
@@ -74,12 +56,28 @@ public class Cms {
         if (!CmsFormatInspector.isCmsSigned(signedCmsBase64)) {
             throw new IllegalArgumentException("El valor provisto no es un CMS válido");
         }
+        return create(CryptoUtils.decodeBase64(signedCmsBase64.trim()));
+    }
 
-        long cuit = CmsCuitExtractor.extractSubjectCuit(signedCmsBase64);
+    /**
+     * Crea un CMS firmado utilizando los parámetros provistos.
+     *
+     * @param params Instancia de CmsParams con los datos necesarios para generar el CMS.
+     * @return Objeto Cms listo para ser utilizado.
+     */
+    public static Cms create(CmsParams params) {
+        return create(CmsSigner.sign(params));
+    }
 
-        Cms cms = new Cms();
-        cms.signedCmsBase64 = signedCmsBase64.trim();
-        cms.subjectCuit = cuit;
+    // -------------------------------------------------------------------------
+    //  entry point
+    // -------------------------------------------------------------------------
+    private static Cms create(byte[] cmsBytes) {
+        // Build the domain object once, here
+        Cms cms                = new Cms();
+        cms.signedCmsBase64    = CryptoUtils.encodeBase64(cmsBytes);
+        cms.subjectCuit        = CmsCuitExtractor.extractSubjectCuit(cmsBytes);
+        cms.cmsSignedData      = createSignedCms(cmsBytes);
         return cms;
     }
 
@@ -111,6 +109,49 @@ public class Cms {
             throw new IllegalStateException("El CMS no ha sido firmado aún.");
         }
         return subjectCuit;
+    }
+
+    /**
+     * Indica si el <strong>Ticket de Acceso (TA)</strong> embebido en el CMS está expirado.
+     * <p>Equivale a comparar la marca temporal <code>expirationTime</code> del login‑ticket con la hora actual.</p>
+     *
+     * @return {@code true} si el TA ya expiró; {@code false} en caso contrario.
+     * @throws IllegalStateException si el CMS aún no fue firmado.
+     */
+    public boolean isTicketExpired() {
+        if (this.signedCmsBase64 == null) {
+            throw new IllegalStateException("El CMS no ha sido firmado aún.");
+        }
+        ArcaDateTime expiration = CmsSignedExtractor.extractTicketExpirationTime(this.cmsSignedData);
+        return ArcaDateTime.now().isAfter(expiration);
+    }
+
+    /**
+     * Indica si el <strong>certificado X.509</strong> utilizado para firmar el CMS está expirado.
+     * <p>Equivale a verificar que la fecha actual sea posterior al campo <code>NotAfter</code> del certificado.</p>
+     *
+     * @return {@code true} si el certificado está vencido; {@code false} si aún es válido.
+     * @throws IllegalStateException si el CMS aún no fue firmado.
+     */
+    public boolean isCertExpired() {
+        if (this.signedCmsBase64 == null) {
+            throw new IllegalStateException("El CMS no ha sido firmado aún.");
+        }
+        ArcaDateTime certValidTo = CmsSignedExtractor.extractCertificateValidTo(this.cmsSignedData);
+        return ArcaDateTime.now().isAfter(certValidTo);
+    }
+
+    private static CMSSignedData createSignedCms(byte[] cmsBytes) {
+        try {
+            return new CMSSignedData(cmsBytes);
+        } catch (org.bouncycastle.cms.CMSException e) {
+            // El wrapper en IllegalArgumentException mantiene la API consistente
+            throw new IllegalArgumentException("The provided Base64 does not represent a valid CMSSignedData", e);
+        }
+    }
+
+    private static CMSSignedData createSignedCms(String base64) {
+        return createSignedCms(CryptoUtils.decodeBase64(base64));
     }
 
     /**
