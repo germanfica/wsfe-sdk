@@ -1,10 +1,8 @@
 package com.germanfica.wsfe.cms;
 
 import com.germanfica.wsfe.param.CmsParams;
-import com.germanfica.wsfe.util.CmsFormatInspector;
-import com.germanfica.wsfe.util.CryptoUtils;
-import com.germanfica.wsfe.util.X500Utils;
-import com.germanfica.wsfe.util.XmlUtils;
+import com.germanfica.wsfe.time.ArcaDateTime;
+import com.germanfica.wsfe.util.*;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;
@@ -111,6 +109,36 @@ public class Cms {
             throw new IllegalStateException("El CMS no ha sido firmado aún.");
         }
         return subjectCuit;
+    }
+
+    /**
+     * Indica si el <strong>Ticket de Acceso (TA)</strong> embebido en el CMS está expirado.
+     * <p>Equivale a comparar la marca temporal <code>expirationTime</code> del login‑ticket con la hora actual.</p>
+     *
+     * @return {@code true} si el TA ya expiró; {@code false} en caso contrario.
+     * @throws IllegalStateException si el CMS aún no fue firmado.
+     */
+    public boolean isTicketExpired() {
+        if (this.signedCmsBase64 == null) {
+            throw new IllegalStateException("El CMS no ha sido firmado aún.");
+        }
+        ArcaDateTime expiration = CmsSignedExtractor.extractTicketExpirationTime(this.cmsSignedData);
+        return ArcaDateTime.now().isAfter(expiration);
+    }
+
+    /**
+     * Indica si el <strong>certificado X.509</strong> utilizado para firmar el CMS está expirado.
+     * <p>Equivale a verificar que la fecha actual sea posterior al campo <code>NotAfter</code> del certificado.</p>
+     *
+     * @return {@code true} si el certificado está vencido; {@code false} si aún es válido.
+     * @throws IllegalStateException si el CMS aún no fue firmado.
+     */
+    public boolean isCertExpired() {
+        if (this.signedCmsBase64 == null) {
+            throw new IllegalStateException("El CMS no ha sido firmado aún.");
+        }
+        ArcaDateTime certValidTo = CmsSignedExtractor.extractCertificateValidTo(this.cmsSignedData);
+        return ArcaDateTime.now().isAfter(certValidTo);
     }
 
     private static CMSSignedData createSignedCms(byte[] cmsBytes) {
