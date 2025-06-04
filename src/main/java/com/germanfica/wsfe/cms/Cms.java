@@ -57,11 +57,7 @@ public class Cms {
         if (!CmsFormatInspector.isCmsSigned(signedCmsBase64)) {
             throw new IllegalArgumentException("El valor provisto no es un CMS válido");
         }
-
-        Cms cms = new Cms();
-        cms.signedCmsBase64 = signedCmsBase64.trim();
-        cms.subjectCuit = CmsCuitExtractor.extractSubjectCuit(signedCmsBase64);
-        return cms;
+        return create(CryptoUtils.decodeBase64(signedCmsBase64.trim()));
     }
 
     /**
@@ -71,11 +67,18 @@ public class Cms {
      * @return Objeto Cms listo para ser utilizado.
      */
     public static Cms create(CmsParams params) {
-        // (1) Sign and Base64-encode in one shot
-        String signedCmsBase64 = CmsSigner.encodeBase64(CmsSigner.sign(params));
+        return create(CmsSigner.sign(params));
+    }
 
-        // (2) Delegate to the single-source constructor
-        return create(signedCmsBase64);
+    // -------------------------------------------------------------------------
+    //  entry point
+    // -------------------------------------------------------------------------
+    private static Cms create(byte[] cmsBytes) {
+        // Build the domain object once, here
+        Cms cms                = new Cms();
+        cms.signedCmsBase64    = CryptoUtils.encodeBase64(cmsBytes);
+        cms.subjectCuit        = CmsCuitExtractor.extractSubjectCuit(cmsBytes);
+        return cms;
     }
 
     /**
