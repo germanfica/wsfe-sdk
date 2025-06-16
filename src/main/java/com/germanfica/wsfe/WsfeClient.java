@@ -7,6 +7,7 @@ import com.germanfica.wsfe.service.WsfeService;
 import com.germanfica.wsfe.provider.feauth.FEAuthProvider;
 import com.germanfica.wsfe.provider.ProviderChain;
 import com.germanfica.wsfe.provider.feauth.StaticAuthProvider;
+import fev1.dif.afip.gov.ar.FEActividadesResponse;
 import fev1.dif.afip.gov.ar.FECAERequest;
 import fev1.dif.afip.gov.ar.FECAEResponse;
 import fev1.dif.afip.gov.ar.FERecuperaLastCbteResponse;
@@ -41,6 +42,10 @@ public class WsfeClient {
 
     public FERecuperaLastCbteResponse feCompUltimoAutorizado(int ptoVta, int cbteTipo) throws ApiException {
         return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler, authProvider).feCompUltimoAutorizado(ptoVta, cbteTipo);
+    }
+
+    public FEActividadesResponse feParamGetActividades() throws ApiException {
+        return new com.germanfica.wsfe.service.WsfeService(soapRequestHandler, authProvider).feParamGetActividades();
     }
 
     static class ClientWsfeResponseGetterOptions extends SoapResponseGetterOptions {
