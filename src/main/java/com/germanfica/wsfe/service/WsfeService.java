@@ -22,6 +22,10 @@ public class WsfeService extends ApiService {
         return invoke(null, ServiceSoap.class, port -> port.feCompUltimoAutorizado(authProvider.getAuth(), ptoVta, cbteTipo));
     }
 
+    public FEActividadesResponse feParamGetActividades() throws ApiException {
+        return invoke(null, ServiceSoap.class, port -> port.feParamGetActividades(authProvider.getAuth()));
+    }
+
     /**
      * Obtiene el último comprobante autorizado para un punto de venta y tipo de comprobante específicos.
      * @param ptoVta Punto de venta
