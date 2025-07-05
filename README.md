@@ -12,6 +12,10 @@ By focusing on high-level abstraction and simplifying the integration process, t
 
 - Java 17 or later
 
+## Architecture Overview
+
+The WSFE SDK is built on the **service-based pattern**, meaning that all API interactions happen through immutable, configurable client instances rather than through global or static methods. This approach ensures thread-safety, testability, and clean separation of concerns.
+
 ## Maven goals
 
 ```maven
