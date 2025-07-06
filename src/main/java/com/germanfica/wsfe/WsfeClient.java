@@ -107,7 +107,7 @@ public class WsfeClient {
         private FEAuthProvider defaultProviderChain() {
             return new StaticAuthProvider(
                 ProviderChain.<FEAuthParams>builder()
-                    //.addProvider(new ConfigFileFEAuthParamsProvider())
+                    //.addProvider(new ApplicationPropertiesFeAuthParamsProvider())
                     //.addProvider(new EnvironmentFEAuthParamsProvider())
                     .build()
                     .resolve()

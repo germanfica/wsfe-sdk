@@ -34,7 +34,10 @@ public class EnvironmentFEAuthParamsProvider implements CredentialsProvider<FEAu
         String exp = ConfigUtils.getenv("WSFE_EXPIRATION_TIME");
         if (gen != null) b.setGenerationTime(ArcaDateTime.parse(gen));
         if (exp != null) b.setExpirationTime(ArcaDateTime.parse(exp));
+        //if (gen == null || exp == null) return Optional.empty();
 
         return Optional.of(b.build());
+        //FEAuthParams p = b.build();
+        //return p.isExpired() ? Optional.empty() : Optional.of(p);
     }
 }
