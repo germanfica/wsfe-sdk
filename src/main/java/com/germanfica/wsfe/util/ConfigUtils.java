@@ -68,4 +68,43 @@ public class ConfigUtils {
         String value = System.getProperty(key);
         return value != null ? Boolean.parseBoolean(value) : defaultValue;
     }
+
+    // --- APPLICATION PROPERTIES (application.properties) ---
+
+    /**
+     * Lee del application.properties o null si no existe.
+     */
+    public static String getAppProperty(String key) {
+        return ApplicationProperties.getProperty(key);
+    }
+
+    /**
+     * Lee del application.properties o devuelve default.
+     */
+    public static String getAppProperty(String key, String defaultValue) {
+        return ApplicationProperties.getProperty(key, defaultValue);
+    }
+
+    public static Long getAppProperty(String key, Long defaultValue) {
+        try {
+            String v = ApplicationProperties.getProperty(key);
+            return v != null ? Long.parseLong(v) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static int getAppProperty(String key, int defaultValue) {
+        try {
+            String v = ApplicationProperties.getProperty(key);
+            return v != null ? Integer.parseInt(v) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static boolean getAppProperty(String key, boolean defaultValue) {
+        String v = ApplicationProperties.getProperty(key);
+        return v != null ? Boolean.parseBoolean(v) : defaultValue;
+    }
 }

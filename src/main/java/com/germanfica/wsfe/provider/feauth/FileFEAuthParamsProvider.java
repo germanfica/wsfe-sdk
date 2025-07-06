@@ -43,9 +43,11 @@ public class FileFEAuthParamsProvider implements CredentialsProvider<FEAuthParam
             String exp = ini.get(SECTION, "expirationTime");
             if (gen != null) b.setGenerationTime(ArcaDateTime.parse(gen));
             if (exp != null) b.setExpirationTime(ArcaDateTime.parse(exp));
+            //if (gen == null || exp == null) return Optional.empty();
 
-            FEAuthParams p = b.build();
-            return p.isExpired() ? Optional.empty() : Optional.of(p);
+            return Optional.of(b.build());
+            //FEAuthParams p = b.build();
+            //return p.isExpired() ? Optional.empty() : Optional.of(p);
         } catch (IOException | NumberFormatException e) {
             return Optional.empty();   // Problemas de lectura/formato => "no encontrado"
         }
