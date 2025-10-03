@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.examples;
+package com.germanfica.wsfe.examples.prod;
 
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
@@ -44,7 +44,6 @@ public class AuthWithProxyExample {
             //WsaaClient client = WsaaClient.builder().build(); // (1)
             // Endpoint de WSAA (homologación)
             //WsaaClient client = WsaaClient.builder().setUrlBase("https://wsaa.afip.gov.ar").build();
-            //WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.HOMO).build(); // (2)
             WsaaClient client = WsaaClient.builder()
                 .setApiEnvironment(ApiEnvironment.PROD)
                 .setProxyOptions(proxyOptions)
