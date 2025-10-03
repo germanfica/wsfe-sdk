@@ -1,7 +1,8 @@
-package com.germanfica.wsfe.examples;
+package com.germanfica.wsfe.examples.homo;
 
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.exception.ApiException;
+import com.germanfica.wsfe.net.ApiEnvironment;
 import com.germanfica.wsfe.param.FEAuthParams;
 import com.germanfica.wsfe.provider.CredentialsProvider;
 import com.germanfica.wsfe.provider.feauth.ApplicationPropertiesFeAuthParamsProvider;
