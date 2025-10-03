@@ -20,7 +20,10 @@ public class FECAESolicitarExample {
         int cbteTipo = 11;
 
         // 3) Crear el WsfeClient
-        WsfeClient client = WsfeClient.builder().setFEAuthParams(auth).build();
+        WsfeClient client = WsfeClient.builder()
+            .setApiEnvironment(ApiEnvironment.HOMO)
+            .setFEAuthParams(auth)
+            .build();
 
         // 4) Cabecera FECAECabRequest
         FECAECabRequest cab = new FECAECabRequest();
