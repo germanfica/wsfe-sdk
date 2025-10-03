@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.examples;
+package com.germanfica.wsfe.examples.homo;
 
 import com.germanfica.wsfe.WsfeClient;
 import com.germanfica.wsfe.exception.ApiException;
