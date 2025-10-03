@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.examples;
+package com.germanfica.wsfe.examples.homo;
 
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.WsfeClient;
