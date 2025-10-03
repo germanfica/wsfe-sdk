@@ -1,4 +1,4 @@
-package com.germanfica.wsfe.examples;
+package com.germanfica.wsfe.examples.prod;
 
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
@@ -30,9 +30,8 @@ public class AuthExample {
 
             // 2) Crear el WsfeClient
             //WsaaClient client = WsaaClient.builder().build(); // (1)
-            // Endpoint de WSAA (homologación)
+            // Endpoint de WSAA (producción)
             //WsaaClient client = WsaaClient.builder().setUrlBase("https://wsaa.afip.gov.ar").build();
-            //WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.HOMO).build(); // (2)
             WsaaClient client = WsaaClient.builder().setApiEnvironment(ApiEnvironment.PROD).build();
 
             // 3) Invocar autenticación en WSAA
