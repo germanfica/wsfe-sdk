@@ -105,6 +105,21 @@ To use this SDK in another project during development without the need to compil
 - https://www.mojohaus.org/jaxb2-maven-plugin/Documentation/v3.1.0/index.html
 - 
 
+## Examples
+
+The SDK provides two parallel example trees, one per environment:
+
+* `com.germanfica.wsfe.examples.homo.*` — AFIP homologation (testing)
+* `com.germanfica.wsfe.examples.prod.*` — AFIP production
+
+### Why
+
+Examples in an SDK are pedagogical assets. They are optimized for clarity and immediate execution rather than for minimizing duplication. Keeping separate examples for each environment removes the need to edit code or toggle comments when switching between homologation and production.
+
+In other words: the value of examples lies in being **plug-and-play**. A developer returning after months, or a beginner setting up for the first time, should be able to run a homo or prod example without adjustments.
+
+Unlike the SDK core, examples are not required to follow strict *Don't Repeat Yourself (DRY)* principles. Their primary goal is to maximize readability and accessibility, ensuring that functionality can be demonstrated in the simplest and most direct way possible.
+
 ## Known issues
 
 When working with IntelliJ IDEA, there are occasional issues where the code and controllers may break after performing a `mvn clean` operation.
