@@ -48,7 +48,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
             .resolve()
             .orElse(null);
 
-        if (cache != null) return;  // TA vigente, no hace nada
+        if (cache != null && !cache.isExpired()) return;  // TA vigente, no hace nada
 
         // (2) No había TA o estaba vencido -> pedir uno nuevo a WSAA
         Cms cms = buildCmsAutomatically();
