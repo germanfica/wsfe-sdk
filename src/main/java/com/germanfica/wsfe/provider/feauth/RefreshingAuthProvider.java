@@ -95,6 +95,10 @@ public class RefreshingAuthProvider implements FEAuthProvider {
                     .addProvider(new ApplicationPropertiesCmsParamsProvider())
                     .build()
                     .resolve()
+                    .filter(cmsValue -> {
+                        Cms cms = Cms.create(cmsValue);
+                        return !cms.isTicketExpired() && !cms.isCertExpired();
+                    })
                     .orElseThrow(() -> new IllegalStateException("No se pudieron resolver CmsParams"));
 
                 Cms cms = Cms.create(cmsParams);
