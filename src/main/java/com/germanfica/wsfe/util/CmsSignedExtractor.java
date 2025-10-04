@@ -132,25 +132,26 @@ public final class CmsSignedExtractor {
         return info;
     }
 
-    /** List signed attributes */
+    /** List signed attributes (with OID names where possible) */
     public static List<String> extractSignedAttributes(CMSSignedData cms) {
         List<String> attrs = new ArrayList<>();
-        SignerInformation signer = cms.getSignerInfos().getSigners().iterator().next();
+        var signers = cms.getSignerInfos().getSigners();
+        if (signers.isEmpty()) return attrs;
 
-        if (signer.getSignedAttributes() != null) {
-            ASN1EncodableVector v = signer.getSignedAttributes().toASN1EncodableVector();
-            for (int i = 0; i < v.size(); i++) {
-                ASN1Encodable enc = v.get(i);
+        SignerInformation signer = signers.iterator().next();
+        if (signer.getSignedAttributes() == null) return attrs;
 
-                if (enc instanceof Attribute) {
-                    Attribute attr = (Attribute) enc;
-                    String oid = attr.getAttrType().getId();
-                    String val = attr.getAttrValues().toString();
-                    attrs.add("OID=" + oid + ", values=" + val);
-                } else {
-                    // fallback si no es Attribute
-                    attrs.add(enc.toString());
-                }
+        ASN1EncodableVector v = signer.getSignedAttributes().toASN1EncodableVector();
+        for (int i = 0; i < v.size(); i++) {
+            ASN1Encodable enc = v.get(i);
+            if (enc instanceof Attribute) {
+                Attribute attr = (Attribute) enc;
+                String oid = attr.getAttrType().getId();
+                String name = OidDictionary.prettyName(oid);
+                String val = attr.getAttrValues().toString();
+                attrs.add("OID=" + oid + " (" + name + "), values=" + val);
+            } else {
+                attrs.add(enc.toString());
             }
         }
         return attrs;
