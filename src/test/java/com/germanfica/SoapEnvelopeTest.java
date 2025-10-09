@@ -2,6 +2,8 @@ package com.germanfica;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.germanfica.wsfe.exception.XmlMappingException;
+import com.germanfica.wsfe.model.LoginTicketResponseData;
+import com.germanfica.wsfe.util.LoginTicketParser;
 import com.germanfica.wsfe.util.XmlExtractor;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -31,14 +33,14 @@ public class SoapEnvelopeTest {
                 """;
 
         XmlExtractor extractor = new XmlExtractor(xmlResponse);
-        String token = extractor.extractValue("/ loginTicketResponse/ credentials/ token");
-        XmlExtractor. LoginTicketData data = extractor. extractLoginTicketData();
+        String token = extractor.extractValue("/loginTicketResponse/credentials/token");
+        LoginTicketResponseData data = (LoginTicketResponseData) LoginTicketParser.parse(xmlResponse);
 
         // Imprimir resultados
         System.out.println("Respuesta de autenticación xml: \n" + xmlResponse);
-        System.out.println("Respuesta de autenticación json: \n" + data);
-        System.out.println("\nRespuesta de token json: \n" + data.token);
-        System.out.println("\nToken: \n" + token);
+        System.out.println("Respuesta de autenticación (parseada): \n" + data);
+        System.out.println("\nRespuesta de LoginTicketResponseData: \n" + data.token());
+        System.out.println("\nToken extraído con XPath: \n" + token);
     }
 
     /**
