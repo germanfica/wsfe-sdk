@@ -99,7 +99,8 @@ public class WsfeClient {
 
         public WsfeClient build() {
             return new WsfeClient(
-                new DefaultSoapRequestHandler(buildOptions()),
+                //new DefaultSoapRequestHandler(buildOptions()),
+                new DefaultWsfeRequestHandler(buildOptions()),
                 this.feAuthProvider != null ? this.feAuthProvider : defaultProviderChain()
             );
         }
