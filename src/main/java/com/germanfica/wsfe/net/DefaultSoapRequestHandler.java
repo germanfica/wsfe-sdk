@@ -9,6 +9,7 @@ import fev1.dif.afip.gov.ar.ServiceSoap;
 import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMS;
 import https.wsaa_afip_gov_ar.ws.services.logincms.LoginCMSService;
 import https.wsaa_afip_gov_ar.ws.services.logincms.LoginFault;
+import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.xml.ws.soap.SOAPFaultException;
@@ -85,11 +86,52 @@ public class DefaultSoapRequestHandler implements SoapRequestHandler {
 
     private void handleSoapFault(SOAPFaultException e) throws ApiException {
         System.err.println("SOAP Fault: " + e.getFault().getFaultString());
+        String faultCode = handleSoapFaultCode(e.getFault());
+        System.err.println("SOAP Fault Code: " + faultCode);
 
         throw new ApiException(
-            new ErrorDto("soap_fault", e.getFault().getFaultString(), null),
+            new ErrorDto(faultCode, e.getFault().getFaultString(), null),
             HttpStatus.INTERNAL_SERVER_ERROR
         );
+    }
+
+    /**
+     * Safely extracts the fault code from a {@link SOAPFault}.
+     * <p>
+     * This method attempts to obtain the local part of the fault code from
+     * {@link SOAPFault#getFaultCodeAsQName()}. If unavailable, it falls back to
+     * {@link SOAPFault#getFaultCode()} and removes any namespace prefix (e.g., "ns1:").
+     * <p>
+     * If no valid fault code is found or an exception occurs while reading it,
+     * the method returns the default value {@code "soap_fault"}.
+     *
+     * @param fault the {@link SOAPFault} instance, may be {@code null}
+     * @return the extracted fault code, or {@code "soap_fault"} if unknown or unavailable
+     */
+    private String handleSoapFaultCode(SOAPFault fault) {
+        if (fault == null) return "soap_fault";
+
+        try {
+            javax.xml.namespace.QName q = fault.getFaultCodeAsQName();
+            if (q != null) {
+                String local = q.getLocalPart();
+                if (local != null && !local.isBlank()) {
+                    return local;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            String raw = fault.getFaultCode();
+            if (raw != null && !raw.isBlank()) {
+                int idx = raw.indexOf(':');
+                return (idx >= 0 && idx + 1 < raw.length()) ? raw.substring(idx + 1) : raw;
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return "soap_fault";
     }
 
     private void handleWebServiceError(WebServiceException e) throws ApiException {
