@@ -91,9 +91,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
 
     /**
      * Genera un nuevo CMS (y con él su Subject CUIT) cada vez que necesitemos
-     * refrescar el Ticket de Acceso.  Si tu certificado tiene una validez de
-     * ~2 años y prefieres reutilizarlo, puedes cachear el {@code Cms} aquí del
-     * mismo modo que el TA (cache) —quedó listo para añadir esa optimización.
+     * refrescar el Ticket de Acceso.
      *
      * @deprecated Use {@link #buildFreshCms()} instead.
      */
