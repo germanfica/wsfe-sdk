@@ -14,12 +14,25 @@ import com.germanfica.wsfe.provider.cms.EnvironmentCmsParamsProvider;
 import com.germanfica.wsfe.provider.cms.FileSignedCmsProvider;
 import com.germanfica.wsfe.provider.cms.SystemPropertyCmsParamsProvider;
 import com.germanfica.wsfe.time.ArcaDateTime;
-import com.germanfica.wsfe.util.*;
+import com.germanfica.wsfe.util.LoginTicketParser;
 import fev1.dif.afip.gov.ar.FEAuthRequest;
 
+/**
+ * RefreshingAuthProvider
+ *
+ * Implementa la política de renovación del Ticket de Acceso (TA) según WSAA.
+ *
+ * - Solo el TA (FEAuthParams) se persiste y se reutiliza entre ejecuciones.
+ * - Cada vez que se requiere un TA nuevo, se genera un CMS fresco
+ *   (basado en un nuevo TRA firmado con el certificado digital).
+ *
+ * Este proveedor confía íntegramente en los tiempos devueltos por el WSAA
+ * dentro del <loginTicketResponse>.
+ */
 public class RefreshingAuthProvider implements FEAuthProvider {
-    private final WsaaClient wsaa;            // WSAA
-    private volatile FEAuthParams cache;               // TA cacheado mientras no expire
+
+    private final WsaaClient wsaa;       // Cliente WSAA
+    private volatile FEAuthParams cache; // TA cacheado mientras no expire
 
     public RefreshingAuthProvider(WsaaClient wsaa) {
         this.wsaa = wsaa;
@@ -41,7 +54,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
     }
 
     private void refresh() throws ApiException {
-        // (1) Intenta cargar un TA válido desde disco
+        // (1) Intentar reutilizar TA válido persistido en disco
         cache = ProviderChain.<FEAuthParams>builder()
             .addProvider(new FileFEAuthParamsProvider())
             .build()
@@ -51,7 +64,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
         if (cache != null && !cache.isExpired()) return;  // TA vigente, no hace nada
 
         // (2) No había TA o estaba vencido -> pedir uno nuevo a WSAA
-        Cms cms = buildCmsAutomatically();
+        Cms cms = buildFreshCms();
         String xml = wsaa.authService().autenticar(cms);
 
         try {
@@ -64,6 +77,7 @@ public class RefreshingAuthProvider implements FEAuthProvider {
                 .setGenerationTime(ArcaDateTime.parse(data.generationTime()))
                 .setExpirationTime(ArcaDateTime.parse(data.expirationTime()))
                 .build();
+
         } catch (Exception e) {
             throw new ApiException(
                 new ErrorDto("invalid_xml", "No se pudo parsear loginTicketResponse", null),
@@ -71,16 +85,17 @@ public class RefreshingAuthProvider implements FEAuthProvider {
             );
         }
 
-        // (3) Persistir en disco para la próxima ejecución
+        // (3) Persistir nuevo TA
         FileFEAuthParamsProvider.save(cache);
     }
 
     /**
-      * Genera un nuevo CMS (y con él su Subject CUIT) cada vez que necesitemos
-      * refrescar el Ticket de Acceso.  Si tu certificado tiene una validez de
-      * ~2 años y prefieres reutilizarlo, puedes cachear el {@code Cms} aquí del
-      * mismo modo que el TA (cache) —quedó listo para añadir esa optimización.
-      */
+     * Genera un nuevo CMS (y con él su Subject CUIT) cada vez que necesitemos
+     * refrescar el Ticket de Acceso.
+     *
+     * @deprecated Use {@link #buildFreshCms()} instead.
+     */
+    @Deprecated
     private Cms buildCmsAutomatically() {
         String signedCmsBase64 = ProviderChain.<String>builder()
             .addProvider(new FileSignedCmsProvider())      // primero busca en el archivo
@@ -103,6 +118,23 @@ public class RefreshingAuthProvider implements FEAuthProvider {
             });
 
         return Cms.create(signedCmsBase64);
+    }
+
+    /**
+     * Genera siempre un CMS fresco firmado con el certificado configurado.
+     * El CMS no se persiste, ya que su vigencia depende del TRA generado
+     * dentro de la misma operación de solicitud de TA.
+     */
+    private Cms buildFreshCms() {
+        CmsParams cmsParams = ProviderChain.<CmsParams>builder()
+            .addProvider(new EnvironmentCmsParamsProvider())
+            .addProvider(new SystemPropertyCmsParamsProvider())
+            .addProvider(new ApplicationPropertiesCmsParamsProvider())
+            .build()
+            .resolve()
+            .orElseThrow(() -> new IllegalStateException("No se pudieron resolver CmsParams"));
+
+        return Cms.create(cmsParams);
     }
 
     private static FEAuthRequest toFEAuthRequest(FEAuthParams p) {
