@@ -14,6 +14,15 @@ import com.germanfica.wsfe.provider.cms.SystemPropertyCmsParamsProvider;
 import com.germanfica.wsfe.time.ArcaDateTime;
 import com.germanfica.wsfe.util.CryptoUtils;
 import com.germanfica.wsfe.util.LoginTicketParser;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Set;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.cms.SignedData;
+import org.bouncycastle.asn1.cms.SignerInfo;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -316,13 +325,57 @@ public class CmsCustomTraTest {
         IntegrationContext ctx = IntegrationContext.prepare();
         String signedCms = ctx.signTra(builder -> { });
 
-        byte[] cmsBytes = Base64.getDecoder().decode(signedCms);
-        cmsBytes[cmsBytes.length - 1] ^= 0x01;
-        String tamperedCms = Base64.getEncoder().encodeToString(cmsBytes);
+        String tamperedCms = tamperCmsSignature(signedCms);
 
         ApiException fault = expectSoapFault(() -> ctx.wsaa.authService().autenticar(tamperedCms));
         // código esperado
         assertFaultContains(fault, "cms.sign.invalid");
+    }
+
+    private static String tamperCmsSignature(String signedCms) throws Exception {
+        byte[] cmsBytes = Base64.getDecoder().decode(signedCms);
+
+        ContentInfo contentInfo;
+        try (ASN1InputStream asn1InputStream = new ASN1InputStream(cmsBytes)) {
+            ASN1Primitive asn1Primitive = asn1InputStream.readObject();
+            contentInfo = ContentInfo.getInstance(asn1Primitive);
+        }
+
+        SignedData signedData = SignedData.getInstance(contentInfo.getContent());
+        ASN1Set signerInfos = signedData.getSignerInfos();
+
+        ASN1Encodable[] tamperedSignerInfos = new ASN1Encodable[signerInfos.size()];
+        for (int i = 0; i < signerInfos.size(); i++) {
+            SignerInfo signerInfo = SignerInfo.getInstance(signerInfos.getObjectAt(i));
+            byte[] signature = signerInfo.getEncryptedDigest().getOctets();
+            byte[] tamperedSignature = signature.clone();
+            tamperedSignature[0] ^= 0x01;
+
+            DEROctetString tamperedDigest = new DEROctetString(tamperedSignature);
+            tamperedSignerInfos[i] = new SignerInfo(
+                signerInfo.getSID(),
+                signerInfo.getDigestAlgorithm(),
+                signerInfo.getAuthenticatedAttributes(),
+                signerInfo.getDigestEncryptionAlgorithm(),
+                tamperedDigest,
+                signerInfo.getUnauthenticatedAttributes()
+            );
+        }
+
+        SignedData tamperedSignedData = new SignedData(
+            signedData.getDigestAlgorithms(),
+            signedData.getEncapContentInfo(),
+            signedData.getCertificates(),
+            signedData.getCRLs(),
+            new DERSet(tamperedSignerInfos)
+        );
+
+        ContentInfo tamperedContentInfo = new ContentInfo(
+            contentInfo.getContentType(),
+            tamperedSignedData
+        );
+
+        return Base64.getEncoder().encodeToString(tamperedContentInfo.getEncoded());
     }
 
     @Test
