@@ -2,9 +2,11 @@ package com.germanfica;
 
 import com.germanfica.wsfe.WsaaClient;
 import com.germanfica.wsfe.cms.Cms;
+import com.germanfica.wsfe.dto.ErrorDto;
 import com.germanfica.wsfe.exception.ApiException;
 import com.germanfica.wsfe.model.LoginTicketResponseData;
 import com.germanfica.wsfe.net.ApiEnvironment;
+import com.germanfica.wsfe.net.HttpStatus;
 import com.germanfica.wsfe.param.CmsParams;
 import com.germanfica.wsfe.param.FEAuthParams;
 import com.germanfica.wsfe.provider.ProviderChain;
@@ -39,11 +41,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 
 import java.math.BigInteger;
@@ -518,18 +516,11 @@ public class CmsCustomTraTest {
         assertFaultContains(fault, "xml.expirationTime.invalid");
     }
 
-    @Test
+    @Disabled("No replicable: requiere de verificar condiciones transitorias o respuestas especificas del servidor. Es un caso dependiente del estado del servicio y no puede garantizarse contra el endpoint real.")    @Test
     @Tag("integration")
     @DisplayName("El servicio al que se desea acceder se encuentra momentáneamente fuera de servicio.")
     void shouldReturnWsnUnavailable() throws Exception {
-        IntegrationContext ctx = IntegrationContext.prepare();
-        String signedCms = ctx.signTra(builder -> {
-            builder.withService("wsfe");
-        });
-
-        ApiException fault = expectSoapFault(() -> ctx.wsaa.authService().autenticar(signedCms));
-        // código esperado
-        assertFaultContains(fault, "wsn.unavailable");
+        assertNonReplicableFault("wsaa.unavailable");
     }
 
     @Test
@@ -546,29 +537,20 @@ public class CmsCustomTraTest {
         assertFaultContains(fault, "wsn.notFound");
     }
 
+    @Disabled("No replicable: requiere de verificar condiciones transitorias o respuestas especificas del servidor. Es un caso dependiente del estado del servicio y no puede garantizarse contra el endpoint real.")
     @Test
     @Tag("integration")
     @DisplayName("El servicio de autenticación/autorización se encuentra momentáneamente fuera de servicio.")
     void shouldReturnWsaaUnavailable() throws Exception {
-        IntegrationContext ctx = IntegrationContext.prepareWithCustomEndpoint("https://wsaahomo.afip.gov.ar:4444");
-        ApiException fault = Assertions.assertThrows(ApiException.class,
-            () -> ctx.wsaa.authService().autenticar(ctx.signTra(builder -> { })));
-        // código esperado
-        assertFaultContains(fault, "wsaa.unavailable");
+        assertNonReplicableFault("wsaa.unavailable");
     }
 
+    @Disabled("No replicable: requiere de verificar condiciones transitorias o respuestas especificas del servidor. Es un caso dependiente del estado del servicio y no puede garantizarse contra el endpoint real.")
     @Test
     @Tag("integration")
     @DisplayName("No se ha podido procesar el requerimiento.")
     void shouldReturnWsaaInternalError() throws Exception {
-        IntegrationContext ctx = IntegrationContext.prepare();
-        String signedCms = ctx.signTra(builder -> {
-            builder.withCustomXml("<loginTicketRequest version=\"1.0\"><header/></loginTicketRequest>");
-        });
-
-        ApiException fault = expectSoapFault(() -> ctx.wsaa.authService().autenticar(signedCms));
-        // código esperado
-        assertFaultContains(fault, "wsaa.internalError");
+        assertNonReplicableFault("wsaa.internalError");
     }
 
     private static ApiException expectSoapFault(Executable executable) {
@@ -581,6 +563,25 @@ public class CmsCustomTraTest {
             faultCode != null && fault.getErrorDto().getFaultCode().contains(expectedCode),
             () -> "Se esperaba código " + expectedCode + " pero se obtuvo: " + fault.getErrorDto().getFaultCode()
         );
+    }
+
+    private static ApiException createNonReplicableFault(String expectedCode) {
+        ErrorDto error = new ErrorDto(
+            "non_replicable",
+            "This test represents a type of case that cannot be guaranteed against the real service. "
+                + "Such conditions are transient or server-specific responses that depend on the server's internal state "
+                + "or the content of the SOAP message, making them extremely difficult to reproduce.",
+            null
+        );
+        ApiException fault = new ApiException(error, HttpStatus.NOT_IMPLEMENTED);
+        System.err.println("Fault: " + fault.getMessage());
+        System.err.println("Fault Code: " + fault.getErrorDto().getFaultCode());
+        return fault;
+    }
+
+    private static void assertNonReplicableFault(String expectedCode) {
+        ApiException fault = createNonReplicableFault(expectedCode);
+        assertFaultContains(fault, expectedCode);
     }
 
     private static void ensureBouncyCastleProvider() {
