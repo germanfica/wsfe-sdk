@@ -32,6 +32,7 @@ import java.util.Optional;
  *     .build();
  * }</pre>
  */
+@Deprecated
 public final class FileSignedCmsProvider implements CredentialsProvider<String> {
 
     /* ~/.wsfe/cms.ini */
@@ -42,6 +43,7 @@ public final class FileSignedCmsProvider implements CredentialsProvider<String> 
     private static final String KEY     = "signedCms";
 
     @Override
+    @Deprecated
     public Optional<String> resolve() {
         try {
             if (!Files.exists(CMS_FILE)) return Optional.empty();
@@ -75,6 +77,7 @@ public final class FileSignedCmsProvider implements CredentialsProvider<String> 
      * @param signedCmsBase64 CMS firmado en Base64.
      * @throws IllegalArgumentException si el valor es nulo o vacío.
      */
+    @Deprecated
     public static void save(String signedCmsBase64) {
         if (signedCmsBase64 == null || signedCmsBase64.isBlank()) {
             throw new IllegalArgumentException("signedCmsBase64 vacío o nulo");
