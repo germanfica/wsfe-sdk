@@ -138,6 +138,13 @@ public final class ArcaDateTime implements Serializable {
     }
 
     /**
+     * Returns a new ArcaDateTime that is <code>millis</code> milliseconds later than this one.
+     */
+    public ArcaDateTime plusMillis(long millis) {
+        return new ArcaDateTime(value.plus(java.time.Duration.ofMillis(millis)));
+    }
+
+    /**
      * Returns a string representation of this date‐time, formatted in the ISO‐8601 full pattern,
      * including milliseconds and offset. The exact pattern used is:
      *
