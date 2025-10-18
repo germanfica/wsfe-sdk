@@ -97,7 +97,7 @@ public class LoginTicketRequest {
         }
     }
 
-    public static LoginTicketRequest create(String source, String destination, String service, long ticketTimeMillis) {
+    public static LoginTicketRequest create(String source, String destination, String service, Long ticketTimeMillis) {
         LoginTicketRequest request = new LoginTicketRequest();
 
         Header header = new Header();
@@ -106,7 +106,13 @@ public class LoginTicketRequest {
         header.setUniqueId(String.valueOf(System.currentTimeMillis() / 1000));
 
         ArcaDateTime generationTime = ArcaDateTime.now();
-        ArcaDateTime expirationTime = ArcaDateTime.now().plusMinutes(10);
+        ArcaDateTime expirationTime;
+
+        if (ticketTimeMillis != null && ticketTimeMillis > 0) {
+            expirationTime = generationTime.plusMillis(ticketTimeMillis);
+        }else {
+            expirationTime = ArcaDateTime.now().plusMinutes(10);
+        }
 
         header.setGenerationTime(generationTime.toString());
         header.setExpirationTime(expirationTime.toString());
