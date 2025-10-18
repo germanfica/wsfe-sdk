@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.io.Serializable;
 import java.time.*;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
 /**
  * Represents a date‐time with an offset, intended to simplify working with ARCA/AFIP date‐time values.
@@ -35,6 +36,10 @@ public final class ArcaDateTime implements Serializable {
 
     public static ArcaDateTime now() {
         return new ArcaDateTime(OffsetDateTime.now());
+    }
+
+    public static ArcaDateTime now(Clock clock) {
+        return of(clock.instant());
     }
 
     public static ArcaDateTime of(OffsetDateTime value) {
