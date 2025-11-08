@@ -37,6 +37,10 @@ public final class ArcaDateTime implements Serializable {
         return new ArcaDateTime(OffsetDateTime.now());
     }
 
+    public static ArcaDateTime now(Clock clock) {
+        return of(clock.instant());
+    }
+
     public static ArcaDateTime of(OffsetDateTime value) {
         return new ArcaDateTime(value);
     }
