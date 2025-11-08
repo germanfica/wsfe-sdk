@@ -34,7 +34,7 @@ public final class ArcaDateTime implements Serializable {
     }
 
     public static ArcaDateTime now() {
-        return new ArcaDateTime(OffsetDateTime.now());
+        return of(Instant.now());
     }
 
     public static ArcaDateTime now(Clock clock) {
@@ -42,7 +42,7 @@ public final class ArcaDateTime implements Serializable {
     }
 
     public static ArcaDateTime of(OffsetDateTime value) {
-        return new ArcaDateTime(value);
+        return new ArcaDateTime(value.toInstant().atOffset(ArcaDateTimeUtils.TimeZoneOffset.ARGENTINA.getZoneOffset()));
     }
 
     /**
@@ -72,15 +72,15 @@ public final class ArcaDateTime implements Serializable {
      * @throws DateTimeParseException if the text cannot be parsed.
      */
     public static ArcaDateTime parse(String isoString) throws DateTimeParseException {
-        return new ArcaDateTime(OffsetDateTime.parse(isoString));
+        return of(OffsetDateTime.parse(isoString));
     }
 
     public boolean isAfterNow() {
-        return value.isAfter(OffsetDateTime.now());
+        return value.isAfter(ArcaDateTime.now().value);
     }
 
     public boolean isBeforeNow() {
-        return value.isBefore(OffsetDateTime.now());
+        return value.isBefore(ArcaDateTime.now().value);
     }
 
     public boolean isAfter(ArcaDateTime other) {
