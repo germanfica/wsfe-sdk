@@ -4,9 +4,11 @@ import com.germanfica.wsfe.util.ArcaDateTimeUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.*;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Represents a date‐time with an offset, intended to simplify working with ARCA/AFIP date‐time values.
@@ -27,10 +29,24 @@ import java.time.format.DateTimeParseException;
 @Getter
 @EqualsAndHashCode
 public final class ArcaDateTime implements Serializable {
-    private final OffsetDateTime value;
+    private final Instant value;
+    private static final ZoneOffset ARCA_OFFSET = ArcaDateTimeUtils.TimeZoneOffset.ARGENTINA.getZoneOffset();
+
+    private ArcaDateTime(Instant value) {
+        this.value = value;
+    }
 
     private ArcaDateTime(OffsetDateTime value) {
-        this.value = value;
+        this.value = value.toInstant();
+    }
+
+    private OffsetDateTime normalizedValue() {
+        return value.atOffset(ARCA_OFFSET);
+    }
+
+    @Serial
+    private Object readResolve() {
+        return ArcaDateTime.of(this.toInstant());
     }
 
     public static ArcaDateTime now() {
@@ -42,7 +58,7 @@ public final class ArcaDateTime implements Serializable {
     }
 
     public static ArcaDateTime of(OffsetDateTime value) {
-        return new ArcaDateTime(value.toInstant().atOffset(ArcaDateTimeUtils.TimeZoneOffset.ARGENTINA.getZoneOffset()));
+        return new ArcaDateTime(value.toInstant());
     }
 
     /**
@@ -64,7 +80,7 @@ public final class ArcaDateTime implements Serializable {
      * @throws IllegalArgumentException if {@code instant} is null.
      */
     public static ArcaDateTime of(Instant instant) {
-        return new ArcaDateTime(instant.atOffset(ArcaDateTimeUtils.TimeZoneOffset.ARGENTINA.getZoneOffset()));
+        return new ArcaDateTime(instant);
     }
 
     /**
@@ -92,7 +108,7 @@ public final class ArcaDateTime implements Serializable {
     }
 
     public boolean isEqual(ArcaDateTime other) {
-        return this.value.isEqual(other.value);
+        return this.value.equals(other.value);
     }
 
     public boolean isNotEqual(ArcaDateTime other) {
@@ -108,37 +124,41 @@ public final class ArcaDateTime implements Serializable {
     }
 
     public OffsetDateTime toOffsetDateTime() {
-        return value;
+        return normalizedValue();
     }
 
     public LocalDate toLocalDate() {
-        return value.toLocalDate();
+        return toOffsetDateTime().toLocalDate();
     }
 
     public LocalTime toLocalTime() {
-        return value.toLocalTime();
+        return toOffsetDateTime().toLocalTime();
     }
 
     public LocalDateTime toLocalDateTime() {
-        return value.toLocalDateTime();
+        return toOffsetDateTime().toLocalDateTime();
     }
 
     public Instant toInstant() {
-        return value.toInstant();
+        return value;
     }
 
     /**
      * Returns a new ArcaDateTime that is <code>minutes</code> minutes earlier than this one.
      */
     public ArcaDateTime minusMinutes(long minutes) {
-        return new ArcaDateTime(value.minusMinutes(minutes));
+        //return new ArcaDateTime(value.minusMinutes(minutes));
+        Instant newInstant = toInstant().minus(minutes, ChronoUnit.MINUTES);
+        return ArcaDateTime.of(newInstant);
     }
 
     /**
      * Returns a new ArcaDateTime that is <code>minutes</code> minutes later than this one.
      */
     public ArcaDateTime plusMinutes(long minutes) {
-        return new ArcaDateTime(value.plusMinutes(minutes));
+        //return new ArcaDateTime(value.plusMinutes(minutes));
+        Instant newInstant = toInstant().plus(minutes, ChronoUnit.MINUTES);
+        return ArcaDateTime.of(newInstant);
     }
 
     /**
@@ -146,6 +166,19 @@ public final class ArcaDateTime implements Serializable {
      */
     public ArcaDateTime plusMillis(long millis) {
         return new ArcaDateTime(value.plus(java.time.Duration.ofMillis(millis)));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArcaDateTime)) return false;
+        ArcaDateTime other = (ArcaDateTime) o;
+        return this.toInstant().equals(other.toInstant());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toInstant().hashCode();
     }
 
     /**
@@ -166,6 +199,6 @@ public final class ArcaDateTime implements Serializable {
      */
     @Override
     public String toString() {
-        return ArcaDateTimeUtils.formatDateTime(value, ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL);
+        return ArcaDateTimeUtils.formatDateTime(normalizedValue(), ArcaDateTimeUtils.DateTimeFormat.ISO_8601_FULL);
     }
 }
