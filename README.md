@@ -24,7 +24,7 @@ mvn generate-sources
 mvn clean generate-sources -DskipTests
 ```
 
-## Install package maven local repository
+## Install package in local Maven repository
 
 (1) First build the package.
 ```bash
@@ -42,68 +42,9 @@ or
 mvn clean package -DskipTests install:install-file -Dfile=target/wsfe-0.0.1-SNAPSHOT.jar -DgroupId=com.germanfica -DartifactId=wsfe -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
 ```
 
-## IntelliJ IDEA Configuration
-
-In order for IntelliJ IDEA to recognize and compile any code generated under `generated-sources` (for example, JAXB, CXF, annotation processors, etc.), you must mark those directories as **Source Folders**.
-
-![idea64_87xSJpD3Zl](https://github.com/user-attachments/assets/c324060f-11e0-4e38-bfc7-3e274e9ed62a)
-
-1. **Open the Project Structure dialog**
-
-   * From the main menu, choose **File -> Project Structure…** (or press `Ctrl + Alt + Shift + S` on Windows/Linux, `⌘ ;` on macOS).
-
-2. **Select your module**
-
-   * In the left-hand pane of the Project Structure dialog, click on **Modules**.
-   * In the upper-center area, select the module that corresponds to your SDK (e.g. `wsfe`).
-
-3. **Switch to the “Sources” tab**
-
-   * With your module selected, click the **Sources** tab in the right-hand pane.
-
-4. **Locate and mark each generated-sources folder as a Source Root**
-
-   * In the folder tree, expand `src` (or the root of your project) until you see `generated-sources/annotations` and `generated-sources/cxf` (or whichever subfolders hold your generated classes).
-   * Select each generated-sources directory one at a time, then click the blue **Sources** button (or right-click and choose **Mark Directory as -> Sources Root**).
-   * Once marked, IntelliJ will highlight those folders in blue and list them under **Source Folders** on the right.
-
-5. **Apply and save**
-
-   * Click **Apply** and then **OK** to close the Project Structure dialog.
-   * IntelliJ will now treat all code inside those `generated-sources` directories as part of the main source set, and it will compile or index them automatically.
-
-After completing these steps, any classes or files that your build tool (Maven, Gradle, etc.) places into `target/generated-sources` (or another designated location) will be correctly recognized by IntelliJ IDEA. If you ever regenerate sources, simply refresh your project (e.g. via **Build -> Rebuild Project** or by re-importing the Maven/Gradle project) and verify that IntelliJ still lists each generated-sources folder under **Source Folders**.
-
-## Using the SDK as a Library in IntelliJ IDEA
-
-![PzQFdT5hT4](https://github.com/user-attachments/assets/c502c4fa-c3a7-42d9-8a82-dc271f838adc)
-
-### Objective
-To use this SDK in another project during development without the need to compile it into a JAR. This approach allows real-time updates and easy debugging.
-
-### Benefits
-- Immediate access to SDK features.
-- Real-time updates when modifying the SDK.
-- No need to package the SDK as a JAR.
-
-### Step-by-Step Guide
-1. **Open the project where you want to use the SDK.**
-2. **Add the SDK as a library:**
-   - Go to **File > Project Structure > Libraries**.
-   - Click the **+** button and select **Java**.
-   - Choose the root folder of the SDK project (e.g., `wsfe-spring-sdk`).
-   - Include the `src/main/java` and any other relevant directories, such as `target/generated-sources`.
-3. **Apply changes:**
-   - Click **Apply** and **OK** to save the configuration.
-4. **Start using the SDK:**
-   - Import the necessary classes and start coding!
-
----
-
-# Docs
+## Docs
 
 - https://www.mojohaus.org/jaxb2-maven-plugin/Documentation/v3.1.0/index.html
-- 
 
 ## Examples
 
