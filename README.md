@@ -42,6 +42,16 @@ or
 mvn clean package -DskipTests install:install-file -Dfile=target/wsfe-0.0.1-SNAPSHOT.jar -DgroupId=com.germanfica -DartifactId=wsfe -Dversion=0.0.1-SNAPSHOT -Dpackaging=jar
 ```
 
+(3) After that, you can add the dependency in another project:
+
+```xml
+<dependency>
+  <groupId>com.germanfica</groupId>
+  <artifactId>wsfe-sdk</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+
 ## Docs
 
 - https://www.mojohaus.org/jaxb2-maven-plugin/Documentation/v3.1.0/index.html
