@@ -38,7 +38,7 @@ public class FECAESolicitarWithRefreshingAuthExample {
         FERecuperaLastCbteResponse feRecuperaLastCbteResponse = client.feCompUltimoAutorizado(ptoVta, cbteTipo);
         det.setCbteDesde(feRecuperaLastCbteResponse.getCbteNro() + 1);     // Número de comprobante desde - FECompUltimoAutorizado + 1
         det.setCbteHasta(feRecuperaLastCbteResponse.getCbteNro() + 1);     // Número de comprobante hasta - FECompUltimoAutorizado + 1
-        det.setCbteFch("20250131");  // Fecha de emisión (AAAAMMDD)
+        det.setCbteFch("20251123");  // Fecha de emisión (AAAAMMDD)
         det.setImpTotal(100.0);  // Importe total
         det.setImpTotConc(0.0);
         det.setImpNeto(100.0);   // Neto
@@ -46,12 +46,13 @@ public class FECAESolicitarWithRefreshingAuthExample {
         det.setImpTrib(0.0);
         det.setImpIVA(0.0);      // Para Factura C no corresponde IVA
         // Fechas servicio
-        det.setFchServDesde("20250131");
-        det.setFchServHasta("20250131");
-        det.setFchVtoPago("20250131");
+        det.setFchServDesde("20251123");
+        det.setFchServHasta("20251123");
+        det.setFchVtoPago("20251123");
         // Moneda
         det.setMonId("PES");     // Pesos
         det.setMonCotiz(1.0);    // Cotización
+        det.setCondicionIVAReceptorId(5); // NUEVO: esto es consumidor final, obligatorio conforme a lo reglamentado por la Resolución General Nro 5616
 
         // 6) Contenedor para uno o más detalles
         ArrayOfFECAEDetRequest detalles = new ArrayOfFECAEDetRequest();
