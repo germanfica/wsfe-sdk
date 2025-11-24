@@ -53,6 +53,7 @@ public class FECAESolicitarExample {
         // Moneda
         det.setMonId("PES");     // Pesos
         det.setMonCotiz(1.0);    // Cotización
+        det.setCondicionIVAReceptorId(5); // NUEVO: esto es consumidor final, obligatorio conforme a lo reglamentado por la Resolución General Nro 5616
 
         // 6) Contenedor para uno o más detalles
         ArrayOfFECAEDetRequest detalles = new ArrayOfFECAEDetRequest();
